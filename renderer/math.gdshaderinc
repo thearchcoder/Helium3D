@@ -193,6 +193,7 @@ float sphere_sdf2d(vec2 p, vec2 sphere_position, float radius) { return length(p
 float sphere_sdf3d(vec3 p, vec3 sphere_position, float radius) { return length(p - sphere_position) - radius; }
 float sphere_sdf4d(vec4 p, vec4 sphere_position, float radius) { return length(p - sphere_position) - radius; }
 float cube_sdf3d(vec3 p, vec3 s) { vec3 q = abs(p) - s; return length(max(q, 0.0)); }
+float cube_sdf4d(vec4 p, vec4 s) { vec4 q = abs(p) - s; return length(max(q, 0.0)); }
 float triangle_sdf3d(vec3 point) { return (max(abs(point.x + point.y) - point.z, abs(point.x - point.y) + point.z) - 1.0) / sqrt(3.0); }
 float octahedron_sdf3d(vec3 p, float s) { vec3 k = abs(p); return (k.x + k.y + k.z - s) * 0.57735027; }
 float dodecahedron_sdf3d(vec3 position, float radius) {

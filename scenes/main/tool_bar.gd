@@ -78,7 +78,7 @@ func load_project_data(path: String) -> void:
 
 # Save an image to the specified path
 func save_image(path: String) -> void:
-	var image: Image = %SubViewport.get_texture().get_image()
+	var image: Image = %TextureRect.texture.get_image()
 	if path.ends_with(".jpg") or path.ends_with(".jpeg"):
 		image.save_jpg(path)
 	elif path.ends_with(".webp"):
@@ -105,6 +105,9 @@ func _on_load_pressed() -> void:
 	%FileDialog.show()
 
 func _on_save_pressed() -> void:
+	if %FileDialog.current_path.ends_with(".png"):
+		%FileDialog.current_path = %FileDialog.current_path.replace(".png", ".hlm")
+	
 	%FileDialog.ok_button_text = "Save"
 	%FileDialog.title = "Save Project"
 	%FileDialog.clear_filters()
@@ -112,6 +115,9 @@ func _on_save_pressed() -> void:
 	%FileDialog.show()
 
 func _on_save_all_pressed() -> void:
+	if %FileDialog.current_path.ends_with(".png"):
+		%FileDialog.current_path = %FileDialog.current_path.replace(".png", ".hlm")
+	
 	%FileDialog.ok_button_text = "Save"
 	%FileDialog.title = "Save Picture and Project"
 	%FileDialog.clear_filters()

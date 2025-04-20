@@ -44,14 +44,14 @@ func _physics_process(delta: float) -> void:
 		%SubViewport.since_last_dynamic_update = 0.0
 	
 	if is_holding and Input.is_action_just_released('mouse wheel up'):
-		speed = clamp(speed * 1.2, 0.0, 100.0)
+		speed = clamp(speed * 1.2, 0.0, 10000.0)
 	if is_holding and Input.is_action_just_released('mouse wheel down'):
-		speed = clamp(speed / 1.2, 0.0, 100.0)
+		speed = clamp(speed / 1.2, 0.0, 10000.0)
 	
 	if is_holding and Input.is_action_pressed('r'):
-		speed = clamp(speed * 1.025, 0.0, 100.0)
+		speed = clamp(speed * 1.025, 0.0, 10000.0)
 	if is_holding and Input.is_action_pressed('f'):
-		speed = clamp(speed / 1.025, 0.0, 100.0)
+		speed = clamp(speed / 1.025, 0.0, 10000.0)
 	
 	var speed_multipler := 1.0
 	if Input.is_action_pressed('control'):

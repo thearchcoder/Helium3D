@@ -4,14 +4,14 @@
 // 14
 // [VARS]
 // int variant[0, 10] = 0
-// bool first_zrev[false, true] = true;
-// bool pxyzminuss[false, true] = false;
-// bool psortsymmetry1[false, true] = false;
-// bool psortsymmetry2[false, true] = false;
-// bool foldzbefore[false, true] = true;
-// bool sphere_inversion[false, true] = true;
-// vec3 sphere_inversion_position[(-2, -2, -2), (2, 2, 2)] = (1, 0, 0);
-// float sphere_inversion_radius[0, 2] = 1;
+// bool first_zrev[false, true] = true
+// bool pxyzminuss[false, true] = true
+// bool psortsymmetry1[false, true] = false
+// bool psortsymmetry2[false, true] = false
+// bool foldzbefore[false, true] = true
+// bool sphere_inversion[false, true] = false
+// vec3 sphere_inversion_position[(-2, -2, -2), (2, 2, 2)] = (1, 0, 0)
+// float sphere_inversion_radius[0, 2] = 1
 // [CODE]
 uniform int  fkochcube_variant = 0;
 uniform bool fkochcube_first_zrev = true;
@@ -147,7 +147,7 @@ vec2 kochcube_sdf(vec3 p){
 		else orbit_trap = min(orbit_trap, process_orbit_trap(p));
     }
 
-    float d = length(p);
+    float d = cube_sdf3d(p, vec3(s));//length(p);
     if (fkochcube_sphere_inversion) d = d * dlength2 / (fkochcube_sphere_inversion_radius + dlength * d);
 
     return vec2(d, orbit_trap);

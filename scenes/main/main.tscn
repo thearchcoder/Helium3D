@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=47 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scenes/main/texture_rect_holder.gd" id="7_20ti0"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="8_rhsly"]
 [ext_resource type="Script" path="res://scenes/main/menus_tab_container.gd" id="9_7154d"]
+[ext_resource type="PackedScene" uid="uid://db57n1ak0l5yd" path="res://ui/logs/logs.tscn" id="14_pnl7n"]
 [ext_resource type="Script" path="res://scenes/main/formula_tab_container.gd" id="16_dmyle"]
 [ext_resource type="PackedScene" uid="uid://4bx65d7nnvmf" path="res://ui/pages/formula page/formula_page.tscn" id="16_hfvnl"]
 [ext_resource type="Script" path="res://scenes/main/bottom_bar.gd" id="18_wb8t8"]
@@ -151,8 +152,6 @@ shader_parameter/fklenian_fractal_size = 1.1
 shader_parameter/fklenian_sphere_inversion = true
 shader_parameter/fklenian_inversion_sphere = Vector4(1, 0.96, 0, 0.8)
 shader_parameter/fspheretree_symmetry = null
-shader_parameter/fspheretree_spikeness = null
-shader_parameter/fspheretree_twist = null
 shader_parameter/fkaliredux_folds = null
 shader_parameter/fkaliredux_minus = null
 shader_parameter/fkaliredux_scale = null
@@ -166,6 +165,13 @@ shader_parameter/fnewton_pole2 = null
 shader_parameter/fnewton_pole3 = null
 shader_parameter/fnewton_invsphere = null
 shader_parameter/fnewton_invert = null
+shader_parameter/fmixpinski4d_w = null
+shader_parameter/fmixpinski4d_scale = null
+shader_parameter/fmixpinski4d_offset = null
+shader_parameter/fmixpinski4d_rotation1 = null
+shader_parameter/fmixpinski4d_rotation2 = null
+shader_parameter/fmixpinski4d_fold1_strength = null
+shader_parameter/fmixpinski4d_fold1 = null
 
 [sub_resource type="BoxMesh" id="BoxMesh_eu6rh"]
 size = Vector3(4000, 4000, -4000)
@@ -219,6 +225,7 @@ anti_aliasing = false
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qbxs5"]
 shader = ExtResource("3_1xdvd")
 shader_parameter/sharpness = 0.41
+shader_parameter/display_tiled_render = false
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_qn1xg"]
 viewport_path = NodePath("SubViewport")
@@ -731,6 +738,12 @@ visible = false
 layout_mode = 2
 fields_list_id = 13
 metadata/_tab_index = 3
+
+[node name="Logs" parent="UI/HBoxContainer/TabContainer" instance=ExtResource("14_pnl7n")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+metadata/_tab_index = 5
 
 [node name="BottomBar" type="TabContainer" parent="UI"]
 layout_mode = 2

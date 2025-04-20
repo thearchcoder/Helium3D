@@ -100,6 +100,7 @@ uniform int current_tile = 0; // first tile by default
 #include "res://formulas/quadratickoch.gdshaderinc"
 #include "res://formulas/kaliliving.gdshaderinc"
 #include "res://formulas/newton.gdshaderinc"
+#include "res://formulas/mixpinski4d.gdshaderinc"
 
 vec2 single_fractal_sdf(int formula, vec3 p) {
 	if (repeat && repeat_gap.x >= 0.000001) p.x = mod(p.x + 0.5 * repeat_gap.x, repeat_gap.x) - 0.5 * repeat_gap.x;
@@ -107,6 +108,7 @@ vec2 single_fractal_sdf(int formula, vec3 p) {
 	if (repeat && repeat_gap.z >= 0.000001) p.z = mod(p.z + 0.5 * repeat_gap.z, repeat_gap.z) - 0.5 * repeat_gap.z;
 
 	// Edited at runtime.
+//return mixpinski4d_sdf(p); //-@18
 //return kaliliving_sdf(p); //-@17
 //return quadratickoch_sdf(p); //-@16
 //return newton_sdf(p); //-@15
@@ -130,10 +132,10 @@ vec2 single_fractal_sdf(int formula, vec3 p) {
 
 vec2 scene_sdf(vec3 p) {
 	vec2 data = single_fractal_sdf(formulas[0], p);
-	
+
 	// Slice the fractal if needed.
 	if (cut) data.x = max(data.x, dot(p + cut_position, normalize(cut_normal)));
-	
+
 	return data.yx;
 }
 
@@ -153,7 +155,7 @@ vec3 ray_marcher(vec3 ro, vec3 rd) {
 		float calc_epsilon = relative_epsilon ? epsilon / 3.4 * dfo : epsilon;
 		if (point_distance < 0.0) {
 			// Refine DE
-			dfo += point_distance * 1.2;
+			dfo += point_distance;
 		} else if (point_distance < calc_epsilon || dfo > max_distance) {
 			orbit_trap_distance = data.x;
 			break;
@@ -281,29 +283,25 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 }
 
 void fragment() {
-	vec3 ro = (inverse(MODEL_MATRIX) * vec4(CAMERA_POSITION_WORLD, 1.0)).xyz;
-	vec3 rd = normalize(vertex_ls - ro);
+    vec3 ro = (inverse(MODEL_MATRIX) * vec4(CAMERA_POSITION_WORLD, 1.0)).xyz;
+    vec3 rd = normalize(vertex_ls - ro);
 
-#ifdef USING_TILING
-	if (tiled) {
-		float total_tiles = float(tiles_x * tiles_y);
-		vec2 tile_size = 1.0 / vec2(float(tiles_x), float(tiles_y));
-		vec2 fragment_tile = floor(SCREEN_UV / tile_size);
-		float tile_index = fragment_tile.y * float(tiles_x) + fragment_tile.x;
+    #ifdef USING_TILING
+    if (tiled) {
+        float total_tiles = float(tiles_x * tiles_y);
+        vec2 tile_size = 1.0 / vec2(float(tiles_x), float(tiles_y));
+        vec2 fragment_tile = floor(SCREEN_UV / tile_size);
+        float tile_index = fragment_tile.y * float(tiles_x) + fragment_tile.x;
 
-		vec2 in_tile_uv = fract(SCREEN_UV / tile_size);
-		float pxsize = 4.0 / min(VIEWPORT_SIZE.x, VIEWPORT_SIZE.y);
-		bool near_edge = any(lessThan(in_tile_uv, vec2(pxsize))) || any(greaterThan(in_tile_uv, vec2(1.0 - pxsize)));
-
-		if (tile_index == float(current_tile) || (near_edge && abs(tile_index - float(current_tile)) <= 1.0)) {
-			ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
-		} else {
-			discard;
-		}
-	} else {
-		ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
-	}
-#else
-	ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
-#endif
+        if (tile_index == float(current_tile)) {
+            ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
+        } else {
+            discard;
+        }
+    } else {
+        ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
+    }
+    #else
+    ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
+    #endif
 }

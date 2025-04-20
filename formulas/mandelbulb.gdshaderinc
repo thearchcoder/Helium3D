@@ -32,7 +32,7 @@ vec3 sphericalReflection3D(vec3 z, float r) {
         z.x = z.x - distX;
         z.y *= -1.0;
     }
-    
+
     // transform the Z component using similar Mobius Cylinder calculation
     float distZ = abs(z.z) - r;
     if (z.z > r) {
@@ -42,7 +42,7 @@ vec3 sphericalReflection3D(vec3 z, float r) {
         z.z = z.z - distZ;
         z.y *= -1.0;  // Flipping y when crossing z boundary as well
     }
-    
+
     return z;
 }
 
@@ -53,7 +53,7 @@ vec2 mandelbulb_sdf(vec3 p) {
 	float r = length(z);
 	float dz = 1.0;
 	float power = fmandelbulb_power;
-    
+
     for (int i = 0; i < int(iterations); i++) {
 		dz = max(dz * fmandelbulb_derivative_bias, pow(r, power - 1.0) * dz * power + 1.0);
 

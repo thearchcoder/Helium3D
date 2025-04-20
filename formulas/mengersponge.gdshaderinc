@@ -22,38 +22,28 @@ vec2 mengersponge_sdf(vec3 p) {
 	for (; n < iterations; n++) {
 		p = rotate3d_point(p, fmengersponge_rotation1);
 
-    	p = abs(p);
-    	if(p.x < p.y) p.xy = p.yx;
-    	if(p.x < p.z) p.xz = p.zx;
-    	if(p.y < p.z) p.zy = p.yz;
+		p = abs(p);
+		if (n < 6) orbit_trap += fract(p.x);
+		if (p.x < p.y) p.xy = p.yx;
+		if (p.x < p.z) { p.xz = p.zx; orbit_trap *= 2.0; }
+		if (p.y < p.z) p.zy = p.yz;
 
 		if (coloring_mode == 0) orbit_trap = min(orbit_trap, abs(dot(p, p)));
 		else orbit_trap = min(orbit_trap, process_orbit_trap(p));
 
-		//p *= scale;
-		//if (p.z > 0.5 * (scale - 1.0)) {
-		//	//p -= (vec3(1) * (1.0 / power)) * (scale - 1.0);
-		//	p -= fmengersponge_offset * (scale - 1.0);
-		//} else {
-		//	//p -= (vec3(1.0, 1.0, 0.0) * (1.0 / power)) * (scale - 1.0);
-		//	//p -= vec3(1, 1, 1) * (scale - 1.0);
-		//	p -= (fmengersponge_offset * vec3(1, 1, 0)) * (scale - 1.0);
-		//}
-
-		p.z -=  .5*fmengersponge_offset.z*(scale-1.)/scale;
-		p.z  = -abs(p.z);
-		p.z +=  .5*fmengersponge_offset.z*(scale-1.)/scale;
+		p.z -= 0.5 * fmengersponge_offset.z * (scale - 1.0) / scale;
+		p.z = -abs(p.z);
+		p.z += 0.5 * fmengersponge_offset.z * (scale - 1.0) / scale;
 
 		p *= scale;
-        s /= scale;
+		s /= scale;
 
-		p.x -= fmengersponge_offset.x*(scale-1.);
-		p.y -= fmengersponge_offset.y*(scale-1.);
+		p.x -= fmengersponge_offset.x * (scale - 1.0);
+		p.y -= fmengersponge_offset.y * (scale - 1.0);
 
 		p = rotate3d_point(p, fmengersponge_rotation2);
 	}
 
-	//float d = length(p) * pow(scale, -float(n));
-	float d = cube_sdf3d(p, vec3(1)) * s;
+	float d = cube_sdf3d(p, vec3(1.0)) * s;
 	return vec2(d, orbit_trap);
 }

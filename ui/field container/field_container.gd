@@ -34,6 +34,8 @@ func set_bloom_falloff(to: float) -> void:
 	%SubViewport.refresh_taa()
 
 func compute_tiled_render() -> void:
+	%TextureRect.material.set_shader_parameter('display_tiled_render', false)
+	
 	var current_tile_node: Node
 	var tiles_x_node: Node
 	var tiles_y_node: Node
@@ -65,6 +67,7 @@ func compute_tiled_render() -> void:
 		images.append(image)
 		tile_paths.append(path)
 	
+	print(images[0].get_width())
 	var img_width: int = images[0].get_width()
 	var img_height: int = images[0].get_height()
 	
@@ -91,15 +94,17 @@ func compute_tiled_render() -> void:
 				
 				final_image.blend_rect(images[idx], src_rect, dst_pos)
 	
-	final_image.save_png("res://tilerender/combined.png")
-	
 	# Cleanup tile images
 	var dir := DirAccess.open("res://")
 	for path in tile_paths:
 		if dir.file_exists(path):
 			dir.remove(path)
 	
-	print("Tiled render complete. Individual tiles cleaned up.")
+	final_image.save_png("res://tilerender/combined.png")
+	
+	%TextureRect.material.set_shader_parameter('display_tiled_render', true)
+	%TextureRect.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
+	%Logs.print_console("Tiled render complete, Total tiles rendered: " + str(tiles_x * tiles_y))
 
 func _ready() -> void:
 	var l: String = str(light_id)
@@ -208,8 +213,11 @@ func _ready() -> void:
 			get_tree().current_scene.using_tiling = val
 			get_tree().current_scene.update_fractal_code(%TabContainer.current_formulas)
 			%SubViewport.refresh_taa()
-			if val:
-				compute_tiled_render()
+			if not val:
+				%TextureRect.material.set_shader_parameter('display_tiled_render', false)
+			},
+			{'name': 'compute_tiles', 'type': 'bool', 'default_value': false, 'onchange_override': func(val: bool) -> void: 
+			compute_tiled_render()
 			},
 			{'name': 'tiles_x', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},
 			{'name': 'tiles_y', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},

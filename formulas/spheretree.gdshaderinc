@@ -4,12 +4,8 @@
 // 12
 // [VARS]
 // float symmetry[1, 100] = 1
-// float spikeness[0, 1.3] = 0
-// float twist[0, 5] = 0
 // [CODE]
 uniform float fspheretree_symmetry;
-uniform float fspheretree_spikeness;
-uniform float fspheretree_twist;
 
 vec2 spheretree_sdf(vec3 p) {
 	p /= 3.0;
@@ -29,19 +25,6 @@ vec2 spheretree_sdf(vec3 p) {
 
 	float innerScale = sqrt(3.0)/(1.0 + sqrt(3.0));
 	for (int i = 0; i < iterations; i++) {
-		float spiral_theta = atan(p.y, p.x);
-		float spiral_r = length(p.xy);
-		spiral_theta += fspheretree_twist * log(spiral_r);
-		p.xy = vec2(cos(spiral_theta), sin(spiral_theta)) * spiral_r;
-
-		if (p.x > p.y) p.xy = mix(p.xy, p.yx, fspheretree_spikeness);
-        //if (p.x > p.z) p.xz = p.zx;
-        //if (p.y > p.z) p.yz = p.zy;
-        //if (p.x > p.y) p.xy = p.yx;
-        //if (p.x > p.z) p.xz = p.zx;
-        //if (p.y > p.z) p.yz = p.zy;
-
-        // ring
         float angle = 3.14159265 / fspheretree_symmetry;
         float theta = atan(p.y, p.x);
         float r = length(p.xy);

@@ -32,6 +32,9 @@ func set_block_offset(new_offset: float) -> void:
 	position.y = ($"../..".size.y - 12) / 2
 	$"../../..".changed_gradient()
 
+func free_object(obj: Object) -> void:
+	obj.free()
+
 func _process(delta: float) -> void:
 	if not is_instance_valid(self):
 		return
@@ -47,7 +50,9 @@ func _process(delta: float) -> void:
 	if is_mouse_inside and (Input.is_action_just_pressed("delete") or Input.is_action_just_pressed("mouse right click")):
 		$"../../..".call_deferred('changed_gradient')
 		# https://github.com/godotengine/godot/issues/73036
-		call('free')
+		#free_object(self)
+		queue_free()
+		return
 	
 	if is_mouse_inside and Input.is_action_just_pressed("mouse click"):
 		is_dragging = true

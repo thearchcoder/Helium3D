@@ -13,6 +13,9 @@ var formulas: Array[Dictionary] = []
 var using_dof: bool = false
 var using_tiling: bool = false
 
+func _ready() -> void:
+	%Logs.print_console('Helium3D ' + VERSION)
+
 func initialize_formulas(path_to_formulas: String) -> void:
 	if formulas != []:
 		return

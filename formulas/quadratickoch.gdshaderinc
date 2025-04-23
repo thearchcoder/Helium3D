@@ -1,5 +1,5 @@
 // [ID]
-// quadratickoch
+// Quadratic koch
 // [INDEX]
 // 16
 // [VARS]

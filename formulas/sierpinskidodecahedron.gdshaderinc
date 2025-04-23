@@ -1,5 +1,5 @@
 // [ID]
-// sierpinskidodecahedron
+// Sierpinski dodecahedron
 // [INDEX]
 // 9
 // [VARS]

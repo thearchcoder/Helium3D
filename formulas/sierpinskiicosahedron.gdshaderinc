@@ -1,5 +1,5 @@
 // [ID]
-// sierpinskiicosahedron
+// Sierpinski icosahedron
 // [INDEX]
 // 5
 // [VARS]

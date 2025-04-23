@@ -1,7 +1,7 @@
 extends Node3D
 
 # Pseudo-constant variables
-var VERSION := '0.7.3-beta'
+var VERSION := '0.8.0-beta'
 var PHASE := VERSION.split('-')[-1]
 var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
@@ -43,7 +43,8 @@ func parse_data(data: String) -> Dictionary:
 	id_regex.compile("// \\[ID\\]\\s*(.+)")
 	var id_match := id_regex.search(data)
 	if id_match:
-		result["id"] = id_match.get_string(1).strip_edges().lstrip('/ ')
+		result["id"] = id_match.get_string(1).strip_edges().lstrip('/ ').to_lower().replace(' ', '')
+		result["formatted_id"] = id_match.get_string(1).strip_edges().lstrip('/ ')
 
 	# Extract code
 	var code_match := data.find("// [CODE]")

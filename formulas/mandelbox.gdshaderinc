@@ -1,5 +1,5 @@
 // [ID]
-// mandelbox
+// Mandelbox
 // [INDEX]
 // 2
 // [VARS]

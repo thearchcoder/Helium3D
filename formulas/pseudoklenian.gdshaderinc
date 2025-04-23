@@ -1,5 +1,5 @@
 // [ID]
-// pseudoklenian
+// Pseudoklenian
 // [INDEX]
 // 10
 // [VARS]

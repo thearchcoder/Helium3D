@@ -85,6 +85,7 @@ uniform int current_tile = 0; // first tile by default
 #include "tonemapping.gdshaderinc"
 #include "res://formulas/mandelbulb.gdshaderinc"
 #include "res://formulas/kochcube.gdshaderinc"
+#include "res://formulas/kochwire.gdshaderinc"
 #include "res://formulas/mandelbox.gdshaderinc"
 #include "res://formulas/sierpinskitetrahedron.gdshaderinc"
 #include "res://formulas/mengersponge.gdshaderinc"
@@ -101,6 +102,8 @@ uniform int current_tile = 0; // first tile by default
 #include "res://formulas/kaliliving.gdshaderinc"
 #include "res://formulas/newton.gdshaderinc"
 #include "res://formulas/mixpinski4d.gdshaderinc"
+#include "res://formulas/vicsek.gdshaderinc"
+#include "res://formulas/kalibox.gdshaderinc"
 
 vec2 single_fractal_sdf(int formula, vec3 p) {
 	if (repeat && repeat_gap.x >= 0.000001) p.x = mod(p.x + 0.5 * repeat_gap.x, repeat_gap.x) - 0.5 * repeat_gap.x;
@@ -108,6 +111,9 @@ vec2 single_fractal_sdf(int formula, vec3 p) {
 	if (repeat && repeat_gap.z >= 0.000001) p.z = mod(p.z + 0.5 * repeat_gap.z, repeat_gap.z) - 0.5 * repeat_gap.z;
 
 	// Edited at runtime.
+//return kalibox_sdf(p); //-@21
+//return kochwire_sdf(p); //-@20
+//return vicsek_sdf(p); //-@19
 //return mixpinski4d_sdf(p); //-@18
 //return kaliliving_sdf(p); //-@17
 //return quadratickoch_sdf(p); //-@16
@@ -156,7 +162,8 @@ vec3 ray_marcher(vec3 ro, vec3 rd) {
 		if (point_distance < 0.0) {
 			// Refine DE
 			dfo += point_distance;
-		} else if (point_distance < calc_epsilon || dfo > max_distance) {
+		} else
+		if (point_distance < calc_epsilon || dfo > max_distance) {
 			orbit_trap_distance = data.x;
 			break;
 		};
@@ -283,25 +290,43 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 }
 
 void fragment() {
-    vec3 ro = (inverse(MODEL_MATRIX) * vec4(CAMERA_POSITION_WORLD, 1.0)).xyz;
-    vec3 rd = normalize(vertex_ls - ro);
+	float error_margin = 1.0; // Controls the border thickness
+	vec3 ro = (inverse(MODEL_MATRIX) * vec4(CAMERA_POSITION_WORLD, 1.0)).xyz;
+	vec3 rd = normalize(vertex_ls - ro);
+	#ifdef USING_TILING
+	if (tiled) {
+		float total_tiles = float(tiles_x * tiles_y);
+		vec2 tile_size = 1.0 / vec2(float(tiles_x), float(tiles_y));
 
-    #ifdef USING_TILING
-    if (tiled) {
-        float total_tiles = float(tiles_x * tiles_y);
-        vec2 tile_size = 1.0 / vec2(float(tiles_x), float(tiles_y));
-        vec2 fragment_tile = floor(SCREEN_UV / tile_size);
-        float tile_index = fragment_tile.y * float(tiles_x) + fragment_tile.x;
+		vec2 padding = error_margin / VIEWPORT_SIZE; // Configurable padding
+		vec2 padded_uv = SCREEN_UV;
+		vec2 fragment_tile = floor(padded_uv / tile_size);
 
-        if (tile_index == float(current_tile)) {
-            ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
-        } else {
-            discard;
-        }
-    } else {
-        ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
-    }
-    #else
-    ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
-    #endif
+		float tile_index = fragment_tile.y * float(tiles_x) + fragment_tile.x;
+
+		bool is_current = false;
+		if (tile_index == float(current_tile)) {
+			is_current = true;
+		} else {
+			vec2 tile_pos = vec2(mod(float(current_tile), float(tiles_x)), floor(float(current_tile) / float(tiles_x)));
+			vec2 tile_min = tile_pos * tile_size - padding;
+			vec2 tile_max = (tile_pos + 1.0) * tile_size + padding;
+
+			if (padded_uv.x >= tile_min.x && padded_uv.x <= tile_max.x &&
+				padded_uv.y >= tile_min.y && padded_uv.y <= tile_max.y) {
+				is_current = true;
+			}
+		}
+
+		if (is_current) {
+			ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
+		} else {
+			discard;
+		}
+	} else {
+		ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
+	}
+	#else
+	ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
+	#endif
 }

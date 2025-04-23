@@ -1,0 +1,94 @@
+// [ID]
+// Vicsek
+// [INDEX]
+// 19
+// [VARS]
+// bool preserve[false, true] = false
+// bool hex_fold1[false, true] = false
+// selection hex_fold2[Disabled, xz, xy, zx, zy] = Disabled
+// bool abs1_x[false, true] = true
+// bool abs1_z[false, true] = true
+// vec3 limit[(-1, -1, -1), (1, 1, 1)] = (0, 0, 0)
+// vec3 abs2_minus[(0, 0, 0), (2, 2, 2)] = (0, 0, 0)
+// vec3 abs2_plus[(0, 0, 0), (2, 2, 2)] = (0, 0, 0)
+// vec3 offset[(-2, -2, -2), (2, 2, 2)] = (1, 1, 1)
+// float scale[1.0, 4.0] = 3.0
+// float thickness[-0.1, 0.3] = -0.1
+// float symmetry[1.0, 100.0] = 1.0
+// [CODE]
+uniform float fvicsek_scale;
+uniform float fvicsek_symmetry;
+uniform float fvicsek_thickness;
+uniform bool fvicsek_abs1_x;
+uniform bool fvicsek_abs1_z;
+uniform vec3 fvicsek_limit;
+uniform vec3 fvicsek_abs2_minus;
+uniform vec3 fvicsek_abs2_plus;
+uniform vec3 fvicsek_offset;
+uniform bool fvicsek_hex_fold1;
+uniform bool fvicsek_preserve;
+uniform int fvicsek_hex_fold2;
+
+vec2 vicsek_sdf(vec3 z) {
+	const vec2 pl1 = vec2(-0.5, 0.8657);
+	const vec2 pl2 = vec2(-0.8657, 0.4);
+	float scale = fvicsek_scale;
+	float orbit_trap = 100000.0;
+	float de = 10000.0;
+	float s = 1.0;
+
+	int i = 0;
+	for (; i < iterations; i++) {
+		float angle = 3.14159265 / fvicsek_symmetry;
+		float theta = atan(z.z, z.x);
+		float r = length(z.xz);
+		theta = mod(theta + angle, 2.0 * angle) - angle;
+		z.xz = vec2(cos(theta), sin(theta)) * r;
+
+		if (fvicsek_abs1_x) z.x = abs(z.x);
+		if (fvicsek_abs1_z) z.z = abs(z.z);
+
+		if (fvicsek_hex_fold1) z.xz -= pl1.xy * 2.0 * min(0.0, dot(z.xz, pl1.xy));
+
+		if (fvicsek_hex_fold2 == 1) z.yz -= pl2 * 2.0 * min(0.0, dot(z.yz, pl2));
+		if (fvicsek_hex_fold2 == 2) z.xz -= pl2 * 2.0 * min(0.0, dot(z.xz, pl2));
+		if (fvicsek_hex_fold2 == 3) z.zx -= pl2 * 2.0 * min(0.0, dot(z.zx, pl2));
+		if (fvicsek_hex_fold2 == 4) z.yx -= pl2 * 2.0 * min(0.0, dot(z.yx, pl2));
+
+		z = abs(z - fvicsek_abs2_minus) - fvicsek_abs2_plus;
+
+		// Compute z1 branch
+		vec3 z1 = z;
+		if (z1.y < z1.z) { z1.yz = z1.zy; orbit_trap *= coloring_mode == 0 ? max(z1.z / z1.x, 0.001) : 1.0; }
+		if (z1.y < z1.x) { z1.yx = z1.xy; orbit_trap *= coloring_mode == 0 ? max(z1.z / z1.x, 0.001) : 1.0; }
+		z1 = z1 * scale - vec3(0.0, fvicsek_offset.y, 0.0) * scale / 2.0;
+
+		if (fvicsek_preserve) {
+			vec3 dir3 = vec3(1.0, 0.0, 0.0);
+			z -= 2.0 * min(0.0, dot(z - (1.0 / 3.0), dir3)) * dir3;
+		}
+
+		// Compute z branch
+		z = z * scale - fvicsek_offset * scale / 2.0;
+
+		// Combine
+		float d1 = cube_sdf3d(z1, vec3(0.5));
+		float d2 = cube_sdf3d(z, vec3(0.5));
+
+		z = mix(z, z1, step(d1, d2));
+		
+		if (z.x > fvicsek_limit.x * 0.5f) z.x -= fvicsek_limit.x * scale;
+		if (z.y > fvicsek_limit.y * 0.5f) z.y -= fvicsek_limit.y;
+		if (z.z > fvicsek_limit.z) z.z -= 2.0f * fvicsek_limit.z;
+		
+		s /= scale;
+		r = dot(z, z);
+		
+		de = min(de, hollow_cube_sdf3d(z, vec3(1.0), fvicsek_thickness) * s);
+
+		if (coloring_mode == 0) orbit_trap = min(orbit_trap, dot(z, z));
+		else orbit_trap = min(orbit_trap, process_orbit_trap(z));
+	}
+
+	return vec2(de, orbit_trap);
+}

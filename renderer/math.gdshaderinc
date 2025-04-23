@@ -1,52 +1,52 @@
 const float golden_ratio = (1.0 + sqrt(5.0)) * 0.5;
 
 float process_orbit_trap(vec3 z) {
-    if (coloring_mode == 1) { return length(z); }
-    if (coloring_mode == 2) { return dot(z, z); }
-    if (coloring_mode == 3) { return sqrt(length(z)); }
-    if (coloring_mode == 4) { return sqrt(dot(z, z)); }
-    if (coloring_mode == 5) { return abs(length(z)); }
-    if (coloring_mode == 6) { return abs(dot(z, z)); }
-    if (coloring_mode == 7) { return log(length(z)); }
-    if (coloring_mode == 8) { return log(dot(z, z)); }
-    if (coloring_mode == 9) { return exp(length(z)); }
-    if (coloring_mode == 10) { return exp(dot(z, z)); }
+	if (coloring_mode == 1) { return length(z); }
+	if (coloring_mode == 2) { return dot(z, z); }
+	if (coloring_mode == 3) { return sqrt(length(z)); }
+	if (coloring_mode == 4) { return sqrt(dot(z, z)); }
+	if (coloring_mode == 5) { return abs(length(z)); }
+	if (coloring_mode == 6) { return abs(dot(z, z)); }
+	if (coloring_mode == 7) { return log(length(z)); }
+	if (coloring_mode == 8) { return log(dot(z, z)); }
+	if (coloring_mode == 9) { return exp(length(z)); }
+	if (coloring_mode == 10) { return exp(dot(z, z)); }
 
-    // Component-based coloring
-    if (coloring_mode == 11) { return abs(z.x); }
-    if (coloring_mode == 12) { return abs(z.y); }
-    if (coloring_mode == 13) { return abs(z.z); }
-    if (coloring_mode == 14) { return max(max(abs(z.x), abs(z.y)), abs(z.z)); }
-    if (coloring_mode == 15) { return min(min(abs(z.x), abs(z.y)), abs(z.z)); }
+	// Component-based coloring
+	if (coloring_mode == 11) { return abs(z.x); }
+	if (coloring_mode == 12) { return abs(z.y); }
+	if (coloring_mode == 13) { return abs(z.z); }
+	if (coloring_mode == 14) { return max(max(abs(z.x), abs(z.y)), abs(z.z)); }
+	if (coloring_mode == 15) { return min(min(abs(z.x), abs(z.y)), abs(z.z)); }
 
-    // Blended component coloring
-    if (coloring_mode == 16) { return (abs(z.x) + abs(z.y) + abs(z.z)) / 3.0; }
-    if (coloring_mode == 17) { return abs(z.x) * abs(z.y) * abs(z.z); }
+	// Blended component coloring
+	if (coloring_mode == 16) { return (abs(z.x) + abs(z.y) + abs(z.z)) / 3.0; }
+	if (coloring_mode == 17) { return abs(z.x) * abs(z.y) * abs(z.z); }
 
-    // Angular/spherical components
-    if (coloring_mode == 18) { return atan(length(z.xy), z.z) / 3.14159; } // Polar angle (normalized)
-    if (coloring_mode == 19) { return atan(z.y, z.x) / 6.28318 + 0.5; }    // Azimuthal angle (normalized)
+	// Angular/spherical components
+	if (coloring_mode == 18) { return atan(length(z.xy), z.z) / 3.14159; } // Polar angle (normalized)
+	if (coloring_mode == 19) { return atan(z.y, z.x) / 6.28318 + 0.5; }    // Azimuthal angle (normalized)
 
-    // Distance to geometric shapes
-    if (coloring_mode == 20) { return abs(length(z) - 1.0); }              // Distance to unit sphere
-    if (coloring_mode == 21) { return abs(max(max(abs(z.x), abs(z.y)), abs(z.z)) - 1.0); } // Distance to unit cube
-    if (coloring_mode == 22) { return abs(z.x) + abs(z.y) + abs(z.z) - 1.0; } // Distance to octahedron
+	// Distance to geometric shapes
+	if (coloring_mode == 20) { return abs(length(z) - 1.0); }              // Distance to unit sphere
+	if (coloring_mode == 21) { return abs(max(max(abs(z.x), abs(z.y)), abs(z.z)) - 1.0); } // Distance to unit cube
+	if (coloring_mode == 22) { return abs(z.x) + abs(z.y) + abs(z.z) - 1.0; } // Distance to octahedron
 
-    // Smooth blending functions
-    if (coloring_mode == 23) { return 0.5 * (1.0 + sin(length(z) * 5.0)); }
-    if (coloring_mode == 24) { return 0.5 * (1.0 + sin(dot(z, z) * 3.0)); }
+	// Smooth blending functions
+	if (coloring_mode == 23) { return 0.5 * (1.0 + sin(length(z) * 5.0)); }
+	if (coloring_mode == 24) { return 0.5 * (1.0 + sin(dot(z, z) * 3.0)); }
 
-    // Periodic functions
-    if (coloring_mode == 25) { return fract(length(z) * 2.0); }
-    if (coloring_mode == 26) { return fract(dot(z, z) * 1.5); }
-    if (coloring_mode == 27) { return cos(length(z) * 4.0) * 0.5 + 0.5; }
-    if (coloring_mode == 28) { return sin(dot(z, z) * 3.0) * 0.5 + 0.5; }
+	// Periodic functions
+	if (coloring_mode == 25) { return fract(length(z) * 2.0); }
+	if (coloring_mode == 26) { return fract(dot(z, z) * 1.5); }
+	if (coloring_mode == 27) { return cos(length(z) * 4.0) * 0.5 + 0.5; }
+	if (coloring_mode == 28) { return sin(dot(z, z) * 3.0) * 0.5 + 0.5; }
 
-    // Hybrid functions
-    if (coloring_mode == 29) { return length(z) / (1.0 + dot(z, z)); }
-    if (coloring_mode == 30) { return sqrt(abs(z.x * z.y * z.z)); }
+	// Hybrid functions
+	if (coloring_mode == 29) { return length(z) / (1.0 + dot(z, z)); }
+	if (coloring_mode == 30) { return sqrt(abs(z.x * z.y * z.z)); }
 
-    return 0.0;
+	return 0.0;
 }
 
 float process_orbit_trap4d(vec4 z) {
@@ -229,6 +229,16 @@ float dodecahedron_sdf3d(vec3 position, float radius) {
 	float d = sqrt(min(min(min(min(min(dot(d1, d1), dot(d2, d2)), dot(d3, d3)), dot(d4, d4)), dot(d5, d5)), dot(d6, d6)));
 	float s = max(max(max(max(max(h1, h2), h3), h4), h5), h6);
 	return (s < 0.0 ? -d : d);
+}
+
+float hollow_cube_sdf3d(vec3 p, vec3 b, float e) {
+	p = abs(p) - b;
+	vec3 q = abs(p + e) - e;
+
+	return min(min(
+		length(max(vec3(p.x, q.y, q.z), 0.0)) + min(max(p.x, max(q.y, q.z)), 0.0),
+		length(max(vec3(q.x, p.y, q.z), 0.0)) + min(max(q.x, max(p.y, q.z)), 0.0)),
+		length(max(vec3(q.x, q.y, p.z), 0.0)) + min(max(q.x, max(q.y, p.z)), 0.0));
 }
 
 #define sabs(p) sqrt((p)*(p)+2e-3)

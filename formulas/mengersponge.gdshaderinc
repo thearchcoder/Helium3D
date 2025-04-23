@@ -1,5 +1,5 @@
 // [ID]
-// mengersponge
+// Mengersponge
 // [INDEX]
 // 7
 // [VARS]
@@ -25,7 +25,7 @@ vec2 mengersponge_sdf(vec3 p) {
 		p = abs(p);
 		if (n < 6) orbit_trap += fract(p.x);
 		if (p.x < p.y) p.xy = p.yx;
-		if (p.x < p.z) { p.xz = p.zx; orbit_trap *= 2.0; }
+		if (p.x < p.z) { p.xz = p.zx; orbit_trap *= coloring_mode == 0 ? 2.0 : 1.0; }
 		if (p.y < p.z) p.zy = p.yz;
 
 		if (coloring_mode == 0) orbit_trap = min(orbit_trap, abs(dot(p, p)));

@@ -1,5 +1,5 @@
 // [ID]
-// newton
+// Newton
 // [INDEX]
 // 15
 // [VARS]

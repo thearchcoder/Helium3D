@@ -83,14 +83,6 @@ func update_field_values(new_fields: Dictionary) -> void:
 		if field_val is EncodedObjectAsID or field_name in get_tree().current_scene.other_fields or field_name in ["other", 'keyframe_texture', 'bg_color', 'fjuliabulb_c_sqrt', 'fjuliaswirl_csqrt_multiplier']:
 			continue
 		
-		if field_name == 'formula':
-			field_name = 'formulas'
-			field_val = [field_val, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-		
-		if field_name == 'powers':
-			field_name = 'power'
-			field_val = field_val[0]
-		
 		var search_result: Array[Control] = value_nodes.filter(func(x: Control) -> bool: return x.name.to_snake_case() == field_name.to_snake_case())
 		if len(search_result) <= 0:
 			continue

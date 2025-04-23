@@ -49,9 +49,9 @@ func _physics_process(delta: float) -> void:
 		speed = clamp(speed / 1.2, 0.0, 10000.0)
 	
 	if is_holding and Input.is_action_pressed('r'):
-		speed = clamp(speed * 1.025, 0.0, 10000.0)
+		speed = clamp(speed * 1.03, 0.0, 10000.0)
 	if is_holding and Input.is_action_pressed('f'):
-		speed = clamp(speed / 1.025, 0.0, 10000.0)
+		speed = clamp(speed / 1.03, 0.0, 10000.0)
 	
 	var speed_multipler := 1.0
 	if Input.is_action_pressed('control'):

@@ -1,5 +1,5 @@
 // [ID]
-// amazingsurf
+// Amazing surf
 // [INDEX]
 // 3
 // [VARS]

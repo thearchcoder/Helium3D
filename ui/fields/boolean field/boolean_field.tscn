@@ -6,6 +6,10 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_agj6n"]
 
 [node name="BooleanField" instance=ExtResource("1_maum6")]
+custom_minimum_size = Vector2(1.45519e-11, 27)
+offset_top = -1.0
+offset_right = -0.299988
+offset_bottom = -84.16
 theme_override_constants/separation = 0
 script = ExtResource("2_s4s4l")
 

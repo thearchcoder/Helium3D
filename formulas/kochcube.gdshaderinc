@@ -1,5 +1,5 @@
 // [ID]
-// kochcube
+// Koch cube
 // [INDEX]
 // 14
 // [VARS]
@@ -9,19 +9,33 @@
 // bool psortsymmetry1[false, true] = false
 // bool psortsymmetry2[false, true] = false
 // bool foldzbefore[false, true] = true
+// bool abs_x[false, true] = true
+// bool abs_y[false, true] = true
+// bool abs_z[false, true] = true
+// selection fold1[Disabled, Sign, Minus, Both] = Disabled
+// selection fold2[Disabled, Max, Min] = Disabled
+// bool fold3[false, true] = true
+// bool fold4[false, true] = true
 // bool sphere_inversion[false, true] = false
 // vec3 sphere_inversion_position[(-2, -2, -2), (2, 2, 2)] = (1, 0, 0)
 // float sphere_inversion_radius[0, 2] = 1
 // [CODE]
-uniform int  fkochcube_variant = 0;
-uniform bool fkochcube_first_zrev = true;
-uniform bool fkochcube_pxyzminuss = false;
-uniform bool fkochcube_psortsymmetry1 = false;
-uniform bool fkochcube_psortsymmetry2 = false;
-uniform bool fkochcube_foldzbefore = true;
-uniform bool fkochcube_sphere_inversion = false;
-uniform vec3 fkochcube_sphere_inversion_position = vec3(1.0, 0, 0);
-uniform float fkochcube_sphere_inversion_radius = 1.0;
+uniform int  fkochcube_variant;
+uniform bool fkochcube_first_zrev;
+uniform bool fkochcube_pxyzminuss;
+uniform bool fkochcube_psortsymmetry1;
+uniform bool fkochcube_psortsymmetry2;
+uniform bool fkochcube_foldzbefore;
+uniform bool fkochcube_abs_x;
+uniform bool fkochcube_abs_y;
+uniform bool fkochcube_abs_z;
+uniform int fkochcube_fold1;
+uniform int fkochcube_fold2;
+uniform bool fkochcube_fold3;
+uniform bool fkochcube_fold4;
+uniform bool fkochcube_sphere_inversion;
+uniform vec3 fkochcube_sphere_inversion_position;
+uniform float fkochcube_sphere_inversion_radius;
 
 mat2 Rot(float a) {
     float s=sin(a), c=cos(a);
@@ -60,90 +74,97 @@ vec2 kochcube_sdf(vec3 p){
     }
 
     for(int i = 0; i < iterations; i++){
-        s /= 2.0;
+		s /= 2.0;
 
-        //p.xz *= Rot(3.14159 / 4.0);  try different places
+		//p = abs(p);
+		//p.xz = vec2(max(p.x, p.z), min(p.x, p.z));
 
-        //optional i think: //p.y*=sign(p.x*p.z);
-        //p = abs(p);
-        //p.xz = vec2(max(p.x, p.z), min(p.x, p.z));
+		if (fkochcube_abs_x) p.x = abs(p.x);
+		if (fkochcube_abs_y) p.y = abs(p.y);
+		if (fkochcube_abs_z) p.z = abs(p.z);
 
-        //p.xz = abs(p.xz);
-        p = abs(p);
+		if (fkochcube_fold1 == 1) {
+			p.yz *= sign(p.y + p.z);
+		} else if (fkochcube_fold2 == 2) {
+			p.xz -= s;
+		} else if (fkochcube_fold2 == 3) {
+			p.yz *= sign(p.y + p.z);
+			p.xz -= s;
+		}
 
-        //p.xz = vec2(min(p.x, p.z), max(p.x, p.z));
+		if (fkochcube_fold2 == 1) p.xz = vec2(max(p.x, p.z), min(p.x, p.z));
+		else if (fkochcube_fold2 == 2) p.xz = vec2(min(p.x, p.z), max(p.x, p.z));
 
-        //optional i think: p.yz *= sign(p.y + p.z);
-        if (!fkochcube_pxyzminuss) p.xz -= s;
-        else p -= s;
+		if (!fkochcube_pxyzminuss) p.xz -= s;
+		else p -= s;
 
-        p = psort(p, fkochcube_psortsymmetry1);
+		p = psort(p, fkochcube_psortsymmetry1);
 
-        if (fkochcube_variant == 2) {
-            if (p.x - p.z > 0.0) p.xz = -p.zx;
-            if (p.x < p.y) p.xy = -p.yx;
-        } else if (fkochcube_variant == 1) { // vicsek
-            if (p.x - p.z > 0.0) p.xz = p.zx;
-        } else if (fkochcube_variant == 3) { // vicsek 2
-            if (p.x - p.z > 0.0) p.xz = -p.zx;
-        } else if (fkochcube_variant == 4) { // mengertetrahedronsnowflake
-            if (p.x - p.z > 0.0) p.xz = p.zx;
-            if (p.x < p.y) p.xy = -p.yx;
-        } else if (fkochcube_variant == 5) { // mengertetrahedronsnowflake 2
-            if (p.x < p.y) p.xy = -p.yx;
-        } else if (fkochcube_variant == 6) { // kochroom (set firstzx = false)
-            if (p.x - p.z > 0.0) p.xz = p.zx;
-            if (p.x < p.y) p.xy = -p.yx;
-        } else if (fkochcube_variant == 7) {  // vicsekblockything (set firstzx = false)
-            if (p.x - p.z > 0.0) p.xz = p.zx;
-        } else if (fkochcube_variant == 8) {
-            if (p.x - p.z > 0.0) p.xz = -p.zx;
-        }
+		if (fkochcube_variant == 2) {
+			if (p.x - p.z > 0.0) p.xz = -p.zx;
+			if (p.x < p.y) p.xy = -p.yx;
+		} else if (fkochcube_variant == 1) { // vicsek
+		    if (p.x - p.z > 0.0) p.xz = p.zx;
+		} else if (fkochcube_variant == 3) { // vicsek 2
+		    if (p.x - p.z > 0.0) p.xz = -p.zx;
+		} else if (fkochcube_variant == 4) { // mengertetrahedronsnowflake
+		    if (p.x - p.z > 0.0) p.xz = p.zx;
+		    if (p.x < p.y) p.xy = -p.yx;
+		} else if (fkochcube_variant == 5) { // mengertetrahedronsnowflake 2
+		    if (p.x < p.y) p.xy = -p.yx;
+		} else if (fkochcube_variant == 6) { // kochroom (set firstzx = false)
+		    if (p.x - p.z > 0.0) p.xz = p.zx;
+		    if (p.x < p.y) p.xy = -p.yx;
+		} else if (fkochcube_variant == 7) {  // vicsekblockything (set firstzx = false)
+		    if (p.x - p.z > 0.0) p.xz = p.zx;
+		} else if (fkochcube_variant == 8) {
+		    if (p.x - p.z > 0.0) p.xz = -p.zx;
+		}
 
-        if (fkochcube_foldzbefore && p.x < p.y) p.xy = -p.yx;
+		if (fkochcube_foldzbefore && p.x < p.y) p.xy = -p.yx;
 
-        if (p.x + p.z <= -s){
-            p.z += s;
-            if (fkochcube_first_zrev) p.xz = -p.zx;
-            p.z -= s;
+		if (p.x + p.z <= -s){
+			p.z += s;
+			if (fkochcube_first_zrev) p.xz = -p.zx;
+			p.z -= s;
 			orbit_trap /= 2.0;
-        }
+		}
 
-        if (p.y >= p.x + s) {
-            p.x += s; // try variant 1, 3, 4 without this line
-            p.xy = p.yx;  // try variant 2, 5 without this line
-            p.x -= s;
-        }
+		if (p.y >= p.x + s) {
+			if (fkochcube_fold3) p.x += s; // try variant 1, 3, 4 without this line
+			if (fkochcube_fold4) p.xy = p.yx;  // try variant 2, 5 without this line
+			p.x -= s;
+		}
 
-        if (!fkochcube_foldzbefore && p.x < p.y) p.xy = -p.yx;
-        p = psort(p, fkochcube_psortsymmetry2);
+		if (!fkochcube_foldzbefore && p.x < p.y) p.xy = -p.yx;
+		p = psort(p, fkochcube_psortsymmetry2);
 
-        s /= 2.0;
-        p.xz = abs(p.xz) - s;
+		s /= 2.0;
+		p.xz = abs(p.xz) - s;
 
 		//s /= 2.0;
-//
+		//
 		//p = abs(p);
 		//p.yz *= sign(p.y + p.z);
 		//p.xz -= s;
-//
+		//
 		//if (p.x + p.z <= -s){
 			//p.z += s;
 			//p.xz = -p.zx;
 			//p.z -= s;
 		//}
-//
+		//
 		//if (p.y >= p.x + s) {
 			//p.xy = p.yx;
 			//p.x -= s;
 		//}
-//
+		//
 		//if (p.x < p.y) p.xy = -p.yx;
-//
+		//
 		//s /= 2.0;
 		//p.xz = abs(p.xz) - s;
 
-        if (coloring_mode == 0) orbit_trap = min(orbit_trap, length(s * p));
+		if (coloring_mode == 0) orbit_trap = min(orbit_trap, length(s * p));
 		else orbit_trap = min(orbit_trap, process_orbit_trap(p));
     }
 

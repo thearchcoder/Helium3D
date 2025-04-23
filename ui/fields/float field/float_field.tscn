@@ -9,8 +9,8 @@
 
 [node name="FloatField" instance=ExtResource("1_2r76m")]
 anchor_bottom = 0.04
-offset_right = -245.28
-offset_bottom = -0.200001
+offset_right = -245.3
+offset_bottom = -16.2
 script = ExtResource("2_tyxyw")
 
 [node name="LineEdit" type="LineEdit" parent="." index="0"]

@@ -50,5 +50,6 @@ size_flags_horizontal = 3
 [node name="Formulas" parent="Fields/HBoxContainer/Values" instance=ExtResource("9_kw4c4")]
 layout_mode = 2
 options = Array[String](["None"])
+label_overrides = Array[String](["None"])
 
 [connection signal="value_changed" from="Fields/HBoxContainer/Values/Formulas" to="." method="set_formula"]

@@ -1,5 +1,5 @@
 // [ID]
-// sierpinskitetrahedron
+// Sierpinski tetrahedron
 // [INDEX]
 // 6
 // [VARS]

@@ -16,6 +16,7 @@ func initialize_formulas() -> void:
 	
 	for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
 		#print('#()', formula)
+		$Fields/HBoxContainer/Values/Formulas.label_overrides.append(formula['formatted_id'])
 		$Fields/HBoxContainer/Values/Formulas.options.append(formula['id'])
 		FORMULAS.append(formula['id'])
 		

@@ -1,5 +1,5 @@
 // [ID]
-// mixpinski4d
+// Mixpinski4D
 // [INDEX]
 // 18
 // [VARS]

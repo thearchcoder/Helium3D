@@ -1,5 +1,5 @@
 // [ID]
-// spheretree
+// Spheretree
 // [INDEX]
 // 12
 // [VARS]

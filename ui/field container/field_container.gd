@@ -59,7 +59,13 @@ func compute_tiled_render() -> void:
 	
 	for i in total_tiles:
 		current_tile_node.value = i
-		await get_tree().process_frame
+		
+		if %SubViewport.antialiasing != %SubViewport.AntiAliasing.TAA:
+			await get_tree().process_frame
+		else:
+			for j in 8:
+				await get_tree().process_frame
+		
 		var texture: Texture = %TextureRect.texture
 		var image: Image = texture.get_image()
 		var path: String = "res://tilerender/tile_" + str(i) + ".png"
@@ -67,7 +73,6 @@ func compute_tiled_render() -> void:
 		images.append(image)
 		tile_paths.append(path)
 	
-	print(images[0].get_width())
 	var img_width: int = images[0].get_width()
 	var img_height: int = images[0].get_height()
 	

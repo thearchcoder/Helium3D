@@ -1,63 +1,66 @@
 // [ID]
-// mandelbulb
+// Mandelbulb
 // [INDEX]
 // 1
 // [VARS]
 // float phase[0.0, 30.0] = 11.0
 // float power[2.0, 16.0] = 8.0
+// bool conjugate[false, true] = false
+// bool abs[false, true] = false
 // bool is_julia[false, true] = false
-// vec3 julia_c[(-3, -3, -3), (3, 3, 3)] = (1.3, 1.3, 1.3)
+// vec4 julia_c[(-3, -3, -3, -3), (3, 3, 3, 3)] = (1.3, 1.3, 1.3, 0.3)
 // float derivative_bias[0.0, 2.0] = 1.0
 // selection number_system[Triplex, Quaternion, Bicomplex] = Triplex
 // selection triplex_mode[Positive Z, Negative Z] = Negative Z
 // selection quaternion_mode[All Positive, Negative X, Negative Y, Negative Z] = Negative Y
+// vec4 alternating_powers[(0.0, 0.0, 0.0, 0.0), (16.0, 16.0, 16.0, 16.0)] = (0.0, 0.0, 0.0, 0.0)
 // [CODE]
 
+uniform bool fmandelbulb_is_julia;
+uniform bool fmandelbulb_conjugate;
+uniform bool fmandelbulb_abs;
+uniform vec4 fmandelbulb_julia_c;
 uniform float fmandelbulb_derivative_bias;
-uniform int fmandelbulb_triplex_mode;
-uniform int fmandelbulb_quaternion_mode;
 uniform float fmandelbulb_power;
 uniform float fmandelbulb_phase;
-uniform bool fmandelbulb_is_julia;
-uniform vec3 fmandelbulb_julia_c;
+uniform int fmandelbulb_triplex_mode;
+uniform int fmandelbulb_quaternion_mode;
 uniform int fmandelbulb_number_system;
-
-vec3 sphericalReflection3D(vec3 z, float r) {
-    // transform the X component using Mobius Cylinder calculation
-    float distX = abs(z.x) - r;
-    if (z.x > r) {
-        z.x = distX - r;
-        z.y *= -1.0;
-    } else if (z.x < 0.0 - r) {
-        z.x = z.x - distX;
-        z.y *= -1.0;
-    }
-
-    // transform the Z component using similar Mobius Cylinder calculation
-    float distZ = abs(z.z) - r;
-    if (z.z > r) {
-        z.z = distZ - r;
-        z.y *= -1.0;  // Flipping y when crossing z boundary as well
-    } else if (z.z < 0.0 - r) {
-        z.z = z.z - distZ;
-        z.y *= -1.0;  // Flipping y when crossing z boundary as well
-    }
-
-    return z;
-}
+uniform vec4 fmandelbulb_alternating_powers;
 
 vec2 mandelbulb_sdf(vec3 p) {
-	vec4 c = vec4(p, 0.0001);
+	vec4 c = fmandelbulb_is_julia ? fmandelbulb_julia_c : vec4(p, 0.0001);
 	vec4 z = vec4(p, 0.0001);
 	float orbit_trap = 100000.0;
 	float r = length(z);
 	float dz = 1.0;
-	float power = fmandelbulb_power;
 
-    for (int i = 0; i < int(iterations); i++) {
+	float powers[5];
+	powers[0] = fmandelbulb_power;
+	powers[1] = fmandelbulb_alternating_powers.x;
+	powers[2] = fmandelbulb_alternating_powers.y;
+	powers[3] = fmandelbulb_alternating_powers.z;
+	powers[4] = fmandelbulb_alternating_powers.w;
+
+	int valid_powers[5];
+	int num_valid_powers = 0;
+
+	for (int i = 0; i < 5; i++) {
+		if (powers[i] != 0.0) {
+			valid_powers[num_valid_powers] = i;
+			num_valid_powers++;
+		}
+	}
+
+	for (int i = 0; i < iterations; i++) {
+		int power_idx = valid_powers[int(mod(float(i), float(num_valid_powers)))];
+		float power = powers[power_idx];
+
 		dz = max(dz * fmandelbulb_derivative_bias, pow(r, power - 1.0) * dz * power + 1.0);
 
-		// Apply the power functions
+		if (fmandelbulb_conjugate) z = vec4(z.x, -z.y, -z.z, -z.w);
+		if (fmandelbulb_abs) z = abs(z);
+
 		if (fmandelbulb_number_system == 0) z.xyz = triplex_pow(z.xyz, power, fmandelbulb_phase, fmandelbulb_triplex_mode == 1 ? -1.0 : 1.0) + c.xyz;
 		if (fmandelbulb_number_system == 1) z = quaternion_pow(z, power, fmandelbulb_phase, fmandelbulb_quaternion_mode) + c;
 		if (fmandelbulb_number_system == 2) z = bicomplex_pow(z, power) + c;
@@ -65,8 +68,12 @@ vec2 mandelbulb_sdf(vec3 p) {
 		r = length(z);
 		if (coloring_mode == 0) orbit_trap = min(orbit_trap, dot(z, z));
 		else orbit_trap = min(orbit_trap, process_orbit_trap4d(z));
+
 		if (r > escape_radius) break;
 	}
 
-	return vec2(0.5 * log(r) * r / dz, orbit_trap);
+	float de = 0.5 * log(r) * r / dz;
+	if (fmandelbulb_number_system == 2) de *= 0.5;
+
+	return vec2(de, orbit_trap);
 }

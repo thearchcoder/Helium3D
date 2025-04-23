@@ -1,5 +1,5 @@
 // [ID]
-// sierpinskioctahedron
+// Sierpinski octahedron
 // [INDEX]
 // 8
 // [VARS]

@@ -1,5 +1,5 @@
 // [ID]
-// bairddelta
+// Baird delta
 // [INDEX]
 // 4
 // [VARS]

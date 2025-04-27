@@ -74,6 +74,7 @@ vec2 kochwire_sdf(vec3 z) {
 
 		z = abs(z);
 		z = min(absz, z);
+		// TODO: option to remove these folds
 		if (z.x - z.y < 0.0) z.xy = z.yx;
 		if (z.x - z.z < 0.0) z.xz = z.zx;
 

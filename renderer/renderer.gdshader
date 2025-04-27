@@ -78,8 +78,6 @@ uniform bool tiled = false;
 uniform int tiles_x = 4;
 uniform int tiles_y = 4;
 uniform int current_tile = 0; // first tile by default
-//uniform sampler2D previous_image;
-//uniform sampler2D screen_texture: hint_screen_texture, repeat_disable, filter_nearest;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
@@ -104,6 +102,7 @@ uniform int current_tile = 0; // first tile by default
 #include "res://formulas/mixpinski4d.gdshaderinc"
 #include "res://formulas/vicsek.gdshaderinc"
 #include "res://formulas/kalibox.gdshaderinc"
+#include "res://formulas/sphairahedron.gdshaderinc"
 
 vec2 single_fractal_sdf(int formula, vec3 p) {
 	if (repeat && repeat_gap.x >= 0.000001) p.x = mod(p.x + 0.5 * repeat_gap.x, repeat_gap.x) - 0.5 * repeat_gap.x;
@@ -111,33 +110,35 @@ vec2 single_fractal_sdf(int formula, vec3 p) {
 	if (repeat && repeat_gap.z >= 0.000001) p.z = mod(p.z + 0.5 * repeat_gap.z, repeat_gap.z) - 0.5 * repeat_gap.z;
 
 	// Edited at runtime.
-//return kalibox_sdf(p); //-@21
-//return kochwire_sdf(p); //-@20
-//return vicsek_sdf(p); //-@19
-//return mixpinski4d_sdf(p); //-@18
-//return kaliliving_sdf(p); //-@17
-//return quadratickoch_sdf(p); //-@16
-//return newton_sdf(p); //-@15
-//return kochcube_sdf(p); //-@14
-//return kaliredux_sdf(p); //-@13
-//return spheretree_sdf(p); //-@12
-//return klenian_sdf(p); //-@11
-//return pseudoklenian_sdf(p); //-@10
-//return sierpinskidodecahedron_sdf(p); //-@9
-//return sierpinskioctahedron_sdf(p); //-@8
-//return mengersponge_sdf(p); //-@7
-//return sierpinskitetrahedron_sdf(p); //-@6
-//return sierpinskiicosahedron_sdf(p); //-@5
-//return bairddelta_sdf(p); //-@4
-//return amazingsurf_sdf(p); //-@3
-//return mandelbox_sdf(p); //-@2
-//return mandelbulb_sdf(p); //-@1
+//if (formula == 22) return sphairahedron_sdf(p); //-@22
+//if (formula == 21) return kalibox_sdf(p); //-@21
+//if (formula == 20) return kochwire_sdf(p); //-@20
+//if (formula == 19) return vicsek_sdf(p); //-@19
+//if (formula == 18) return mixpinski4d_sdf(p); //-@18
+//if (formula == 17) return kaliliving_sdf(p); //-@17
+//if (formula == 16) return quadratickoch_sdf(p); //-@16
+//if (formula == 15) return newton_sdf(p); //-@15
+//if (formula == 14) return kochcube_sdf(p); //-@14
+//if (formula == 13) return kaliredux_sdf(p); //-@13
+//if (formula == 12) return spheretree_sdf(p); //-@12
+//if (formula == 11) return klenian_sdf(p); //-@11
+//if (formula == 10) return pseudoklenian_sdf(p); //-@10
+//if (formula == 9)  return sierpinskidodecahedron_sdf(p); //-@9
+//if (formula == 8)  return sierpinskioctahedron_sdf(p); //-@8
+//if (formula == 7)  return mengersponge_sdf(p); //-@7
+//if (formula == 6)  return sierpinskitetrahedron_sdf(p); //-@6
+//if (formula == 5)  return sierpinskiicosahedron_sdf(p); //-@5
+//if (formula == 4)  return bairddelta_sdf(p); //-@4
+//if (formula == 3)  return amazingsurf_sdf(p); //-@3
+//if (formula == 2)  return mandelbox_sdf(p); //-@2
+//if (formula == 1)  return mandelbulb_sdf(p); //-@1
 
 	return vec2(0.0);
 }
 
 vec2 scene_sdf(vec3 p) {
 	vec2 data = single_fractal_sdf(formulas[0], p);
+	if (formulas[1] > 0) data = data.x < 0.1 ? (data + single_fractal_sdf(formulas[1], p)) * 0.5 : data;
 
 	// Slice the fractal if needed.
 	if (cut) data.x = max(data.x, dot(p + cut_position, normalize(cut_normal)));
@@ -160,10 +161,9 @@ vec3 ray_marcher(vec3 ro, vec3 rd) {
 
 		float calc_epsilon = relative_epsilon ? epsilon / 3.4 * dfo : epsilon;
 		if (point_distance < 0.0) {
-			// Refine DE
 			dfo += point_distance;
-		} else
-		if (point_distance < calc_epsilon || dfo > max_distance) {
+			break;
+		} else if (point_distance < calc_epsilon || dfo > max_distance) {
 			orbit_trap_distance = data.x;
 			break;
 		};

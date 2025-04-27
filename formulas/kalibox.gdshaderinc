@@ -18,7 +18,7 @@ vec2 kalibox_sdf(vec3 z) {
 	float de = 1.0;
 	float orbit_trap = 10000.0;
 	float MinR = 0.0;
-	
+
 	int i = 0;
 	for (; i < iterations; i++) {
 		z = fkalibox_offset1 - abs(z);

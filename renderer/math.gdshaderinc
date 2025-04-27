@@ -128,44 +128,49 @@ vec3 triplex_pow(vec3 v, float n, float phase, float zmul) {
 	float phi = n * asin(v.z / r) + phase;  // v.z > -v.z
 
 	// atan(tan(phi + 0.1) * 0.6) + 0.3
+	// sin(abs(phi) + 1.0)
 	float cos_phi = cos(phi);  // phi > sin(phi), cos(phi)  !  phi + a * b   !  tan(phi) * 0.1
+	// vec3(sin(theta) * cos(phi), sin(phi), cos(theta))
+
+	// vec3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta))
 
 	return pow(r, n) * vec3(cos(theta) * cos_phi, sin(theta) * cos_phi, sin(phi) * zmul);
 }
 
 vec4 quaternion_pow(vec4 q, float t, float phase, int negative_axis) {
-    float qw = q.x;
-    float qx = q.y;
-    float qy = q.z;
-    float qz = q.w;
+	float qw = q.x;
+	float qx = q.y;
+	float qy = q.z;
+	float qz = q.w;
 
-    float norm = sqrt(qw*qw + qx*qx + qy*qy + qz*qz);
+	float norm = sqrt(qw*qw + qx*qx + qy*qy + qz*qz);
 
-    if (norm < 1e-6) return vec4(0.0, 0.0, 0.0, 0.0);
-    if (abs(qw - norm) < 1e-6 && abs(qx) < 1e-6 && abs(qy) < 1e-6 && abs(qz) < 1e-6) return vec4(pow(norm, t), 0.0, 0.0, 0.0);
+	if (norm < 1e-6) return vec4(0.0, 0.0, 0.0, 0.0);
+	if (abs(qw - norm) < 1e-6 && abs(qx) < 1e-6 && abs(qy) < 1e-6 && abs(qz) < 1e-6) return vec4(pow(norm, t), 0.0, 0.0, 0.0);
 
-    vec4 qNormalized = q / norm;
-    float wNormalized = qNormalized.x;
+	vec4 qNormalized = q / norm;
+	float wNormalized = qNormalized.x;
 
-    float theta = acos(wNormalized) + phase;
-    float vectorMagnitude = sqrt(1.0 - wNormalized*wNormalized);
-    const float EPSILON = 1e-6;
+	float theta = acos(wNormalized) + phase;
+	float vectorMagnitude = sqrt(1.0 - wNormalized*wNormalized);
+	const float EPSILON = 1e-6;
 
-    vec3 unitVector;
-    if (vectorMagnitude < EPSILON) {
-        unitVector = vec3(1.0, 0.0, 0.0);
-    } else {
-		if (negative_axis == 3) unitVector = vec3(qNormalized.y, -qNormalized.z, qNormalized.w) / vectorMagnitude;
-		if (negative_axis == 2) unitVector = vec3(-qNormalized.y, qNormalized.z, qNormalized.w) / vectorMagnitude;
+	vec3 unitVector;
+	if (vectorMagnitude < EPSILON) {
+		unitVector = vec3(1.0, 0.0, 0.0);
+	} else {
+		if (negative_axis == 1) unitVector = vec3(-qNormalized.y, qNormalized.z, qNormalized.w) / vectorMagnitude;
 		else unitVector = vec3(qNormalized.y, qNormalized.z, qNormalized.w) / vectorMagnitude;
-    }
+	}
 
-    float newW = pow(norm, t) * cos(t * theta);
-	if (negative_axis == 0) newW = -newW;
-    vec3 newVector = pow(norm, t) * sin(t * theta) * unitVector;
+	float newW = pow(norm, t) * cos(t * theta);
+	vec3 newVector = pow(norm, t) * sin(t * theta) * unitVector;
 
-    return vec4(newW, newVector.x, newVector.y, newVector.z);
+	return vec4(newW, newVector.x, newVector.y, newVector.z);
 }
+
+vec4 quaternion_conj(vec4 q) { return vec4(q.x, -q.y, -q.z, -q.w); }
+vec3 triplex_conj(vec3 t) { return vec3(t.x, -t.y, -t.z); }
 
 vec4 bicomplex_mult(vec4 a, vec4 b) {
 	return vec4(

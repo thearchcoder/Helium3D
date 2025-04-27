@@ -2,6 +2,9 @@ extends HBoxContainer
 
 # Dedicated function to save project data
 func save_project_data(path: String) -> void:
+	if not path.ends_with('.hlm'):
+		path += '.hlm'
+
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	if file:
 		var data: Dictionary = get_tree().current_scene.fields.duplicate(true)
@@ -78,6 +81,9 @@ func load_project_data(path: String) -> void:
 
 # Save an image to the specified path
 func save_image(path: String) -> void:
+	if not path.ends_with('.png') and not path.ends_with('.jpg') and not path.ends_with('.jpeg') and not path.ends_with('.webp'):
+		path += '.png'
+	
 	var image: Image = %TextureRect.texture.get_image()
 	if path.ends_with(".jpg") or path.ends_with(".jpeg"):
 		image.save_jpg(path)
@@ -125,7 +131,6 @@ func _on_save_all_pressed() -> void:
 	%FileDialog.add_filter("*.png, *.jpg, *.jpeg, *.webp", "Images")
 	%FileDialog.show()
 
-# Updated file dialog confirmed handler using the new functions
 func _on_file_dialog_confirmed() -> void:
 	if %FileDialog.title == "Save Picture":
 		save_image(%FileDialog.current_path)
@@ -135,7 +140,7 @@ func _on_file_dialog_confirmed() -> void:
 		# Save project
 		save_project_data(%FileDialog.current_path)
 		# Save picture
-		save_image(%FileDialog.current_path.replace(".hlm", "") + ".png")
+		save_image(%FileDialog.current_path)
 	elif %FileDialog.title == "Load Project":
 		load_project_data(%FileDialog.current_path)
 

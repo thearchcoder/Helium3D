@@ -6,19 +6,23 @@
 // float phase[0.0, 30.0] = 11.0
 // float power[2.0, 16.0] = 8.0
 // bool conjugate[false, true] = false
-// bool abs[false, true] = false
+// bool abs_x[false, true] = false
+// bool abs_y[false, true] = false
+// bool abs_z[false, true] = false
 // bool is_julia[false, true] = false
 // vec4 julia_c[(-3, -3, -3, -3), (3, 3, 3, 3)] = (1.3, 1.3, 1.3, 0.3)
 // float derivative_bias[0.0, 2.0] = 1.0
 // selection number_system[Triplex, Quaternion, Bicomplex] = Triplex
 // selection triplex_mode[Positive Z, Negative Z] = Negative Z
-// selection quaternion_mode[All Positive, Negative X, Negative Y, Negative Z] = Negative Y
+// selection quaternion_mode[Negative X, Negative Y] = Negative Y
 // vec4 alternating_powers[(0.0, 0.0, 0.0, 0.0), (16.0, 16.0, 16.0, 16.0)] = (0.0, 0.0, 0.0, 0.0)
 // [CODE]
 
 uniform bool fmandelbulb_is_julia;
 uniform bool fmandelbulb_conjugate;
-uniform bool fmandelbulb_abs;
+uniform bool fmandelbulb_abs_x;
+uniform bool fmandelbulb_abs_y;
+uniform bool fmandelbulb_abs_z;
 uniform vec4 fmandelbulb_julia_c;
 uniform float fmandelbulb_derivative_bias;
 uniform float fmandelbulb_power;
@@ -57,9 +61,14 @@ vec2 mandelbulb_sdf(vec3 p) {
 		float power = powers[power_idx];
 
 		dz = max(dz * fmandelbulb_derivative_bias, pow(r, power - 1.0) * dz * power + 1.0);
-
-		if (fmandelbulb_conjugate) z = vec4(z.x, -z.y, -z.z, -z.w);
-		if (fmandelbulb_abs) z = abs(z);
+		
+		if (fmandelbulb_conjugate) {
+			if (fmandelbulb_number_system == 0) z.xyz = triplex_conj(z.xyz).xyz;
+			else z = quaternion_conj(z); // I assume bicomplex_conj(b) == quaternion_conj(q), no?
+		}
+		if (fmandelbulb_abs_x) z.x = abs(z.x);
+		if (fmandelbulb_abs_y) z.y = abs(z.y);
+		if (fmandelbulb_abs_z) z.z = abs(z.z);
 
 		if (fmandelbulb_number_system == 0) z.xyz = triplex_pow(z.xyz, power, fmandelbulb_phase, fmandelbulb_triplex_mode == 1 ? -1.0 : 1.0) + c.xyz;
 		if (fmandelbulb_number_system == 1) z = quaternion_pow(z, power, fmandelbulb_phase, fmandelbulb_quaternion_mode) + c;

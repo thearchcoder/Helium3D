@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=48 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://owbf3siulolw" path="res://ui/field container/field_container.tscn" id="19_l42h1"]
 [ext_resource type="Texture2D" uid="uid://bxxblx70rjx10" path="res://resources/icons/film.svg" id="20_grqpr"]
 [ext_resource type="Texture2D" uid="uid://dhq5jlac5844f" path="res://resources/icons/play-solid.svg" id="20_k1hov"]
+[ext_resource type="Texture2D" uid="uid://bckot1yilknrf" path="res://resources/icons/render.svg" id="20_y04jv"]
 [ext_resource type="Texture2D" uid="uid://bhl7ghqs734tv" path="res://resources/icons/backward-solid.svg" id="20_y77tv"]
 [ext_resource type="Texture2D" uid="uid://b2t5230wme2ra" path="res://resources/icons/forward-solid.svg" id="21_ka5o1"]
 [ext_resource type="Texture2D" uid="uid://em4me5v5s48x" path="res://resources/icons/circle.svg" id="22_an3xl"]
@@ -82,7 +83,9 @@ shader_parameter/tiles_y = 4
 shader_parameter/current_tile = 0
 shader_parameter/fmandelbulb_is_julia = null
 shader_parameter/fmandelbulb_conjugate = null
-shader_parameter/fmandelbulb_abs = null
+shader_parameter/fmandelbulb_abs_x = null
+shader_parameter/fmandelbulb_abs_y = null
+shader_parameter/fmandelbulb_abs_z = null
 shader_parameter/fmandelbulb_julia_c = null
 shader_parameter/fmandelbulb_derivative_bias = null
 shader_parameter/fmandelbulb_power = null
@@ -180,11 +183,15 @@ shader_parameter/fkaliliving_c = null
 shader_parameter/fkaliliving_rotation1 = null
 shader_parameter/fkaliliving_rotation2 = null
 shader_parameter/fkaliliving_scale = null
+shader_parameter/fnewton_plane = null
+shader_parameter/fnewton_intersection_mode = null
 shader_parameter/fnewton_pole1 = null
 shader_parameter/fnewton_pole2 = null
 shader_parameter/fnewton_pole3 = null
 shader_parameter/fnewton_invsphere = null
 shader_parameter/fnewton_invert = null
+shader_parameter/fnewton_symmetry1 = null
+shader_parameter/fnewton_symmetry2 = null
 shader_parameter/fmixpinski4d_w = null
 shader_parameter/fmixpinski4d_scale = null
 shader_parameter/fmixpinski4d_offset = null
@@ -207,6 +214,11 @@ shader_parameter/fvicsek_hex_fold2 = null
 shader_parameter/fkalibox_scale = null
 shader_parameter/fkalibox_offset1 = null
 shader_parameter/fkalibox_offset2 = null
+shader_parameter/fsphairahedron_cube_type = null
+shader_parameter/fsphairahedron_zb = 0.3
+shader_parameter/fsphairahedron_zc = 1.0
+shader_parameter/fsphairahedron_inversion_sphere = null
+shader_parameter/fsphairahedron_sphere_inversion = null
 
 [sub_resource type="BoxMesh" id="BoxMesh_eu6rh"]
 size = Vector3(4000, 4000, -4000)
@@ -842,10 +854,20 @@ icon = ExtResource("21_ka5o1")
 [node name="AddKeyframeButton" type="Button" parent="UI/BottomBar/Animation/ControlButtons/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+tooltip_text = "Add the current frame as a keyframe to animation."
 theme_override_constants/icon_max_width = 21
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("20_grqpr")
+
+[node name="RenderButton" type="Button" parent="UI/BottomBar/Animation/ControlButtons/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Render animation and save to disk."
+theme_override_constants/icon_max_width = 21
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("20_y04jv")
 
 [node name="CurrentTime" type="MarginContainer" parent="UI/BottomBar/Animation"]
 layout_mode = 2
@@ -921,6 +943,7 @@ theme_override_constants/separation = 0
 [connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/PlayingToggleButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_playing_toggle_button_pressed"]
 [connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/SetTimeEndButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_set_time_end_button_pressed"]
 [connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/AddKeyframeButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_add_keyframe_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/RenderButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_render_button_pressed"]
 [connection signal="mouse_entered" from="UI/BottomBar/Animation/CurrentTime" to="UI/BottomBar/Animation/CurrentTime/HBoxContainer" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="UI/BottomBar/Animation/CurrentTime" to="UI/BottomBar/Animation/CurrentTime/HBoxContainer" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="UI/BottomBar/Animation/CurrentTime/HBoxContainer" to="UI/BottomBar/Animation/CurrentTime/HBoxContainer" method="_on_mouse_entered"]

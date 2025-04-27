@@ -24,14 +24,17 @@ func i_am_a_field_container() -> void: pass
 func set_bloom_enabled(to: bool) -> void: 
 	world.environment.glow_enabled = to
 	%SubViewport.refresh_taa()
+	field_changed('bloom', to)
 
 func set_bloom_intensity(to: float) -> void: 
 	world.environment.glow_bloom = to
 	%SubViewport.refresh_taa()
+	field_changed('bloom_intensity', to)
 
 func set_bloom_falloff(to: float) -> void: 
 	world.environment.glow_strength = to
 	%SubViewport.refresh_taa()
+	field_changed('bloom_falloff', to)
 
 func compute_tiled_render() -> void:
 	%TextureRect.material.set_shader_parameter('display_tiled_render', false)

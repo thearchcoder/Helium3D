@@ -4,12 +4,15 @@ const ANIMATION_TRACK_KEYFRAME_SCENE = preload('res://ui/animation/track keyfram
 var is_mouse_hovering: bool = false
 var keyframes: Dictionary = {}
 var is_playing: bool = false
+var is_rendering: bool = false
 var animation_frames_data: Array[Dictionary] = []
 var currently_at_frame: float = 0:
 	set(value):
 		currently_at_frame = value
 		%Time.position.x = (value / 60 * 133.0) + 60.0
-		#print(%Time.position.x)
+
+func _ready() -> void:
+	_on_set_time_start_button_pressed()
 
 func _on_playing_toggle_button_pressed() -> void:
 	is_playing = not is_playing
@@ -214,17 +217,20 @@ func _process(delta: float) -> void:
 		%PlayingToggleButton.icon = preload('res://resources/icons/play-solid.svg')
 
 	if is_playing:
-		#print(currently_at_frame, ' | ', len(animation_frames_data))
-		# data, update_app_fields, use_lerp, update_keyframes, delta_multiplier
-		#print('at: ', currently_at_frame)#, ' | ', animation_frames_data[round(currently_at_frame)])
 		get_tree().current_scene.update_app_state(animation_frames_data[round(currently_at_frame)], true, false, false, 0.51, true if currently_at_frame != 0 else false)
 		
 		# Save keyframe
 		var image: Image = %SubViewport.get_texture().get_image()
-		#if image:
-			#image.save_png('kf_' + str(currently_at_frame) + str('.png'))
+		if image and is_rendering and currently_at_frame >= 2:
+			var home_dir := OS.get_environment("HOME")
+			var path := home_dir + "/renders/frame_" + str(currently_at_frame - 2) + ".png"
+			image.save_png(path)
+			#%Logs.print_console(path)
 		
-		currently_at_frame += 1
+		if not is_rendering:
+			currently_at_frame += 1.0 / delta
+		else:
+			currently_at_frame += 1.0
 		%SubViewport.refresh_no_taa()
 
 func _on_mouse_entered() -> void: is_mouse_hovering = true
@@ -238,3 +244,12 @@ func _on_add_keyframe_button_pressed() -> void:
 
 func _on_set_time_start_button_pressed() -> void: currently_at_frame = 0
 func _on_set_time_end_button_pressed() -> void: currently_at_frame = (len(keyframes) - 1) * 60.0
+
+func _on_render_button_pressed() -> void:
+	if is_playing:
+		_on_playing_toggle_button_pressed()
+		is_rendering = true
+		_on_playing_toggle_button_pressed()
+	else:
+		is_rendering = true
+		_on_playing_toggle_button_pressed()

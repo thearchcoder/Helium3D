@@ -1,7 +1,7 @@
 extends Node3D
 
 # Pseudo-constant variables
-var VERSION := '0.8.0-beta'
+var VERSION := '0.8.1-beta'
 var PHASE := VERSION.split('-')[-1]
 var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
@@ -15,6 +15,9 @@ var using_tiling: bool = false
 
 func _ready() -> void:
 	%Logs.print_console('Helium3D ' + VERSION)
+
+#func _process(delta: float) -> void:
+	#print(%Fractal.material_override.get_shader_parameter('formulas'))
 
 func initialize_formulas(path_to_formulas: String) -> void:
 	if formulas != []:

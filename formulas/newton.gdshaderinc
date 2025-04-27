@@ -3,17 +3,25 @@
 // [INDEX]
 // 15
 // [VARS]
-// vec4 pole1[(-2, -2, -1, -1), (2, 2, 1, 1)] = (0.0, 0.0, 1.0, 0.0)
-// vec4 pole2[(-2, -2, -1, -1), (2, 2, 1, 1)] = (-0.595, 0.866, 1.0, 0.0)
-// vec4 pole3[(-2, -2, -1, -1), (2, 2, 1, 1)] = (2.0, -0.866, 1.0, 0.0)
+// selection plane[XZ, YZ, XY] = YZ
+// bool intersection_mode[false, true] = true
+// float symmetry1[1.0, 100.0] = 1.0
+// float symmetry2[1.0, 100.0] = 1.0
+// vec4 pole1[(-2, -2, -1, -1), (2, 2, 1, 1)] = (1.0, 0.0, 1.0, 0.0)
+// vec4 pole2[(-2, -2, -1, -1), (2, 2, 1, 1)] = (-0.5, 0.866, 1.0, 0.0)
+// vec4 pole3[(-2, -2, -1, -1), (2, 2, 1, 1)] = (-0.5, -0.866, 1.0, 0.0)
 // vec4 invsphere[(-2, -2, -2, -2), (2, 2, 2, 2)] = (1, 0.037, 0, 1)
-// bool invert[false, true] = true
+// bool invert[false, true] = false
 // [CODE]
+uniform int fnewton_plane;
+uniform bool fnewton_intersection_mode;
 uniform vec4 fnewton_pole1;
 uniform vec4 fnewton_pole2;
 uniform vec4 fnewton_pole3;
 uniform vec4 fnewton_invsphere;
 uniform bool fnewton_invert;
+uniform float fnewton_symmetry1;
+uniform float fnewton_symmetry2;
 
 float complex_abs(vec2 z) { return length(z); }
 vec2 complex_mul(vec2 a, vec2 b) { return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x); }
@@ -91,20 +99,112 @@ float newton_sdf2d(vec2 z0) {
 	return 0.0;
 }
 
+float newton3d_de_intersection(vec3 p, int plane_combo) {
+	float angle1 = 3.14159265 / fnewton_symmetry1;
+	float angle2 = 3.14159265 / fnewton_symmetry2;
+	float theta1 = 0.0;
+	float theta2 = 0.0;
+	float r = 0.0;
+	vec3 p_rotated1 = p;
+	vec3 p_rotated2 = p;
+
+	if (plane_combo == 0) {
+		// XZ rotation for both vectors
+		r = length(p.xz);
+
+		// First rotation with angle1
+		theta1 = atan(p.z, p.x);
+		theta1 = mod(theta1 + angle1, 2.0 * angle1) - angle1;
+		p_rotated1.xz = vec2(cos(theta1), sin(theta1)) * r;
+
+		// Second rotation with angle2
+		theta2 = atan(p.z, p.x);
+		theta2 = mod(theta2 + angle2, 2.0 * angle2) - angle2;
+		p_rotated2.xz = vec2(cos(theta2), sin(theta2)) * r;
+
+		float a = newton_sdf2d(p_rotated1.xy);
+		float b = newton_sdf2d(p_rotated2.yz);
+		return max(a, b);
+	} else if (plane_combo == 1) {
+		// XY rotation for both vectors
+		r = length(p.xy);
+
+		// First rotation with angle1
+		theta1 = atan(p.x, p.y);
+		theta1 = mod(theta1 + angle1, 2.0 * angle1) - angle1;
+		p_rotated1.xy = vec2(cos(theta1), sin(theta1)) * r;
+
+		// Second rotation with angle2
+		theta2 = atan(p.x, p.y);
+		theta2 = mod(theta2 + angle2, 2.0 * angle2) - angle2;
+		p_rotated2.xy = vec2(cos(theta2), sin(theta2)) * r;
+
+		float a = newton_sdf2d(p_rotated1.zx);
+		float b = newton_sdf2d(p_rotated2.xy);
+		return max(a, b);
+	} else {
+		// YZ rotation for both vectors
+		r = length(p.yz);
+
+		// First rotation with angle1
+		theta1 = atan(p.y, p.z);
+		theta1 = mod(theta1 + angle1, 2.0 * angle1) - angle1;
+		p_rotated1.yz = vec2(cos(theta1), sin(theta1)) * r;
+
+		// Second rotation with angle2
+		theta2 = atan(p.y, p.z);
+		theta2 = mod(theta2 + angle2, 2.0 * angle2) - angle2;
+		p_rotated2.yz = vec2(cos(theta2), sin(theta2)) * r;
+
+		float a = newton_sdf2d(p_rotated1.yz);
+		float b = newton_sdf2d(p_rotated2.zx);
+		return max(a, b);
+	}
+}
+
+float newton3d_de_rotation(vec3 p, int plane_id) {
+	float angle = 3.14159265 / fnewton_symmetry1;
+	float theta = 0.0;
+	float r = 0.0;
+
+	if (plane_id == 0) {
+		r = length(p.yz);
+		theta = atan(p.z, p.y);
+		theta = mod(theta + angle, 2.0 * angle) - angle;
+		p.yz = vec2(cos(theta), sin(theta)) * r;
+		p = vec3(length(p.yz), p.x, 0.0);
+	} else if (plane_id == 1) {
+		r = length(p.yz);
+		theta = atan(p.z, p.y);
+		theta = mod(theta + angle, 2.0 * angle) - angle;
+		p.yz = vec2(cos(theta), sin(theta)) * r;
+		p = vec3(p.x, length(p.yz), 0.0);
+	} else {
+		r = length(p.xz);
+		theta = atan(p.z, p.x);
+		theta = mod(theta + angle, 2.0 * angle) - angle;
+		p.xz = vec2(cos(theta), sin(theta)) * r;
+		p = vec3(p.x, p.y, length(p.xz));
+	}
+
+	return sqrt(pow(newton_sdf2d(p.xy), 2.0) + pow(p.z, 3.0));
+}
+
 vec2 newton_sdf(vec3 p) {
-	vec3 q = vec3(p.x, length(p.yz), 0.0);
 	float d = 0.0;
 	float d2 = 0.0;
 
 	if (fnewton_invert) {
-		q -= fnewton_invsphere.xyz;
-		d = length(q);
+		p -= fnewton_invsphere.xyz;
+		d = length(p);
 		d2 = d * d;
-		q = (fnewton_invsphere.w * fnewton_invsphere.w / d2) * q;
-		q += fnewton_invsphere.xyz;
+		p = (fnewton_invsphere.w * fnewton_invsphere.w / d2) * p;
+		p += fnewton_invsphere.xyz;
 	}
 
-	float de = sqrt(pow(newton_sdf2d(q.xy), 2.0) + pow(q.z, 3.0));
+	float de;
+	if (fnewton_intersection_mode) de = newton3d_de_intersection(p, fnewton_plane);
+	else de = newton3d_de_rotation(p, fnewton_plane);
 
 	if (fnewton_invert) de = de * d2 / (fnewton_invsphere.w + d * de);
 	de *= 0.5;

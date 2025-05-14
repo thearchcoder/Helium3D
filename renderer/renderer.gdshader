@@ -5,6 +5,7 @@ render_mode unshaded;
 // Line numbers for these 2 lines must stay the same.
 //#define USING_DOF
 //#define USING_TILING
+//#define USING_REFLECTIONS
 
 // Effects / DOF
 uniform bool dof_enabled = false;
@@ -14,7 +15,8 @@ uniform float dof_lens_distance = 10.3;
 uniform float dof_aperture = 0.0;
 
 // Lighting
-uniform float light_intensity = 0.6;
+uniform float light1_intensity = 0.6;
+uniform float light2_intensity = 0.6;
 uniform vec3 light1_position = vec3(10.0, 10.0, -10.0);
 uniform vec3 light2_position = vec3(-10.0, -10.0, 10.0);
 uniform vec3 light1_color: source_color = vec3(1.0, 1.0, 1.0);
@@ -28,8 +30,10 @@ uniform float shadow_raystep_multiplier = 1.0;
 uniform float shadow_epsilon = 0.01;
 
 uniform sampler2D palette;
-uniform sampler2D bg_color;
-uniform int coloring_mode = 0;
+uniform int coloring_mode;
+uniform float color_offset;
+uniform int color_min_iterations;
+uniform int color_max_iterations;
 
 // Rendering
 uniform int iterations = 8;
@@ -39,12 +43,13 @@ uniform float raystep_multiplier = 1.0;
 uniform float epsilon = 0.000003;
 uniform bool relative_epsilon = false;
 uniform float escape_radius;
+uniform int de_mode = 1;
 // Formula
 uniform int formulas[10];
-// Effects / Ambient Occlusion
+// Lighting / Ambient Occlusion
 uniform int ambient_occlusion_steps = 6;
 uniform float ambient_occlusion_radius = 0.5;
-uniform float ambient_occlusion_brightness = 0.0;
+uniform vec3 ambient_occlusion_color = vec3(1.0);
 // Effects / Vignette
 uniform float vignette_strength = 0.7;
 uniform float vignette_radius = 0.8;
@@ -73,11 +78,23 @@ uniform bool repeat = false;
 uniform bool cut = false;
 uniform vec3 cut_normal = vec3(0.0, 1.0, 0.0);
 uniform vec3 cut_position = vec3(0.0, 0.0, 0.0);
+uniform bool sphere_inversion = false;
+uniform vec4 inversion_sphere = vec4(1.0, 1.0, 0.0, 1.0);
+uniform vec3 translation = vec3(0.0);
+uniform vec3 rotation = vec3(0.0);
+uniform vec3 kalaidoscope = vec3(1.0);
 // Performance
 uniform bool tiled = false;
 uniform int tiles_x = 4;
 uniform int tiles_y = 4;
 uniform int current_tile = 0; // first tile by default
+// Settings
+uniform bool transparent_bg = true;
+
+// Lighting / Background
+uniform int bg_type;
+uniform sampler2D bg_image;
+uniform sampler2D bg_color;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
@@ -103,47 +120,109 @@ uniform int current_tile = 0; // first tile by default
 #include "res://formulas/vicsek.gdshaderinc"
 #include "res://formulas/kalibox.gdshaderinc"
 #include "res://formulas/sphairahedron.gdshaderinc"
-
-vec2 single_fractal_sdf(int formula, vec3 p) {
-	if (repeat && repeat_gap.x >= 0.000001) p.x = mod(p.x + 0.5 * repeat_gap.x, repeat_gap.x) - 0.5 * repeat_gap.x;
-	if (repeat && repeat_gap.y >= 0.000001) p.y = mod(p.y + 0.5 * repeat_gap.y, repeat_gap.y) - 0.5 * repeat_gap.y;
-	if (repeat && repeat_gap.z >= 0.000001) p.z = mod(p.z + 0.5 * repeat_gap.z, repeat_gap.z) - 0.5 * repeat_gap.z;
-
-	// Edited at runtime.
-//if (formula == 22) return sphairahedron_sdf(p); //-@22
-//if (formula == 21) return kalibox_sdf(p); //-@21
-//if (formula == 20) return kochwire_sdf(p); //-@20
-//if (formula == 19) return vicsek_sdf(p); //-@19
-//if (formula == 18) return mixpinski4d_sdf(p); //-@18
-//if (formula == 17) return kaliliving_sdf(p); //-@17
-//if (formula == 16) return quadratickoch_sdf(p); //-@16
-//if (formula == 15) return newton_sdf(p); //-@15
-//if (formula == 14) return kochcube_sdf(p); //-@14
-//if (formula == 13) return kaliredux_sdf(p); //-@13
-//if (formula == 12) return spheretree_sdf(p); //-@12
-//if (formula == 11) return klenian_sdf(p); //-@11
-//if (formula == 10) return pseudoklenian_sdf(p); //-@10
-//if (formula == 9)  return sierpinskidodecahedron_sdf(p); //-@9
-//if (formula == 8)  return sierpinskioctahedron_sdf(p); //-@8
-//if (formula == 7)  return mengersponge_sdf(p); //-@7
-//if (formula == 6)  return sierpinskitetrahedron_sdf(p); //-@6
-//if (formula == 5)  return sierpinskiicosahedron_sdf(p); //-@5
-//if (formula == 4)  return bairddelta_sdf(p); //-@4
-//if (formula == 3)  return amazingsurf_sdf(p); //-@3
-//if (formula == 2)  return mandelbox_sdf(p); //-@2
-//if (formula == 1)  return mandelbulb_sdf(p); //-@1
-
-	return vec2(0.0);
-}
+#include "res://formulas/lionbulb.gdshaderinc"
+#include "res://formulas/jerusalemcube.gdshaderinc"
 
 vec2 scene_sdf(vec3 p) {
-	vec2 data = single_fractal_sdf(formulas[0], p);
-	if (formulas[1] > 0) data = data.x < 0.1 ? (data + single_fractal_sdf(formulas[1], p)) * 0.5 : data;
+	float d, d2;
 
-	// Slice the fractal if needed.
-	if (cut) data.x = max(data.x, dot(p + cut_position, normalize(cut_normal)));
+	if (length(kalaidoscope) - 1.0 > 0.00001) {
+		p.xy = kalaido(p.xy, kalaidoscope.x);
+		p.yz = kalaido(p.yz, kalaidoscope.y);
+		p.xz = kalaido(p.xz, kalaidoscope.z);
+	}
 
-	return data.yx;
+	p -= translation;
+	p = rotate3d_point(p, rotation);
+
+	if (sphere_inversion) {
+		p -= inversion_sphere.xyz;
+		d = length(p);
+		d2 = d * d;
+		p = (inversion_sphere.w * inversion_sphere.w / d2) * p;
+		p += inversion_sphere.xyz;
+	}
+
+	if (repeat && repeat_gap.x >= 0.000001) p.x = continuousMod(p.x + 0.5 * repeat_gap.x, repeat_gap.x) - 0.5 * repeat_gap.x;
+	if (repeat && repeat_gap.y >= 0.000001) p.y = continuousMod(p.y + 0.5 * repeat_gap.y, repeat_gap.y) - 0.5 * repeat_gap.y;
+	if (repeat && repeat_gap.z >= 0.000001) p.z = continuousMod(p.z + 0.5 * repeat_gap.z, repeat_gap.z) - 0.5 * repeat_gap.z;
+
+	// Edited at runtime.
+	vec4 z = vec4(p, 0.000001);
+	vec4 original_z = z;
+	float orbit = 100000.0;
+	float dz = 1.0;
+	float s = 1.2;
+
+	// sphairahedron precompute
+//float zb = fsphairahedron_zb;                                          //-@22
+//float zc = fsphairahedron_zc;                                          //-@22
+//vec4 s2 = getS2A(zb, zc);                                              //-@22
+//vec4 s4 = getS4A(zb, zc);                                              //-@22
+//vec4 s6 = getS6A(zb, zc);                                              //-@22
+//vec4 inversionSphere = getInversionSphere(zb, zc);                     //-@22
+//vec4 g0 = computeGSpheres0(inversionSphere);                           //-@22
+//vec4 g1 = computeGSpheres1(inversionSphere, s2);                       //-@22
+//vec4 g2 = computeGSpheres2(inversionSphere);                           //-@22
+//vec4 g3 = computeGSpheres3(inversionSphere, s4);                       //-@22
+//vec4 g4 = computeGSpheres4(inversionSphere);                           //-@22
+//vec4 g5 = computeGSpheres5(inversionSphere, s6);                       //-@22
+//vec3 v0 = computeVertexes0(g0, g1, g2);                                //-@22
+//vec3 v1 = computeVertexes1(g0, g3, g4);                                //-@22
+//vec3 v2 = computeVertexes2(g2, g4, g5);                                //-@22
+//Plane dividePlane = computeDividePlane(inversionSphere, v0, v1, v2);   //-@22
+//vec4 convexSphere = computeConvexSphere(inversionSphere, dividePlane); //-@22
+
+	// kleinian precompute
+	vec3 lz = z.xyz + vec3(1.0);
+	vec3 llz = z.xyz + vec3(-1.0);
+	float DF = 1.0;
+	float a = fklenian_x;
+	float b = fklenian_y;
+	float f = sign(b);
+
+	for (int i = 0; i < iterations; i++) {
+		bool escaped = false;
+//mandelbulb_iter(z, dz, original_z, orbit, i);             //-@1
+//mandelbox_iter(z, dz, original_z, orbit, i);              //-@2
+//amazingsurf_iter(z, dz, original_z, orbit, i);            //-@3
+//bairddelta_iter(z, dz, original_z, orbit, i);             //-@4
+//sierpinskiicosahedron_iter(z, dz, original_z, orbit, i);  //-@5
+//sierpinskitetrahedron_iter(z, dz, original_z, orbit, i);  //-@6
+//mengersponge_iter(z, dz, original_z, orbit, i);           //-@7
+//sierpinskioctahedron_iter(z, dz, original_z, orbit, i);   //-@8
+//sierpinskidodecahedron_iter(z, dz, original_z, orbit, i); //-@9
+//pseudoklenian_iter(z, dz, original_z, orbit, i);          //-@10
+//klenian_iter(z, dz, original_z, orbit, i, DF, a, b, f, llz, lz, escaped); //-@11
+//spheretree_iter(z, dz, original_z, orbit, i, escaped);    //-@12
+//kochcube_iter(z, dz, original_z, orbit, i, s);            //-@14
+//quadratickoch_iter(z, dz, original_z, orbit, i);          //-@16
+//kaliliving_iter(z, dz, original_z, orbit, i);             //-@17
+//mixpinski4d_iter(z, dz, original_z, orbit, i);            //-@18
+//vicsek_iter(z, dz, original_z, orbit, i);                 //-@19
+//kochwire_iter(z, dz, original_z, orbit, i);               //-@20
+//kalibox_iter(z, dz, original_z, orbit, i);                //-@21
+//sphairahedron_iter(z, dz, original_z, orbit, i, s2, s4, s6, dividePlane.normal, dividePlane.p1, escaped); //-@22
+//lionbulb_iter(z, dz, original_z, orbit, i);               //-@23
+//jerusalemcube_iter(z, dz, original_z, orbit, i);          //-@24
+		orbit = min(orbit, process_orbit_trap4d(z, original_z, i));
+		if (length(z) > escape_radius || escaped) break;
+	}
+
+	float r = length(z);
+	float de;
+
+if (de_mode == 0) de = length(z) / dz;
+else if (de_mode == 1) de = 0.5 * log(r) * r / dz;
+//else if (de_mode == 2) de = distInfSphairahedra(z.xyz, s2, s4, s6, dividePlane.p1, dividePlane.normal) / abs(dz) * 0.25; //-@22
+//else if (de_mode == 3) de = min(fklenian_show_balls ? min(z.y, a - z.y) : z.y, 0.3) / max(DF, 2.0); //-@11
+
+	if (sphere_inversion) de = de * d2 / (inversion_sphere.w + d * de);
+	if (cut) de = max(de, dot(p + cut_position, normalize(cut_normal)));
+
+	//de = max(de, 0.0);
+
+	return vec2(de, orbit).yx;
 }
 
 #include "lighting/ambient_occlusion.gdshaderinc"
@@ -173,46 +252,52 @@ vec3 ray_marcher(vec3 ro, vec3 rd) {
 }
 
 vec3 calculate_normal(vec3 p, float h) {
-	float dist = scene_sdf(p).y;
-
-	// Sample multiple points and average
-	vec3 n = vec3(0.0);
-	for (int i = 0; i < 1; i++) {
-		float angle = float(i) * PI / 2.0;
-		vec2 e = vec2(sin(angle), cos(angle)) * h;
-
-		n.x += scene_sdf(p + vec3(h, e.x, e.y)).y - dist;
-		n.y += scene_sdf(p + vec3(e.y, h, e.x)).y - dist;
-		n.z += scene_sdf(p + vec3(e.x, e.y, h)).y - dist;
-	}
-
-	return normalize(n);
+	return normalize(vec3(
+		scene_sdf(p + vec3(h, 0.0, 0.0)).y - scene_sdf(p - vec3(h, 0.0, 0.0)).y,
+		scene_sdf(p + vec3(0.0, h, 0.0)).y - scene_sdf(p - vec3(0.0, h, 0.0)).y,
+		scene_sdf(p + vec3(0.0, 0.0, h)).y - scene_sdf(p - vec3(0.0, 0.0, h)).y
+	));
 }
+
 
 #include "lighting/lighting.gdshaderinc"
 
 varying vec3 vertex_ls;
+void vertex() { vertex_ls = VERTEX; }
 
-void vertex() {
-	vertex_ls = VERTEX;
-}
+uniform float reflection_intensity = 1.0;
+uniform int reflection_bounces = 1;
 
-vec3 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix) {
+vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color) {
 	vec3 data = ray_marcher(ray_origin, ray_dir);
-	float orbit_trap_distance = data.x;
+	float orbit_trap = data.x;
 	float dfo = data.y;
 	float total_marches = data.z;
-	vec3 palette_color = texture(palette, vec2(orbit_trap_distance, 0.0)).xyz;
+	vec3 palette_color = pow(texture(palette, vec2(orbit_trap + color_offset, 0.0)).xyz, vec3(2.0));
 	vec3 final_color;
 	vec3 p = ray_origin + ray_dir * dfo;
 	vec3 normal = calculate_normal(p, relative_epsilon ? epsilon / 3.4 * dfo : epsilon);
 
 	if (dfo >= max_distance) {
-		final_color = pow(texture(bg_color, vec2(screen_uv.y, 0.0)).xyz, vec3(2.0));
+		if (transparent_bg) discard_color = true;
+
+		vec3 sph_dir = normalize(ray_dir);
+		vec2 uv;
+
+		float theta = atan(sph_dir.z, sph_dir.x);
+		float phi = acos(sph_dir.y);
+
+		uv.x = (theta / (2.0 * PI)) + 0.5;
+		uv.y = phi / PI;
+
+		// uv = ray_dir.xy * 0.5 + 0.5;
+
+		if (bg_type == 0) final_color = pow(texture(bg_color, vec2(screen_uv.y, 0.0)).xyz, vec3(2.0));
+		if (bg_type == 1) final_color = texture(bg_image, uv).xyz;
 	} else {
-		float ao = calcAO(p, normal) + ambient_light;
-		vec3 light1 = get_light(p, ray_dir, ray_origin, light1_position, light1_color, normal);
-		vec3 light2 = get_light(p, ray_dir, ray_origin, light2_position, light2_color, normal);
+		vec3 ao = ambient_occlusion_color * (calcAO(p, normal) + ambient_light);
+		vec3 light1 = get_light(p, ray_dir, ray_origin, light1_position, light1_color, light1_intensity, normal);
+		vec3 light2 = get_light(p, ray_dir, ray_origin, light2_position, light2_color, light2_intensity, normal);
 
 		final_color = 3.0 * palette_color * ao * (light1 + light2);
 	}
@@ -220,7 +305,7 @@ vec3 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	// Outline
 	if (outline && float(total_marches) * raystep_multiplier > outline_threshold) {
 		float outline_factor = smoothstep(outline_threshold, 100.0, float(total_marches) * raystep_multiplier);
-		final_color += 3.0 * outline_color * pow(outline_intensity * outline_factor, outline_falloff);
+		final_color = mix(final_color, 3.0 * outline_color, pow(outline_intensity * outline_factor, outline_falloff));
 	}
 
 	// Fog
@@ -234,11 +319,58 @@ vec3 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 		float fresnelFactor = fresnel_intensity * pow(1.0 - cosTheta, fresnel_falloff);
 		final_color = mix(final_color, fresnel_color, fresnelFactor);
 	}
-
+	
 	// Tone mapping and Gamma correction
-	final_color = tonemap_color(final_color);
-	final_color = gamma_correct(final_color);
+	if (dfo < max_distance || bg_type != 1) {
+		final_color = tonemap_color(final_color);
+		final_color = gamma_correct(final_color);
+	} else if (bg_type == 1) {
+		float image_exposure = 1.5;
+		final_color *= (image_exposure + 0.5) / (1.0 + final_color / image_exposure);
+		final_color = pow(final_color, vec3(1.0 / 0.5));
+	}
 
+	return vec4(final_color, dfo < max_distance ? 1.0 : 0.0);
+}
+
+vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color) {
+	vec3 current_origin = ray_origin;
+	vec3 current_dir = ray_dir;
+
+	// Initial ray
+	vec4 result = render_single_ray(current_origin, current_dir, screen_uv, projection_matrix, view_matrix, discard_color);
+	vec3 final_color = result.rgb;
+	bool hit_surface = result.a > 0.5;
+
+#ifdef USING_REFLECTIONS
+	// Ray hit data for initial ray
+	vec3 data = ray_marcher(current_origin, current_dir);
+	float dfo = data.y;
+	vec3 hit_point = current_origin + current_dir * dfo;
+	vec3 normal = calculate_normal(hit_point, relative_epsilon ? epsilon / 3.4 * dfo : epsilon);
+
+	// Calculate reflections
+	float reflection_strength = reflection_intensity;
+	bool reflections_enabled = reflection_intensity >= 0.0001;
+
+	for (int i = 0; i < reflection_bounces && reflections_enabled && hit_surface; i++) {
+		current_dir = reflect(current_dir, normal);
+		current_origin = hit_point + normal * epsilon * 2.0;
+
+		result = render_single_ray(current_origin, current_dir, screen_uv, projection_matrix, view_matrix, discard_color);
+		hit_surface = result.a > 0.5;
+
+		final_color = mix(final_color, result.rgb, reflection_strength);
+
+		data = ray_marcher(current_origin, current_dir);
+		dfo = data.y;
+		hit_point = current_origin + current_dir * dfo;
+		normal = calculate_normal(hit_point, relative_epsilon ? epsilon / 3.4 * dfo : epsilon);
+		
+		if (!hit_surface) break;
+	}
+#endif
+	
 	// Vignette
 	if (is_exponential) {
 		vec2 vignette_uv = screen_uv * (1.0 - screen_uv.yx);
@@ -252,11 +384,12 @@ vec3 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	return final_color;
 }
 
-vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCoord, vec2 resolution, mat4 projection_matrix, mat4 view_matrix) {
+// Update calculate_albedo to use render_ray instead of render_single_ray
+vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCoord, vec2 resolution, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color) {
 	float time = float(TIME);
 	float baseSeed = hash(screen_uv + time * 0.01);
 
-	if (!dof_enabled) return render_single_ray(ray_origin, ray_dir, screen_uv, projection_matrix, view_matrix);
+	if (!dof_enabled) return render_ray(ray_origin, ray_dir, screen_uv, projection_matrix, view_matrix, discard_color);
 
 #ifdef USING_DOF
 	vec3 cameraDir = ray_dir;
@@ -279,7 +412,7 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 		vec3 lensPos = ray_origin + cameraX * lensOffset.x + cameraY * lensOffset.y;
 		vec3 rd = normalize(focusPoint - lensPos);
 
-		colorTotal += render_single_ray(lensPos, rd, jitteredUV, projection_matrix, view_matrix);
+		colorTotal += render_ray(lensPos, rd, jitteredUV, projection_matrix, view_matrix, discard_color);
 	}
 
 	vec3 finalColor = colorTotal / float(dof_samples);
@@ -288,6 +421,10 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 	return vec3(0.0);
 #endif
 }
+
+#define SET_ALBEDO bool discard_color = false; \
+	ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX, discard_color); \
+	if (discard_color) discard;
 
 void fragment() {
 	float error_margin = 1.0; // Controls the border thickness
@@ -319,14 +456,14 @@ void fragment() {
 		}
 
 		if (is_current) {
-			ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
+			SET_ALBEDO
 		} else {
 			discard;
 		}
 	} else {
-		ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
+		SET_ALBEDO
 	}
 	#else
-	ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX);
+	SET_ALBEDO
 	#endif
 }

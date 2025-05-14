@@ -10,6 +10,7 @@ signal value_changed(option: String)
 		if value > len(options) - 1: value = 0
 		index = value
 		$HBoxContainer/Label.text = label_overrides[index]
+		value_changed.emit(options[index])
 
 func _ready() -> void:
 	Global.value_nodes.append(self)
@@ -21,7 +22,6 @@ func _ready() -> void:
 		var preview: Node = FRACTAL_PREVIEW_SCENE.instantiate()
 		preview.formula_name = option
 		preview.formula_id = options.find(option)
-		%"Mandelbulb Variants".add_child(preview)
 
 func i_am_a_selection_field() -> void: pass
 
@@ -41,3 +41,5 @@ func _on_right_pressed() -> void:
 	
 	$HBoxContainer/Label.text = label_overrides[index]
 	value_changed.emit(options[index])
+
+func _on_label_pressed() -> void: $Popup.visible = true

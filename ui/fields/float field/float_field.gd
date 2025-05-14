@@ -40,3 +40,22 @@ func _on_line_edit_text_changed(new_text: String) -> void:
 		$HSlider.set_value_no_signal(float(new_text))
 		value_changed.emit(float(new_text))
 		value = float(new_text)
+	else:
+		var fixed_float: String = ""
+		for c in new_text:
+			if (c >= '0' and c <= '9') or c == '.':
+				fixed_float += c
+		
+		var old_caret_column: int = $LineEdit.caret_column
+		if fixed_float != "":
+			$LineEdit.text = fixed_float
+			$HSlider.set_value_no_signal(float(fixed_float))
+			value_changed.emit(float(fixed_float))
+			value = float(fixed_float)
+		else:
+			$LineEdit.text = "0"
+			$HSlider.set_value_no_signal(0)
+			value_changed.emit(0)
+			value = 0
+		
+		$LineEdit.caret_column = old_caret_column - 1

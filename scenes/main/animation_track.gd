@@ -11,8 +11,18 @@ var currently_at_frame: float = 0:
 		currently_at_frame = value
 		%Time.position.x = (value / 60 * 133.0) + 60.0
 
+var taa_frame_counter: int = 0
+var waiting_for_taa: bool = false
+var rendering_tiles: bool = false
+var using_tiling: bool = false
+
+func update_tiling_variables() -> void:
+	rendering_tiles = get_tree().current_scene.busy_rendering_tiles
+	using_tiling = get_tree().current_scene.using_tiling
+
 func _ready() -> void:
 	_on_set_time_start_button_pressed()
+	update_tiling_variables()
 
 func _on_playing_toggle_button_pressed() -> void:
 	is_playing = not is_playing
@@ -37,21 +47,17 @@ func update_animation_frames_data() -> void:
 	
 	var fps: int = 60
 	
-	# Define required fields that must always be included
 	var required_fields: Array[String] = ["keyframes", "total_visible_formula_pages", "player_position", "head_rotation", "camera_rotation"]
 	
-	# Collect all field names from all keyframes
 	var all_field_names: Array[String] = []
 	for time in (sorted_keyframes as Array[float]):
 		for field_name in (keyframes[time].keys() as Array[String]):
 			if not field_name in all_field_names:
 				all_field_names.append(field_name)
 	
-	# Create interpolation data for each field across all keyframes
 	var field_interpolation_data: Dictionary = {}
 	
 	for field_name in all_field_names:
-		# Collect all values for this field across all keyframes
 		var field_values: Array[Variant] = []
 		var field_times: Array[float] = []
 		
@@ -60,7 +66,6 @@ func update_animation_frames_data() -> void:
 				field_values.append(keyframes[time][field_name])
 				field_times.append(time)
 		
-		# Check if all values are the same
 		var all_same := true
 		if field_values.size() >= 2:
 			var first_value: Variant = field_values[0]
@@ -69,20 +74,17 @@ func update_animation_frames_data() -> void:
 					all_same = false
 					break
 			
-			# Add to interpolation data if values change OR it's a required field
 			if not all_same or field_name in required_fields:
 				field_interpolation_data[field_name] = {
 					"values": field_values,
 					"times": field_times
 				}
 	
-	# Generate frame data
 	var total_frames := int((sorted_keyframes[-1] - sorted_keyframes[0]) * fps)
 	for frame in range(total_frames + 1):
 		var current_time: float = sorted_keyframes[0] + (frame / float(fps))
 		var frame_data: Dictionary = {}
 		
-		# Get last keyframe data as base
 		var base_keyframe_time := 0.0
 		for time in (sorted_keyframes as Array[float]):
 			if time <= current_time:
@@ -90,63 +92,50 @@ func update_animation_frames_data() -> void:
 		
 		frame_data = keyframes[base_keyframe_time].duplicate(true)
 		
-		# Remove fields that don't change from frame_data, except required ones
 		for field_name in (frame_data.keys() as Array[String]):
 			if not field_name in field_interpolation_data and not field_name in required_fields:
 				frame_data.erase(field_name)
 		
-		# Interpolate each field
 		for field_name in (field_interpolation_data.keys() as Array[String]):
 			var field_info: Dictionary = field_interpolation_data[field_name]
 			var values: Array[Variant] = field_info["values"]
 			var times: Array[float] = field_info["times"]
 			
-			# Find segment for current time
 			var start_idx := 0
 			for i in range(times.size()):
 				if times[i] <= current_time:
 					start_idx = i
 			
-			# Skip if we're at the last keyframe for this field
 			if start_idx >= times.size() - 1:
 				continue
 			
-			# Calculate normalized time within segment
 			var segment_start_time: float = times[start_idx]
 			var segment_end_time: float = times[start_idx + 1]
 			var segment_length: float = segment_end_time - segment_start_time
 			var segment_t: float = (current_time - segment_start_time) / segment_length
 			
-			# Get values for this field from all keyframes
 			var keyframe_values: Array[Variant] = []
 			for t in (times as Array[float]):
 				var idx := sorted_keyframes.find(t)
 				if idx != -1 and field_name in keyframes[t]:
 					keyframe_values.append(keyframes[t][field_name])
 			
-			# Use global Interpolation with all values for this field
 			var interpolation_mode := Interpolation.InterpolationModes.CATMULLROM
 			var interpolated_values := Interpolation.interpolate(keyframe_values, interpolation_mode)
 			
-			# If we got empty array, Interpolation doesn't support this type
 			if interpolated_values.size() == 0:
-				# For unsupported types, just use the value from the previous keyframe
-				# Find the appropriate keyframe based on the current time
 				var closest_keyframe_time := times[0]
 				for t in (times as Array[float]):
 					if t <= current_time and t > closest_keyframe_time:
 						closest_keyframe_time = t
 				
-				# Get the value from the closest keyframe
 				if field_name in keyframes[closest_keyframe_time]:
 					frame_data[field_name] = keyframes[closest_keyframe_time][field_name]
 			else:
-				# Find the right position in the interpolated array
 				var total_t: float = (current_time - times[0]) / (times[-1] - times[0])
 				var interpolated_idx := int(total_t * (interpolated_values.size() - 1))
 				interpolated_idx = clamp(interpolated_idx, 0, interpolated_values.size() - 1)
 				
-				# Update frame data with interpolated value
 				frame_data[field_name] = interpolated_values[interpolated_idx]
 		
 		animation_frames_data.append(frame_data)
@@ -190,7 +179,6 @@ func reload_keyframes() -> void:
 			keyframe.image = keyframe_data['keyframe_texture']
 		
 		keyframe.data = keyframe_data
-		#keyframe.position.x = at_pixel
 		%Keyframes.add_child(keyframe)
 
 func update_timeline() -> void:
@@ -200,11 +188,41 @@ func update_timeline() -> void:
 	for i in 100 + 1:
 		var label: Label = Label.new()
 		label.add_theme_font_override('font', preload('res://resources/font/Rubik-SemiBold.ttf'))
-		label.add_theme_font_size_override('font_side', 15)
+		label.add_theme_font_size_override('font_size', 15)
 		label.text = str(float(i))
 		%Timeline.add_child(label)
 
+func process_frame() -> void:
+	var image: Image = %SubViewport.get_texture().get_image()
+	
+	if get_tree().current_scene.using_tiling and FileAccess.file_exists(get_tree().current_scene.HELIUM3D_PATH + '/tilerender/combined.png'):
+		image = Image.load_from_file(get_tree().current_scene.HELIUM3D_PATH + '/tilerender/combined.png')
+	
+	if image and is_rendering and currently_at_frame >= 2:
+		var path: String = get_tree().current_scene.HELIUM3D_PATH + "/renders/frame_" + str(currently_at_frame - 2) + ".png"
+		image.save_png(path)
+	
+	if not is_rendering:
+		currently_at_frame += 1.0 / get_process_delta_time()
+	else:
+		currently_at_frame += 1.0
+	
+	%SubViewport.refresh_taa()
+	waiting_for_taa = false
+	
+	if using_tiling:
+		await get_tree().process_frame
+		%Rendering.compute_tiled_render()
+
 func _process(delta: float) -> void:
+	update_tiling_variables()
+	
+	if not using_tiling:
+		if waiting_for_taa and is_playing:
+			taa_frame_counter += 1
+			if taa_frame_counter >= get_tree().current_scene.taa_samples:
+				process_frame()
+	
 	if is_mouse_hovering and Input.is_action_just_pressed('mouse click') and has_focus():
 		insert_keyframe(get_global_mouse_position().x / 50.0)
 	
@@ -215,23 +233,27 @@ func _process(delta: float) -> void:
 			currently_at_frame = 0
 		
 		%PlayingToggleButton.icon = preload('res://resources/icons/play-solid.svg')
-
-	if is_playing:
+	
+	var wait := true
+	
+	if using_tiling:
+		wait = rendering_tiles
+	else:
+		wait = waiting_for_taa
+	
+	if is_playing and not wait:
+		if round(currently_at_frame) >= len(animation_frames_data):
+			stop()
+			return
+		
 		get_tree().current_scene.update_app_state(animation_frames_data[round(currently_at_frame)], true, false, false, 0.51, true if currently_at_frame != 0 else false)
 		
-		# Save keyframe
-		var image: Image = %SubViewport.get_texture().get_image()
-		if image and is_rendering and currently_at_frame >= 2:
-			var home_dir := OS.get_environment("HOME")
-			var path := home_dir + "/renders/frame_" + str(currently_at_frame - 2) + ".png"
-			image.save_png(path)
-			#%Logs.print_console(path)
-		
-		if not is_rendering:
-			currently_at_frame += 1.0 / delta
+		if %SubViewport.antialiasing == %SubViewport.AntiAliasing.TAA and is_rendering and not using_tiling:
+			waiting_for_taa = true
+			taa_frame_counter = 0
 		else:
-			currently_at_frame += 1.0
-		%SubViewport.refresh_no_taa()
+			if not rendering_tiles:
+				process_frame()
 
 func _on_mouse_entered() -> void: is_mouse_hovering = true
 func _on_mouse_exited() -> void: is_mouse_hovering = false

@@ -3,6 +3,8 @@
 // [INDEX]
 // 15
 // [VARS]
+// float epsilon[0.0, 1.0] = 0.05
+// float relax[1.0, 5.0] = 2.0
 // selection plane[XZ, YZ, XY] = YZ
 // bool intersection_mode[false, true] = true
 // float symmetry1[1.0, 100.0] = 1.0
@@ -13,6 +15,8 @@
 // vec4 invsphere[(-2, -2, -2, -2), (2, 2, 2, 2)] = (1, 0.037, 0, 1)
 // bool invert[false, true] = false
 // [CODE]
+uniform float fnewton_epsilon;
+uniform float fnewton_relax;
 uniform int fnewton_plane;
 uniform bool fnewton_intersection_mode;
 uniform vec4 fnewton_pole1;
@@ -38,68 +42,103 @@ vec2 complex_reciprocal(vec2 z) {
     return vec2(z.x / denom, -z.y / denom);
 }
 
-float newton_sdf2d(vec2 z0) {
-	const int nzero = 3;
-	vec2 zeros[5];
-	vec2 zerop[5];
+//float newton_sdf2d(vec2 z0, inout float trap) {
+	//const int nzero = 3;
+	//vec2 zeros[5];
+	//vec2 zerop[5];
+//
+	//zeros[0] = fnewton_pole1.xy;
+	//zeros[1] = fnewton_pole2.xy;
+	//zeros[2] = fnewton_pole3.xy;
+//
+	//zerop[0] = fnewton_pole1.zw;
+	//zerop[1] = fnewton_pole2.zw;
+	//zerop[2] = fnewton_pole3.zw;
+//
+	//const int npole = 0;
+	//vec2 poles[5];
+	//vec2 polep[5];
+//
+	//vec2 z = z0;
+	//vec2 dz = vec2(1.0, 0.0);
+	//float eps = 0.001;
+//
+	//for (int k = 0; k < iterations; k++) {
+		//for (int i = 0; i < nzero; i++) {
+			//float e = complex_abs(z - zeros[i]);
+			//if (e < eps) {
+				//float de = e * -log(e) / length(dz);
+				////de = min(de, sphere_sdf2d(z0, fnewton_pole1.xy, 0.3));
+				////de = min(de, sphere_sdf2d(z0, fnewton_pole2.xy, 0.3));
+				////de = min(de, sphere_sdf2d(z0, fnewton_pole3.xy, 0.3));
+				//return de;
+			//}
+		//}
+//
+		//vec2 sz = vec2(0.0, 0.0);
+		//vec2 sz2 = vec2(0.0, 0.0);
+//
+		//for (int i = 0; i < nzero; ++i) {
+			//vec2 d = z - zeros[i];
+			//sz += complex_div(zerop[i], d);
+			//sz2 += complex_div(zerop[i], complex_mul(d, d));
+		//}
+//
+		//vec2 sp = vec2(0.0, 0.0);
+		//vec2 sp2 = vec2(0.0, 0.0);
+//
+		//for (int j = 0; j < npole; ++j) {
+			//vec2 d = z - poles[j];
+			//sp += complex_div(polep[j], d);
+			//sp2 += complex_div(polep[j], complex_mul(d, d));
+		//}
+//
+		//vec2 d = sz - sp;
+		//z -= complex_div(vec2(1.0, 0.0), d);
+//
+		//vec2 temp = complex_div(sp2 - sz2, complex_mul(d, d));
+		//dz = complex_mul(dz, temp + vec2(1.0, 0.0));
+		//
+		//if (k > color_min_iterations && k < color_max_iterations) trap = min(trap, dot(z, z));
+	//}
+//
+	//return 0.0;
+//}
 
-	zeros[0] = fnewton_pole1.xy;
-	zeros[1] = fnewton_pole2.xy;
-	zeros[2] = fnewton_pole3.xy;
-
-	zerop[0] = fnewton_pole1.zw;
-	zerop[1] = fnewton_pole2.zw;
-	zerop[2] = fnewton_pole3.zw;
-
-	const int npole = 0;
-	vec2 poles[5];
-	vec2 polep[5];
-
-	vec2 z = z0;
-	vec2 dz = vec2(1.0, 0.0);
-	float eps = 0.001;
-
-	for (int k = 0; k < iterations; k++) {
-		for (int i = 0; i < nzero; i++) {
-			float e = complex_abs(z - zeros[i]);
-			if (e < eps) {
-				float de = e * -log(e) / length(dz);
-				//de = min(de, sphere_sdf2d(z0, fnewton_pole1.xy, 0.3));
-				//de = min(de, sphere_sdf2d(z0, fnewton_pole2.xy, 0.3));
-				//de = min(de, sphere_sdf2d(z0, fnewton_pole3.xy, 0.3));
-				return de;
-			}
-		}
-
-		vec2 sz = vec2(0.0, 0.0);
-		vec2 sz2 = vec2(0.0, 0.0);
-
-		for (int i = 0; i < nzero; ++i) {
-			vec2 d = z - zeros[i];
-			sz += complex_div(zerop[i], d);
-			sz2 += complex_div(zerop[i], complex_mul(d, d));
-		}
-
-		vec2 sp = vec2(0.0, 0.0);
-		vec2 sp2 = vec2(0.0, 0.0);
-
-		for (int j = 0; j < npole; ++j) {
-			vec2 d = z - poles[j];
-			sp += complex_div(polep[j], d);
-			sp2 += complex_div(polep[j], complex_mul(d, d));
-		}
-
-		vec2 d = sz - sp;
-		z -= complex_div(vec2(1.0, 0.0), d);
-
-		vec2 temp = complex_div(sp2 - sz2, complex_mul(d, d));
-		dz = complex_mul(dz, temp + vec2(1.0, 0.0));
-	}
-
-	return 0.0;
+vec2 complex_sin(vec2 z) {
+    return vec2(sin(z.x) * cosh(z.y), cos(z.x) * sinh(z.y));
 }
 
-float newton3d_de_intersection(vec3 p, int plane_combo) {
+vec2 complex_cos(vec2 z) {
+    return vec2(cos(z.x) * cosh(z.y), -sin(z.x) * sinh(z.y));
+}
+
+float newton_sdf2d(vec2 z, inout float ob_trap) {
+    vec2 dz = vec2(1.0, 0.0);
+    float eps = fnewton_epsilon;
+
+    for (int k = 0; k < iterations + (k-k); k++) {
+        vec2 sin_z = complex_sin(z);
+        vec2 cos_z = complex_cos(z);
+
+        float e = complex_abs(sin_z);
+        if (e < eps) {
+            float de = e * -log(e) / length(dz);
+            return de;
+        }
+
+        vec2 d = cos_z;
+        z -= complex_div(fnewton_relax*sin_z, cos_z);
+        dz = complex_mul(dz, cos_z);
+    }
+
+    float e = complex_abs(complex_sin(z));
+    float de = e * -log(e) / length(dz);
+
+    return de;
+}
+
+float newton3d_de_intersection(vec3 p, int plane_combo, inout float trap) {
 	float angle1 = 3.14159265 / fnewton_symmetry1;
 	float angle2 = 3.14159265 / fnewton_symmetry2;
 	float theta1 = 0.0;
@@ -122,8 +161,8 @@ float newton3d_de_intersection(vec3 p, int plane_combo) {
 		theta2 = mod(theta2 + angle2, 2.0 * angle2) - angle2;
 		p_rotated2.xz = vec2(cos(theta2), sin(theta2)) * r;
 
-		float a = newton_sdf2d(p_rotated1.xy);
-		float b = newton_sdf2d(p_rotated2.yz);
+		float a = newton_sdf2d(p_rotated1.xy, trap);
+		float b = newton_sdf2d(p_rotated2.yz, trap);
 		return max(a, b);
 	} else if (plane_combo == 1) {
 		// XY rotation for both vectors
@@ -139,8 +178,8 @@ float newton3d_de_intersection(vec3 p, int plane_combo) {
 		theta2 = mod(theta2 + angle2, 2.0 * angle2) - angle2;
 		p_rotated2.xy = vec2(cos(theta2), sin(theta2)) * r;
 
-		float a = newton_sdf2d(p_rotated1.zx);
-		float b = newton_sdf2d(p_rotated2.xy);
+		float a = newton_sdf2d(p_rotated1.zx, trap);
+		float b = newton_sdf2d(p_rotated2.xy, trap);
 		return max(a, b);
 	} else {
 		// YZ rotation for both vectors
@@ -156,13 +195,13 @@ float newton3d_de_intersection(vec3 p, int plane_combo) {
 		theta2 = mod(theta2 + angle2, 2.0 * angle2) - angle2;
 		p_rotated2.yz = vec2(cos(theta2), sin(theta2)) * r;
 
-		float a = newton_sdf2d(p_rotated1.yz);
-		float b = newton_sdf2d(p_rotated2.zx);
+		float a = newton_sdf2d(p_rotated1.yz, trap);
+		float b = newton_sdf2d(p_rotated2.zx, trap);
 		return max(a, b);
 	}
 }
 
-float newton3d_de_rotation(vec3 p, int plane_id) {
+float newton3d_de_rotation(vec3 p, int plane_id, inout float trap) {
 	float angle = 3.14159265 / fnewton_symmetry1;
 	float theta = 0.0;
 	float r = 0.0;
@@ -187,12 +226,13 @@ float newton3d_de_rotation(vec3 p, int plane_id) {
 		p = vec3(p.x, p.y, length(p.xz));
 	}
 
-	return sqrt(pow(newton_sdf2d(p.xy), 2.0) + pow(p.z, 3.0));
+	return sqrt(pow(newton_sdf2d(p.xy, trap), 2.0) + pow(p.z, 3.0));
 }
 
 vec2 newton_sdf(vec3 p) {
 	float d = 0.0;
 	float d2 = 0.0;
+	float trap = 100000.0;
 
 	if (fnewton_invert) {
 		p -= fnewton_invsphere.xyz;
@@ -203,11 +243,11 @@ vec2 newton_sdf(vec3 p) {
 	}
 
 	float de;
-	if (fnewton_intersection_mode) de = newton3d_de_intersection(p, fnewton_plane);
-	else de = newton3d_de_rotation(p, fnewton_plane);
+	if (fnewton_intersection_mode) de = newton3d_de_intersection(p, fnewton_plane, trap);
+	else de = newton3d_de_rotation(p, fnewton_plane, trap);
 
 	if (fnewton_invert) de = de * d2 / (fnewton_invsphere.w + d * de);
 	de *= 0.5;
 
-	return vec2(de, 0.0);
+	return vec2(de, trap);
 }

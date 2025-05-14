@@ -20,13 +20,13 @@ func _ready() -> void:
 	_on_color_picker_button_color_changed(color)
 
 func reload_position() -> void:
-	var length: float = $"../../..".size.x - 19
+	var length: float = $"../..".size.x - 19
 	
 	position.x = clamp(offset * length, -5, length)
 	$"../../..".changed_gradient()
 
 func set_block_offset(new_offset: float) -> void:
-	var length: float = $"../../..".size.x - 19
+	var length: float = $"../..".size.x - 19
 	
 	position.x = clamp(new_offset * length, 0, length)
 	position.y = ($"../..".size.y - 12) / 2
@@ -45,13 +45,12 @@ func _process(delta: float) -> void:
 	if Engine.get_frames_drawn() <= 3:
 		return
 	
-	var length: float = $"../../..".size.x - 19  # 20 = margin from margin container
+	var length: float = $"../..".size.x - 19  # 20 = margin from margin container
 	
 	if is_mouse_inside and (Input.is_action_just_pressed("delete") or Input.is_action_just_pressed("mouse right click")):
 		$"../../..".call_deferred('changed_gradient')
 		# https://github.com/godotengine/godot/issues/73036
-		#free_object(self)
-		queue_free()
+		call('free')
 		return
 	
 	if is_mouse_inside and Input.is_action_just_pressed("mouse click"):

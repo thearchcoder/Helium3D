@@ -11,23 +11,38 @@ uniform vec4 fkaliredux_folds;
 uniform vec3 fkaliredux_minus;
 uniform float fkaliredux_scale;
 
-vec2 kaliredux_sdf(vec3 pos) {
-	vec4 p = vec4(pos, 1.0);
-	float orbit_trap = 100000.0;
-	//p.y = abs(3.0 - mod(p.y - 1.0, 6.0));
+void kaliredux_iter(inout vec4 p, inout float dz, vec4 original_z, float orbit, int i) {
+	p = rotate4d_point(p, vec4(0.0, 0.0, 0.0, fkaliredux_folds.x));
 
-	for (int i = 0; i < iterations; i++) {
-		p = rotate4d_point(p, vec4(0.0, 0.0, 0.0, fkaliredux_folds.x));
+	p = abs(p) - vec4(0.5, 1.5, 0.5, 0);
+	p = p * fkaliredux_scale / clamp(dot(p.xyz, p.xyz), fkaliredux_folds.z, fkaliredux_folds.w) - vec4(fkaliredux_minus, 0.0);
 
-		p = abs(p) - vec4(0.5, 1.5, 0.5, 0);
-		p = p * fkaliredux_scale / clamp(dot(p.xyz, p.xyz), fkaliredux_folds.z, fkaliredux_folds.w) - vec4(fkaliredux_minus, 0.0);
+	p = rotate4d_point(p, vec4(0.0, 0.0, 0.0, fkaliredux_folds.y));
 
-		p = rotate4d_point(p, vec4(0.0, 0.0, 0.0, fkaliredux_folds.y));
+	//if (coloring_mode == 0 && i > color_min_iterations && i < color_max_iterations) orbit_trap = min(orbit_trap, dot(p, p));
+	//else orbit_trap = min(orbit_trap, process_orbit_trap4d(p, i));
 
-		if (coloring_mode == 0) orbit_trap = min(orbit_trap, dot(p, p));
-		else orbit_trap = min(orbit_trap, process_orbit_trap4d(p));
-	}
-
-	float d = max(abs(p.z / p.w) - 0.01, length(p.zx) / p.w - 0.002);
-	return vec2(d, orbit_trap);
+	//float d = max(abs(p.z / p.w) - 0.01, length(p.zx) / p.w - 0.002);
+	//return vec2(d, orbit_trap);
 }
+
+//vec2 kaliredux_sdf(vec3 pos) {
+	//vec4 p = vec4(pos, 1.0);
+	//float orbit_trap = 100000.0;
+	////p.y = abs(3.0 - mod(p.y - 1.0, 6.0));
+//
+	//for (int i = 0; i < iterations; i++) {
+		//p = rotate4d_point(p, vec4(0.0, 0.0, 0.0, fkaliredux_folds.x));
+//
+		//p = abs(p) - vec4(0.5, 1.5, 0.5, 0);
+		//p = p * fkaliredux_scale / clamp(dot(p.xyz, p.xyz), fkaliredux_folds.z, fkaliredux_folds.w) - vec4(fkaliredux_minus, 0.0);
+//
+		//p = rotate4d_point(p, vec4(0.0, 0.0, 0.0, fkaliredux_folds.y));
+//
+		//if (coloring_mode == 0 && i > color_min_iterations && i < color_max_iterations) orbit_trap = min(orbit_trap, dot(p, p));
+		//else orbit_trap = min(orbit_trap, process_orbit_trap4d(p, i));
+	//}
+//
+	//float d = max(abs(p.z / p.w) - 0.01, length(p.zx) / p.w - 0.002);
+	//return vec2(d, orbit_trap);
+//}

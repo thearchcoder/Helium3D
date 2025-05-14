@@ -5,6 +5,10 @@ const BLOCK_SCENE = preload('res://ui/fields/palette field color block/palette_f
 signal value_changed(to: Gradient)
 @export var offsets := PackedFloat32Array([0.0, 1.0])
 @export var colors := PackedColorArray([Color(0.0, 0.0, 0.0), Color(0.0, 0.0, 0.0)])
+var is_blurry: bool = false:
+	set(value):
+		is_blurry = value
+		changed_gradient()
 
 func _ready() -> void:
 	Global.value_nodes.append(self)
@@ -37,6 +41,7 @@ func changed_gradient() -> void:
 	var gradient: Gradient = Gradient.new()
 	gradient.offsets = offsets
 	gradient.colors = colors
+	gradient.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CONSTANT if not is_blurry else Gradient.GRADIENT_INTERPOLATE_CUBIC
 	
 	var gradient_texture: GradientTexture1D = GradientTexture1D.new()
 	gradient_texture.gradient = gradient
@@ -56,4 +61,7 @@ func _on_button_button_down() -> void:
 	block.prevent_opening_colorpicker = true
 	block.drag_start_x = get_global_mouse_position().x - 1
 	block.original_position_x = get_global_mouse_position().x - block.global_position.x - 6
-	block.offset = block.position.x / size.x
+	block.offset = block.position.x / $MarginContainer.size.x
+
+func _on_blur_button_pressed() -> void:
+	is_blurry = !is_blurry

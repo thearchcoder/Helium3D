@@ -1,65 +1,48 @@
 const float golden_ratio = (1.0 + sqrt(5.0)) * 0.5;
 
-float process_orbit_trap(vec3 z) {
-	if (coloring_mode == 1) { return length(z); }
-	if (coloring_mode == 2) { return dot(z, z); }
-	if (coloring_mode == 3) { return sqrt(length(z)); }
-	if (coloring_mode == 4) { return sqrt(dot(z, z)); }
-	if (coloring_mode == 5) { return abs(length(z)); }
-	if (coloring_mode == 6) { return abs(dot(z, z)); }
-	if (coloring_mode == 7) { return log(length(z)); }
-	if (coloring_mode == 8) { return log(dot(z, z)); }
-	if (coloring_mode == 9) { return exp(length(z)); }
-	if (coloring_mode == 10) { return exp(dot(z, z)); }
-
-	// Component-based coloring
-	if (coloring_mode == 11) { return abs(z.x); }
-	if (coloring_mode == 12) { return abs(z.y); }
-	if (coloring_mode == 13) { return abs(z.z); }
-	if (coloring_mode == 14) { return max(max(abs(z.x), abs(z.y)), abs(z.z)); }
-	if (coloring_mode == 15) { return min(min(abs(z.x), abs(z.y)), abs(z.z)); }
-
-	// Blended component coloring
-	if (coloring_mode == 16) { return (abs(z.x) + abs(z.y) + abs(z.z)) / 3.0; }
-	if (coloring_mode == 17) { return abs(z.x) * abs(z.y) * abs(z.z); }
-
-	// Angular/spherical components
-	if (coloring_mode == 18) { return atan(length(z.xy), z.z) / 3.14159; } // Polar angle (normalized)
-	if (coloring_mode == 19) { return atan(z.y, z.x) / 6.28318 + 0.5; }    // Azimuthal angle (normalized)
-
-	// Distance to geometric shapes
-	if (coloring_mode == 20) { return abs(length(z) - 1.0); }              // Distance to unit sphere
-	if (coloring_mode == 21) { return abs(max(max(abs(z.x), abs(z.y)), abs(z.z)) - 1.0); } // Distance to unit cube
-	if (coloring_mode == 22) { return abs(z.x) + abs(z.y) + abs(z.z) - 1.0; } // Distance to octahedron
-
-	// Smooth blending functions
-	if (coloring_mode == 23) { return 0.5 * (1.0 + sin(length(z) * 5.0)); }
-	if (coloring_mode == 24) { return 0.5 * (1.0 + sin(dot(z, z) * 3.0)); }
-
-	// Periodic functions
-	if (coloring_mode == 25) { return fract(length(z) * 2.0); }
-	if (coloring_mode == 26) { return fract(dot(z, z) * 1.5); }
-	if (coloring_mode == 27) { return cos(length(z) * 4.0) * 0.5 + 0.5; }
-	if (coloring_mode == 28) { return sin(dot(z, z) * 3.0) * 0.5 + 0.5; }
-
-	// Hybrid functions
-	if (coloring_mode == 29) { return length(z) / (1.0 + dot(z, z)); }
-	if (coloring_mode == 30) { return sqrt(abs(z.x * z.y * z.z)); }
-
-	return 0.0;
+/////////////
+// General //
+/////////////
+vec3 decreaseLength(vec3 v, float amount) {
+	return normalize(v) * (length(v) - amount);
 }
 
-float process_orbit_trap4d(vec4 z) {
-	if (coloring_mode == 1) { return length(z); }
-	if (coloring_mode == 2) { return dot(z, z); }
-	if (coloring_mode == 3) { return sqrt(length(z)); }
-	if (coloring_mode == 4) { return sqrt(dot(z, z)); }
-	if (coloring_mode == 5) { return abs(length(z)); }
-	if (coloring_mode == 6) { return abs(dot(z, z)); }
-	if (coloring_mode == 7) { return log(length(z)); }
-	if (coloring_mode == 8) { return log(dot(z, z)); }
-	if (coloring_mode == 9) { return exp(length(z)); }
-	if (coloring_mode == 10) { return exp(dot(z, z)); }
+float continuousMod(float x, float y) {
+	float modValue = mod(x, y * 2.0);
+	return modValue <= y ? modValue : y * 2.0 - modValue;
+}
+
+/////////////
+// Kalaido //
+/////////////
+vec2 kalaido(vec2 p, float symmetry) {
+	float angle = 3.14159265 / symmetry;
+	float theta = atan(p.y, p.x);
+	theta = continuousMod(theta + angle, 2.0 * angle) - angle;
+	p = vec2(cos(theta), sin(theta)) * length(p);
+
+	return p;
+}
+
+////////////////
+// Orbit trap //
+////////////////
+
+float process_orbit_trap4d(vec4 z, vec4 o, int current_iteration) {
+	if (current_iteration < color_min_iterations) return 10000000.0; // large number so it gets discarded inside min()
+	if (current_iteration > color_max_iterations) return 10000000.0;
+
+	if (coloring_mode == 0) { return length(z); }
+	if (coloring_mode == 1) { return dot(z, z); }
+	if (coloring_mode == 2) { return sqrt(length(z)); }
+	if (coloring_mode == 3) { return sqrt(dot(z, z)); }
+	if (coloring_mode == 4) { return log(length(z)); }
+	if (coloring_mode == 5) { return log(dot(z, z)); }
+	if (coloring_mode == 6) { return exp(length(z)); }
+	if (coloring_mode == 7) { return exp(dot(z, z)); }
+	if (coloring_mode == 8) { return length(sin(o)); }
+	if (coloring_mode == 9) { return length(cos(o)); }
+	
 	return 0.0;
 }
 
@@ -88,40 +71,25 @@ vec4 rotate4d_point(vec4 p, vec4 rot) {
 	return p;
 }
 
-mat3 rotateX(float angle) {
-    float s = sin(angle);
-    float c = cos(angle);
-    return mat3(
-        vec3(1.0, 0.0, 0.0),
-        vec3(0.0, c, -s),
-        vec3(0.0, s, c)
-    );
+///////////////////////
+// Hypercomplex Math //
+///////////////////////
+vec3 triplex_mul(vec3 n1, vec3 n2) {
+	float r1 = length(n1);
+	float theta1 = atan(n1.y, n1.x);
+	float phi1 = asin(n1.z / r1);
+	float r2 = length(n2);
+	float theta2 = atan(n2.y, n2.x);
+	float phi2 = asin(n2.z / r2);
+
+	float r = r1 * r2;
+	float theta = theta1 + theta2;
+	float phi = phi1 + phi2;
+
+	return vec3(r * cos(theta) * cos(phi), r * sin(theta) * cos(phi), r * sin(phi));
 }
 
-mat3 rotateY(float angle) {
-    float s = sin(angle);
-    float c = cos(angle);
-    return mat3(
-        vec3(c, 0.0, s),
-        vec3(0.0, 1.0, 0.0),
-        vec3(-s, 0.0, c)
-    );
-}
-
-mat3 rotateZ(float angle) {
-    float s = sin(angle);
-    float c = cos(angle);
-    return mat3(
-        vec3(c, -s, 0.0),
-        vec3(s, c, 0.0),
-        vec3(0.0, 0.0, 1.0)
-    );
-}
-
-/////////
-// Pow //
-/////////
-vec3 triplex_pow(vec3 v, float n, float phase, float zmul) {
+vec3 triplex_pow(vec3 v, float n, float phase) {
 	// swap cos and sin around
 	float r = length(v);  // put negative here
 	float theta = n * atan(v.y, v.x);
@@ -134,7 +102,7 @@ vec3 triplex_pow(vec3 v, float n, float phase, float zmul) {
 
 	// vec3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta))
 
-	return pow(r, n) * vec3(cos(theta) * cos_phi, sin(theta) * cos_phi, sin(phi) * zmul);
+	return pow(r, n) * vec3(cos(theta) * cos_phi, sin(theta) * cos_phi, sin(phi));
 }
 
 vec4 quaternion_pow(vec4 q, float t, float phase, int negative_axis) {
@@ -188,6 +156,15 @@ vec4 bicomplex_pow(vec4 z, float p) {
 	for (int i = 0; i < int_power; i++) res = bicomplex_mult(res, z);
 
 	return res;
+}
+/////////////////////////////
+// Cartesian and Spherical //
+////////////////////////////
+vec3 to_spherical(vec3 c) {
+	float r = length(c);
+	float theta = atan(c.y, c.x);
+	float phi = asin(c.z / r);
+	return vec3(r, theta, phi);
 }
 
 ////////////////

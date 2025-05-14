@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_idpb3"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="2_788kb"]
 [ext_resource type="Script" path="res://ui/fields/formula field/formula_field.gd" id="2_t45rt"]
+[ext_resource type="PackedScene" uid="uid://caa5e0qf2jkom" path="res://ui/formula search menu/formula_search_menu.tscn" id="4_7tgqj"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4o5ok"]
 
@@ -16,8 +17,6 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wa5cg"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_e2s0f"]
 
 [node name="FormulaField" instance=ExtResource("1_idpb3")]
 anchor_right = 0.2
@@ -55,31 +54,7 @@ theme_override_font_sizes/font_size = 20
 theme_override_styles/focus = SubResource("StyleBoxEmpty_wa5cg")
 text = " > "
 
-[node name="Popup" type="Window" parent="." index="2"]
-title = "Select Formula"
-initial_position = 1
-size = Vector2i(1000, 600)
-visible = false
-theme_override_constants/title_outline_size = 0
-theme_override_fonts/title_font = ExtResource("2_788kb")
-
-[node name="TabContainer" type="TabContainer" parent="Popup" index="0"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_constants/side_margin = 0
-theme_override_fonts/font = ExtResource("2_788kb")
-theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_e2s0f")
-current_tab = 0
-
-[node name="Mandelbulb Variants" type="VBoxContainer" parent="Popup/TabContainer" index="1"]
-unique_name_in_owner = true
-layout_mode = 2
-metadata/_tab_index = 0
+[node name="Popup" parent="." index="2" instance=ExtResource("4_7tgqj")]
 
 [node name="Label" type="Label" parent="." index="3"]
 visible = false
@@ -87,5 +62,5 @@ layout_mode = 2
 text = "idea formula field, use selection field. but if we the button it opens a tree like structure to pick the formula, just like godots node adding menu."
 
 [connection signal="pressed" from="HBoxContainer/Left" to="." method="_on_left_pressed"]
-[connection signal="pressed" from="HBoxContainer/Label" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Label" to="." method="_on_label_pressed"]
 [connection signal="pressed" from="HBoxContainer/Right" to="." method="_on_right_pressed"]

@@ -6,8 +6,6 @@
 // selection cube_type[Cube A, Cube B, Cube C] = Cube A
 // float zc[0.0, 1.5] = 1.0;
 // float zb[0.0, 1.5] = 0.3;
-// bool sphere_inversion[false, true] = false
-// vec4 inversion_sphere[(-2, -2, -2, -2), (2, 2, 2, 2)] = (1.0, 0.96, 0.0, 0.8)
 // [CODE]
 
 // Credit's to soma arc for the original code.
@@ -21,15 +19,13 @@ This work is licensed under Creative Commons Attribution-NonCommercial-ShareAlik
 uniform int fsphairahedron_cube_type;
 uniform float fsphairahedron_zb;
 uniform float fsphairahedron_zc;
-uniform vec4 fsphairahedron_inversion_sphere;
-uniform bool fsphairahedron_sphere_inversion;
 
 // from Syntopia http://blog.hvidtfeldts.net/index.php/2015/01/path-tracing-3d-fractals/
 vec2 rand2n(vec2 co, float sampleIndex) {
 	vec2 seed = co * (sampleIndex + 1.0);
 	seed += vec2(-1, 1);
 	// implementation based on: lumina.sourceforge.net/Tutorials/Noise.html
-	return vec2(fract(sin(dot(seed.xy ,vec2(12.9898,78.233))) * 43758.5453), fract(cos(dot(seed.xy ,vec2(4.898,7.23))) * 23421.631));
+	return vec2(fract(sin(dot(seed.xy, vec2(12.9898,78.233))) * 43758.5453), fract(cos(dot(seed.xy, vec2(4.898,7.23))) * 23421.631));
 }
 
 struct Plane {
@@ -149,7 +145,7 @@ vec4 sphereFromPoints(vec3 p0, vec3 p1, vec3 p2, vec3 p3){
 	coefficient10 = 2. * (p3.z - p2.z);
 	coefficient11 = -(pow(p2.x, 2.) + pow(p2.y, 2.) + pow(p2.z, 2.)) +
 					  pow(p3.x, 2.) + pow(p3.y, 2.) + pow(p3.z, 2.);
-	
+
 	int col = 0;
 	float maxValue = abs(coefficient0);
 	if (abs(coefficient4) > maxValue) {
@@ -160,7 +156,7 @@ vec4 sphereFromPoints(vec3 p0, vec3 p1, vec3 p2, vec3 p3){
 		col = 2;
 		maxValue = abs(coefficient8);
 	}
-	
+
 	if (col == 1) {
 		float tmp0 = coefficient4;
 		float tmp1 = coefficient5;
@@ -175,7 +171,7 @@ vec4 sphereFromPoints(vec3 p0, vec3 p1, vec3 p2, vec3 p3){
 		coefficient2 = tmp2;
 		coefficient3 = tmp3;
 	}
-	
+
 	if (col == 2) {
 		float tmp0 = coefficient8;
 		float tmp1 = coefficient9;
@@ -192,13 +188,13 @@ vec4 sphereFromPoints(vec3 p0, vec3 p1, vec3 p2, vec3 p3){
 	}
 
 	float vkk = coefficient0;
-	float vik = coefficient4;    
+	float vik = coefficient4;
 	coefficient4 = coefficient4 - vik * (coefficient0 / vkk);
 	coefficient5 = coefficient5 - vik * (coefficient1 / vkk);
 	coefficient6 = coefficient6 - vik * (coefficient2 / vkk);
 	coefficient7 = coefficient7 - vik * (coefficient3 / vkk);
 
-	vik = coefficient8;            
+	vik = coefficient8;
 	coefficient8 = coefficient8 - vik * (coefficient0 / vkk);
 	coefficient9 = coefficient9 - vik * (coefficient1 / vkk);
 	coefficient10 = coefficient10 - vik * (coefficient2 / vkk);
@@ -206,12 +202,12 @@ vec4 sphereFromPoints(vec3 p0, vec3 p1, vec3 p2, vec3 p3){
 
 	col = 1;
 	maxValue = abs(coefficient5);
-	
+
 	if (abs(coefficient9) > maxValue) {
 		col = 2;
 		maxValue = abs(coefficient9);
 	}
-	
+
 	if (col == 2) {
 		float tmp0 = coefficient8;
 		float tmp1 = coefficient9;
@@ -229,7 +225,7 @@ vec4 sphereFromPoints(vec3 p0, vec3 p1, vec3 p2, vec3 p3){
 
 	vkk = coefficient5;
 	vik = coefficient9;
-		
+
 	coefficient9 = coefficient9 - vik * (coefficient5 / vkk);
 	coefficient10 = coefficient10 - vik * (coefficient6 / vkk);
 	coefficient11 = coefficient11 - vik * (coefficient7 / vkk);
@@ -238,15 +234,15 @@ vec4 sphereFromPoints(vec3 p0, vec3 p1, vec3 p2, vec3 p3){
 
 	float acc = 0.0;
 	acc += coefficient6 * coefficient11;
-		
+
 	coefficient7 = (coefficient7 - acc) / coefficient5;
-		
+
 	acc = 0.0;
 	acc += coefficient1 * coefficient7;
 	acc += coefficient2 * coefficient11;
 
 	coefficient3 = (coefficient3 - acc) / coefficient0;
-	
+
 	vec3 center = vec3(coefficient3, coefficient7, coefficient11);
 	float r = length(center - p0);
 	return vec4(center, r);
@@ -356,7 +352,7 @@ Plane computeDividePlane(vec4 inversionSphere, vec3 v0, vec3 v1, vec3 v2) {
 	if (normal.y < 0.0) {
 		normal = -normal;
 	}
-	
+
 	return Plane(p1, p2, p3, normal);
 }
 
@@ -364,7 +360,7 @@ vec4 computeConvexSphere(vec4 inversionSphere, Plane dividePlane) {
 	return invertOnPlane(inversionSphere, dividePlane);
 }
 
-bool intersectPlane(vec3 p, vec3 n, 
+bool intersectPlane(vec3 p, vec3 n,
 					vec3 rayOrigin, vec3 rayDir,
 					 inout float minDist,
 					inout vec3 intersection, inout vec3 normal){
@@ -430,92 +426,50 @@ vec4 getInversionSphere(float zb, float zc) {
 	return vec4(0.0);
 }
 
-vec2 sphairahedron_sdf(vec3 pos) {
-	float dr = 1.;
-	pos.y += 2.0;
-	
-	if (fsphairahedron_sphere_inversion) SphereInvert(pos, dr, fsphairahedron_inversion_sphere);
-	
-	
-	float invNum = 0.0;
-	float zb = fsphairahedron_zb;
-	float zc = fsphairahedron_zc;
+void sphairahedron_iter(inout vec4 z4, inout float dr, vec4 original_z, float orbit, int i, vec4 s2, vec4 s4, vec4 s6, vec3 dividePlane_normal, vec3 dividePlane_p1, inout bool escaped) {
+	vec3 pos = z4.xyz;
+	if (i == 0) pos.y += 2.0;
 
-	// Calculate spheres
-	vec4 s2 = getS2A(zb, zc);
-	vec4 s4 = getS4A(zb, zc);
-	vec4 s6 = getS6A(zb, zc);
-	vec4 inversionSphere = getInversionSphere(zb, zc);
-
-	// Calculate gSpheres
-	vec4 g0 = computeGSpheres0(inversionSphere);
-	vec4 g1 = computeGSpheres1(inversionSphere, s2);
-	vec4 g2 = computeGSpheres2(inversionSphere);
-	vec4 g3 = computeGSpheres3(inversionSphere, s4);
-	vec4 g4 = computeGSpheres4(inversionSphere);
-	vec4 g5 = computeGSpheres5(inversionSphere, s6);
-
-	// Calculate vertices
-	vec3 v0 = computeVertexes0(g0, g1, g2);
-	vec3 v1 = computeVertexes1(g0, g3, g4);
-	vec3 v2 = computeVertexes2(g2, g4, g5);
-	vec3 v3 = computeVertexes3(g0, g1, g3);
-	vec3 v4 = computeVertexes4(g3, g4, g5);
-	vec3 v5 = computeVertexes5(g1, g2, g5);
-	vec3 v6 = computeVertexes6(g1, g3, g5);
-	vec3 v7 = computeVertexes7(g0, g2, g4);
-
-	// Calculate divide plane
-	Plane dividePlane = computeDividePlane(inversionSphere, v0, v1, v2);
-	
-	// Calculate convex sphere
-	vec4 convexSphere = computeConvexSphere(inversionSphere, dividePlane);
-
-	float d;
-	for(int i = 0; i < iterations; i++) {
-		bool inFund = true;
-		if(distance(pos, s2.xyz) < s2.w) {
-			invNum++;
-			SphereInvert(pos, dr, s2);
-			inFund = false;
-		}
-		if(distance(pos, s4.xyz) < s4.w) {
-			invNum++;
-			SphereInvert(pos, dr, s4);
-			inFund = false;
-		}
-		if(distance(pos, s6.xyz) < s6.w) {
-			invNum++;
-			SphereInvert(pos, dr, s6);
-			inFund = false;
-		}
-
-		pos -= PL1.p1;
-		d = dot(pos, PL1.normal);
-		if(d > 0.) {
-			pos -= 2. * d * PL1.normal;
-			inFund = false;
-		}
-		pos += PL1.p1;
-		
-		pos -= PL2.p1;
-		d = dot(pos, PL2.normal);
-		if(d > 0.) {
-			pos -= 2. * d * PL2.normal;
-			inFund = false;
-		}
-		pos += PL2.p1;
-		
-		pos -= PL3.p1;
-		d = dot(pos, PL3.normal);
-		if(d > 0.) {
-			pos -= 2. * d * PL3.normal;
-			inFund = false;
-		}
-		pos += PL3.p1;
-
-		if(inFund) break;
+	bool inFund = true;
+	if(distance(pos, s2.xyz) < s2.w) {
+		SphereInvert(pos, dr, s2);
+		inFund = false;
 	}
+	if(distance(pos, s4.xyz) < s4.w) {
+		SphereInvert(pos, dr, s4);
+		inFund = false;
+	}
+	if(distance(pos, s6.xyz) < s6.w) {
+		SphereInvert(pos, dr, s6);
+		inFund = false;
+	}
+
+	pos -= PL1.p1;
+	float d = dot(pos, PL1.normal);
+	if(d > 0.0) {
+		pos -= 2. * d * PL1.normal;
+		inFund = false;
+	}
+	pos += PL1.p1;
+
+	pos -= PL2.p1;
+	d = dot(pos, PL2.normal);
+	if(d > 0.0) {
+		pos -= 2. * d * PL2.normal;
+		inFund = false;
+	}
+	pos += PL2.p1;
+
+	pos -= PL3.p1;
+	d = dot(pos, PL3.normal);
+	if(d > 0.0) {
+		pos -= 2.0 * d * PL3.normal;
+		inFund = false;
+	}
+	pos += PL3.p1;
+
+	if (inFund) escaped = true;
 	
-	return vec2(distInfSphairahedra(pos, s2, s4, s6, dividePlane.p1, dividePlane.normal) / abs(dr) * 0.25, invNum);
+	z4.xyz = pos;
+	//return distInfSphairahedra(pos, s2, s4, s6, dividePlane_p1, dividePlane_normal) / abs(dr) * 0.25;
 }

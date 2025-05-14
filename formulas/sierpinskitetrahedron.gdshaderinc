@@ -13,43 +13,70 @@ uniform vec3 fsierpinskitetrahedron_rotation2;
 uniform vec3 fsierpinskitetrahedron_offset;
 uniform float fsierpinskitetrahedron_scale;
 
-vec2 sierpinskitetrahedron_sdf(vec3 z) {
+void sierpinskitetrahedron_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i) {
+	vec3 z = z4.xyz;
 	float scale = fsierpinskitetrahedron_scale;
 	vec3 offset = fsierpinskitetrahedron_offset;
-	float orbit_trap = 1000000.0;
-	float r;
-	float s = 1.0;
-	int n = 0;
-
-	for (; n < iterations; n++) {
-		z = rotate3d_point(z, fsierpinskitetrahedron_rotation1);
-
-		if (z.x + z.y < 0.0) z.xy = -z.yx;
-		if (z.x + z.z < 0.0) z.xz = -z.zx;
-		if (z.y + z.z < 0.0) z.zy = -z.yz;
-
-		z = z * scale - offset * (scale - 1.0);
-		s /= scale;
-		
-		//z.z -=  .5*offset.z*(scale-1.)/scale;
-		//z.z  = -abs(z.z);
-		//z.z +=  .5*offset.z*(scale-1.)/scale;
-
-		//z *= scale;
-
-		//z.x -= offset.x*(scale-1.);
-		//z.y -= offset.y*(scale-1.);  
-
-		if (coloring_mode == 0) orbit_trap = min(orbit_trap, abs(dot(z, z)));
-		else orbit_trap = min(orbit_trap, process_orbit_trap(z));
-		
-		z = rotate3d_point(z, fsierpinskitetrahedron_rotation2);
-	}
 	
-	//float d = length(z) * pow(scale, -float(n));
-	float d = triangle_sdf3d(z) * s;
-	return vec2(d, orbit_trap);
+	z = rotate3d_point(z, fsierpinskitetrahedron_rotation1);
+
+	if (z.x + z.y < 0.0) z.xy = -z.yx;
+	if (z.x + z.z < 0.0) z.xz = -z.zx;
+	if (z.y + z.z < 0.0) z.zy = -z.yz;
+
+	z = z * scale - offset * (scale - 1.0);
+	dz = dz * abs(scale) + 1.0;
+
+	//z.z -=  .5*offset.z*(scale-1.)/scale;
+	//z.z  = -abs(z.z);
+	//z.z +=  .5*offset.z*(scale-1.)/scale;
+
+	//z *= scale;
+
+	//z.x -= offset.x*(scale-1.);
+	//z.y -= offset.y*(scale-1.);
+
+	z = rotate3d_point(z, fsierpinskitetrahedron_rotation2);
+	z4.xyz = z;
 }
+
+//vec2 sierpinskitetrahedron_sdf(vec3 z) {
+	//float scale = fsierpinskitetrahedron_scale;
+	//vec3 offset = fsierpinskitetrahedron_offset;
+	//float orbit_trap = 1000000.0;
+	//float r;
+	//float s = 1.0;
+	//int n = 0;
+//
+	//for (; n < iterations; n++) {
+		//z = rotate3d_point(z, fsierpinskitetrahedron_rotation1);
+//
+		//if (z.x + z.y < 0.0) z.xy = -z.yx;
+		//if (z.x + z.z < 0.0) z.xz = -z.zx;
+		//if (z.y + z.z < 0.0) z.zy = -z.yz;
+//
+		//z = z * scale - offset * (scale - 1.0);
+		//s /= scale;
+//
+		////z.z -=  .5*offset.z*(scale-1.)/scale;
+		////z.z  = -abs(z.z);
+		////z.z +=  .5*offset.z*(scale-1.)/scale;
+//
+		////z *= scale;
+//
+		////z.x -= offset.x*(scale-1.);
+		////z.y -= offset.y*(scale-1.);
+//
+		//if (coloring_mode == 0 && n > color_min_iterations && n < color_max_iterations) orbit_trap = min(orbit_trap, abs(dot(z, z)));
+		//else orbit_trap = min(orbit_trap, process_orbit_trap(z, n));
+//
+		//z = rotate3d_point(z, fsierpinskitetrahedron_rotation2);
+	//}
+//
+	////float d = length(z) * pow(scale, -float(n));
+	//float d = triangle_sdf3d(z) * s;
+	//return vec2(d, orbit_trap);
+//}
 
 //vec2 sierpinskitetrahedron4d_sdf(vec3 z3d, float power) {
 	//vec4 z = vec4(z3d, 0.0);

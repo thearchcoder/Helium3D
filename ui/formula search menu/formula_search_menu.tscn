@@ -1,0 +1,78 @@
+[gd_scene load_steps=4 format=3 uid="uid://caa5e0qf2jkom"]
+
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="1_hhs3y"]
+[ext_resource type="Script" path="res://ui/fields/formula field/search_menu.gd" id="2_b44c0"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x5nan"]
+
+[node name="Popup" type="Window"]
+auto_translate_mode = 1
+title = "Search Formula"
+initial_position = 1
+size = Vector2i(690, 250)
+visible = false
+content_scale_factor = 1.28
+theme_override_constants/title_outline_size = 0
+theme_override_fonts/title_font = ExtResource("1_hhs3y")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SearchMenu" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("2_b44c0")
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/SearchMenu"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_hhs3y")
+theme_override_font_sizes/font_size = 18
+text = "Formula: "
+
+[node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/SearchMenu"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("1_hhs3y")
+flat = true
+
+[node name="Filter" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Filter"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_hhs3y")
+theme_override_font_sizes/font_size = 18
+text = "Filter: "
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/Filter"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "No filter"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_x5nan")
+
+[node name="SearchCloseButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_hhs3y")
+theme_override_font_sizes/font_size = 18
+text = "Close"
+
+[connection signal="close_requested" from="." to="MarginContainer/VBoxContainer/SearchMenu" method="_on_popup_close_requested"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/SearchMenu/OptionButton" to="MarginContainer/VBoxContainer/SearchMenu" method="_on_option_button_item_selected"]
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/Filter/LineEdit" to="MarginContainer/VBoxContainer/SearchMenu" method="_on_line_edit_text_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SearchCloseButton" to="MarginContainer/VBoxContainer/SearchMenu" method="_on_search_close_button_pressed"]

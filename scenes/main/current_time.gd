@@ -17,7 +17,7 @@ func update_drag() -> void:
 	previous_mouse_position = get_global_mouse_position()
 	previous_currently_at_frame = %AnimationTrack.currently_at_frame
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	update_drag()
 
 func _input(event: InputEvent) -> void:

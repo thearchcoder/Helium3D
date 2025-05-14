@@ -12,7 +12,7 @@ float calcAO(vec3 pos, vec3 normal) {
 	float diff_norm = diff / float(ambient_occlusion_steps);
 	float ao = 1.0 - diff_norm/ambient_occlusion_radius;
 
-	return clamp(ao + ambient_occlusion_brightness, 0.0, 1.0);
+	return clamp(ao, 0.0, 1.0);
 }
 
 //float calcAO(vec3 pos, vec3 normal ) {

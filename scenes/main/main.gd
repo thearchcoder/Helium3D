@@ -7,14 +7,22 @@ var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
 var PATCH := VERSION.split('.')[2].split('-')[0]
 
+@onready var HELIUM3D_PATH: String = OS.get_environment("HOME") + "/.hlm"
+var taa_samples: int = 2
 var fields: Dictionary = {}
 var other_fields: Array = ['total_visible_formula_pages', 'player_position', 'head_rotation', 'camera_rotation']
 var formulas: Array[Dictionary] = []
 var using_dof: bool = false
 var using_tiling: bool = false
+var using_reflections: bool = false
+var busy_rendering_tiles: bool = false
 
 func _ready() -> void:
 	%Logs.print_console('Helium3D ' + VERSION)
+	
+	var dir := DirAccess.open("res://")
+	if not dir.dir_exists(HELIUM3D_PATH):
+		dir.make_dir(HELIUM3D_PATH)
 
 #func _process(delta: float) -> void:
 	#print(%Fractal.material_override.get_shader_parameter('formulas'))
@@ -226,6 +234,11 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 		modified_lines[6] = (modified_lines[6] as String).lstrip('/')
 	else:
 		modified_lines[6] = '//' + (modified_lines[6] as String)
+	
+	if using_reflections:
+		modified_lines[7] = (modified_lines[7] as String).lstrip('/')
+	else:
+		modified_lines[7] = '//' + (modified_lines[7] as String)
 	
 	shader.code = "\n".join(modified_lines)
 	%Fractal.material_override.shader = shader

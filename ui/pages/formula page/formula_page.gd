@@ -126,7 +126,16 @@ func _ready() -> void:
 				label.text += '\n'
 				label.add_theme_constant_override('line_spacing', 8)
 			
-			$Fields/HBoxContainer/Names.get_node(NodePath(node.get_parent().name)).add_child(label)
+			var names: Node = $Fields/HBoxContainer/Names.get_node(NodePath(node.get_parent().name))
+			var label_already_exists: bool = false
+			
+			for child in names.get_children():
+				if child is Label:
+					if child.text == label.text:
+						label_already_exists = true
+			
+			if not label_already_exists:
+				$Fields/HBoxContainer/Names.get_node(NodePath(node.get_parent().name)).add_child(label)
 
 func i_am_a_formula_page() -> void: pass
 

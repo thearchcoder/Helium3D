@@ -16,8 +16,10 @@ corner_radius_bottom_left = 3
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k504r"]
 
 [node name="SelectionField" instance=ExtResource("1_dylg4")]
-offset_right = 202.72
-offset_bottom = -66.16
+anchor_right = 0.338
+anchor_bottom = 0.03
+offset_right = -0.100037
+offset_bottom = -0.400002
 script = ExtResource("2_xel7h")
 options = Array[String](["Glow", "Shell", "Angle"])
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bpyo1d3rv8lku"
-path="res://.godot/imported/moon.png-49ba8c00494e5b6378347e406dc1c5eb.ctex"
+uid="uid://b83pdnns1kkoq"
+path="res://.godot/imported/tile_4.png-9868deb0c4b71ecdb111559de7de1668.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://moon.png"
-dest_files=["res://.godot/imported/moon.png-49ba8c00494e5b6378347e406dc1c5eb.ctex"]
+source_file="res://tilerender/tile_4.png"
+dest_files=["res://.godot/imported/tile_4.png-9868deb0c4b71ecdb111559de7de1668.ctex"]
 
 [params]
 

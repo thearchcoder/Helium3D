@@ -31,11 +31,11 @@ float soft_shadow(vec3 point, vec3 dir, float start, float end) {
 	return clamp(shadow, 0.0, 1.0);
 }
 
-vec3 get_light(vec3 p, vec3 rd, vec3 ro, vec3 light_pos, vec3 light_color, vec3 normal) {
+vec3 get_light(vec3 p, vec3 rd, vec3 ro, vec3 light_pos, vec3 light_color, float light_intensity, vec3 normal) {
 	vec3 to_light = normalize(light_pos - p);
 
 	// Diffuse
-	float light = light_intensity * clamp(dot(to_light, normal), 0.0, 1.0);
+	float light = light_intensity * clamp(dot(to_light, normal) - 0.0, 0.0, 1.0);
 
 	// Soft shadows
 	float shadow = soft_shadow(p, to_light, shadow_epsilon, length(light_pos - p));

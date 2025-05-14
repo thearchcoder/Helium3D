@@ -1,8 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://btjotc720lyxd"]
+[gd_scene load_steps=12 format=3 uid="uid://btjotc720lyxd"]
 
 [ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_x23c8"]
 [ext_resource type="Script" path="res://ui/fields/palette field/palette_field.gd" id="2_560la"]
-[ext_resource type="PackedScene" uid="uid://dv5u2gutb4uqn" path="res://ui/fields/palette field color block/palette_field_color_block.tscn" id="2_k2iqx"]
+[ext_resource type="Texture2D" uid="uid://xgfmikrv5y1t" path="res://resources/icons/gradientblur.svg" id="3_cbtqc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mnd2h"]
 bg_color = Color(0.0807833, 0.0807834, 0.0807832, 1)
@@ -12,6 +12,7 @@ expand_margin_right = 6.0
 expand_margin_bottom = 6.0
 
 [sub_resource type="Gradient" id="Gradient_7w6g2"]
+interpolation_mode = 1
 offsets = PackedFloat32Array(0, 0.766393)
 colors = PackedColorArray(0.679304, 0.835563, 1, 1, 0.554142, 0.68827, 0.967115, 1)
 
@@ -20,12 +21,31 @@ gradient = SubResource("Gradient_7w6g2")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ptrqr"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_el3ur"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8uu56"]
+content_margin_left = 3.0
+content_margin_right = 3.0
+bg_color = Color(0.111197, 0.111197, 0.111197, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7302w"]
+content_margin_left = 3.0
+content_margin_right = 3.0
+bg_color = Color(0.0605303, 0.0605304, 0.0605302, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3iilv"]
+content_margin_left = 3.0
+content_margin_right = 3.0
+bg_color = Color(0.0807833, 0.0807834, 0.0807832, 1)
+
 [node name="PaletteField" instance=ExtResource("1_x23c8")]
-anchor_right = 0.43
+anchor_right = 0.157
 anchor_bottom = 0.032
-offset_right = -0.600037
-offset_bottom = 0.440002
+offset_right = 0.849976
+offset_bottom = 0.439999
+theme_override_constants/separation = 0
 script = ExtResource("2_560la")
+offsets = PackedFloat32Array()
 
 [node name="MarginContainer" type="MarginContainer" parent="." index="0"]
 layout_mode = 2
@@ -67,29 +87,20 @@ layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
-[node name="PaletteFieldColorBlock" parent="MarginContainer/Blocks" index="0" instance=ExtResource("2_k2iqx")]
-layout_mode = 2
-anchors_preset = 0
-offset_left = 400.0
-offset_right = 412.0
-offset_bottom = 24.0
-offset = 1.45519e-11
-color = Color(0, 0, 0, 1)
-
-[node name="PaletteFieldColorBlock2" parent="MarginContainer/Blocks" index="1" instance=ExtResource("2_k2iqx")]
-layout_mode = 2
-anchors_preset = 0
-offset_left = 400.0
-offset_right = 412.0
-offset_bottom = 24.0
-offset = 0.76639
-color = Color(0, 0, 0, 1)
-
 [node name="Label" type="Label" parent="MarginContainer" index="4"]
 layout_mode = 2
 text = "
 "
 
+[node name="BlurButton" type="Button" parent="." index="2"]
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_el3ur")
+theme_override_styles/hover = SubResource("StyleBoxFlat_8uu56")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_7302w")
+theme_override_styles/normal = SubResource("StyleBoxFlat_3iilv")
+icon = ExtResource("3_cbtqc")
+
 [connection signal="button_down" from="MarginContainer/HBoxContainer2/Button" to="." method="_on_button_button_down"]
 [connection signal="mouse_entered" from="MarginContainer/Blocks" to="." method="_on_blocks_mouse_entered"]
 [connection signal="mouse_exited" from="MarginContainer/Blocks" to="." method="_on_blocks_mouse_exited"]
+[connection signal="pressed" from="BlurButton" to="." method="_on_blur_button_pressed"]

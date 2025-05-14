@@ -9,12 +9,12 @@ uniform float fspheretree_symmetry;
 
 void spheretree_iter(inout vec4 z4, inout float scale, vec4 original_z, float orbit, int i, inout bool escaped) {
 	vec3 p = z4.xyz;
-	if (i == 0) { 
+	if (i == 0) {
 		p /= 3.0;
 		p.z += 0.5;
 		scale = 0.45;
 	}
-	
+
 	const float rad = 0.2;
 	const vec3 s0 = vec3(0.0,1.0,rad);
 	const vec3 s1 = vec3(sqrt(3.0)/2.0, -0.5,rad);
@@ -26,7 +26,7 @@ void spheretree_iter(inout vec4 z4, inout float scale, vec4 original_z, float or
 	const vec3 n1 = vec3(-0.5, -sqrt(3.0)/2.0,0.0);
 	const vec3 n2 = vec3(-0.5, sqrt(3.0)/2.0,0.0);
 	const float innerScale = sqrt(3.0)/(1.0 + sqrt(3.0));
-	
+
 	float angle = 3.14159265 / fspheretree_symmetry;
 	float theta = atan(p.y, p.x);
 	float r = length(p.xy);
@@ -37,14 +37,14 @@ void spheretree_iter(inout vec4 z4, inout float scale, vec4 original_z, float or
 		escaped = true; // definitely inside
 		return;
 	}
-	
+
 	float maxH = i == 0 ? -100.0 : 0.4;
-	
+
 	if (p.z > maxH && length(p-vec3(0,0,0.5*1.1)) > 0.5*1.1) {
 		escaped = true; // definitely outside
 		return;
 	}
-	
+
 	if (p.z < maxH && length(p -vec3(0,0,0.5)) > 0.5) {
 		// needs a sphere inverse
 		float sc =  dot(p, p);
@@ -86,11 +86,11 @@ void spheretree_iter(inout vec4 z4, inout float scale, vec4 original_z, float or
 	if (l1 < l0 && l1 < l2) p -= t1 * (2.0*dot(t1, p) - 1.0);
 	else if (l2 < l0 && l2 < l1) p -= t2 * (2.0 * dot(p, t2) + 1.0);
 	p.z = h;
-	
+
 	if (i == iterations) {
 		p.z -= 0.4;
 		p = decreaseLength(p, 0.4);
 	}
-	
+
 	z4.xyz = p;
 }

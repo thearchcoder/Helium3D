@@ -42,7 +42,7 @@ float process_orbit_trap4d(vec4 z, vec4 o, int current_iteration) {
 	if (coloring_mode == 7) { return exp(dot(z, z)); }
 	if (coloring_mode == 8) { return length(sin(o)); }
 	if (coloring_mode == 9) { return length(cos(o)); }
-	
+
 	return 0.0;
 }
 

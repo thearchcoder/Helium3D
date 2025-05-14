@@ -1,7 +1,7 @@
 extends Node3D
 
 # Pseudo-constant variables
-var VERSION := '0.8.1-beta'
+var VERSION := '0.8.2-beta'
 var PHASE := VERSION.split('-')[-1]
 var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]

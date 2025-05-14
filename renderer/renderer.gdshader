@@ -195,6 +195,7 @@ vec2 scene_sdf(vec3 p) {
 //pseudoklenian_iter(z, dz, original_z, orbit, i);          //-@10
 //klenian_iter(z, dz, original_z, orbit, i, DF, a, b, f, llz, lz, escaped); //-@11
 //spheretree_iter(z, dz, original_z, orbit, i, escaped);    //-@12
+//kaliredux_iter(z, dz, original_z, orbit, i);              //-@13
 //kochcube_iter(z, dz, original_z, orbit, i, s);            //-@14
 //quadratickoch_iter(z, dz, original_z, orbit, i);          //-@16
 //kaliliving_iter(z, dz, original_z, orbit, i);             //-@17
@@ -219,8 +220,6 @@ else if (de_mode == 1) de = 0.5 * log(r) * r / dz;
 
 	if (sphere_inversion) de = de * d2 / (inversion_sphere.w + d * de);
 	if (cut) de = max(de, dot(p + cut_position, normalize(cut_normal)));
-
-	//de = max(de, 0.0);
 
 	return vec2(de, orbit).yx;
 }

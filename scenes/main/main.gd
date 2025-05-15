@@ -1,7 +1,7 @@
 extends Node3D
 
 # Pseudo-constant variables
-var VERSION := '0.8.2-beta'
+var VERSION := '0.8.3-beta'
 var PHASE := VERSION.split('-')[-1]
 var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
@@ -10,7 +10,7 @@ var PATCH := VERSION.split('.')[2].split('-')[0]
 @onready var HELIUM3D_PATH: String = OS.get_environment("HOME") + "/.hlm"
 var taa_samples: int = 2
 var fields: Dictionary = {}
-var other_fields: Array = ['total_visible_formula_pages', 'player_position', 'head_rotation', 'camera_rotation']
+var other_fields: Array = ['total_visible_formula_pages', 'player_position', 'head_rotation', 'camera_rotation', 'gradienttexture1ds']
 var formulas: Array[Dictionary] = []
 var using_dof: bool = false
 var using_tiling: bool = false
@@ -23,9 +23,6 @@ func _ready() -> void:
 	var dir := DirAccess.open("res://")
 	if not dir.dir_exists(HELIUM3D_PATH):
 		dir.make_dir(HELIUM3D_PATH)
-
-#func _process(delta: float) -> void:
-	#print(%Fractal.material_override.get_shader_parameter('formulas'))
 
 func initialize_formulas(path_to_formulas: String) -> void:
 	if formulas != []:
@@ -141,11 +138,30 @@ func update_app_state(data: Dictionary, update_app_fields: bool = true, use_lerp
 	data = data.duplicate(true)
 	
 	if 'other' not in data:
-		data['other'] = {"keyframes": data.get("keyframes", {}), 'total_visible_formula_pages': data['total_visible_formula_pages'], 'player_position': data['player_position'], 'head_rotation': data['head_rotation'], 'camera_rotation': data['camera_rotation']}
+		data['other'] = {"keyframes": data.get("keyframes", {}), 'total_visible_formula_pages': data['total_visible_formula_pages'], 'player_position': data['player_position'], 'head_rotation': data['head_rotation'], 'camera_rotation': data['camera_rotation'], 'gradienttexture1ds': data['gradienttexture1ds']}
 		for other_field_name in (data['other'].keys() as Array[String]):
 			data.erase(other_field_name)
 	
 	var other_data: Dictionary = data['other']
+	
+	if other_data.get('gradienttexture1ds', {}):
+		data['gradienttexture1ds'] = other_data['gradienttexture1ds'].duplicate(true)
+		other_data.erase('gradienttexture1ds')
+	
+	if data.has("gradienttexture1ds"):
+		var gradient_data: Dictionary = data["gradienttexture1ds"].duplicate(true)
+		
+		for key in (gradient_data.keys() as Array[String]):
+			var gradient_info: Dictionary = gradient_data[key]
+			
+			var gradient: Gradient = Gradient.new()
+			gradient.offsets = gradient_info["offsets"]
+			gradient.colors = gradient_info["colors"]
+			
+			data[key] = gradient
+		
+		data.erase("gradienttexture1ds")
+	
 	var delta: float = get_process_delta_time() * delta_multiplier
 	var player: Node = %Player
 	var head: Node = %Player.get_node('Head')

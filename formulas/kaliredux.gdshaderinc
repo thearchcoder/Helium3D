@@ -13,9 +13,9 @@ uniform float fkaliredux_scale;
 
 void kaliredux_iter(inout vec4 p, inout float dz, vec4 original_z, float orbit, int i) {
 	p = rotate4d_point(p, vec4(0.0, 0.0, 0.0, fkaliredux_folds.x));
-	
+
 	dz = dz * abs(fkaliredux_scale) + 5.0;
-	
+
 	p = abs(p) - vec4(0.5, 1.5, 0.5, 0);
 	p = p * fkaliredux_scale / clamp(dot(p.xyz, p.xyz), fkaliredux_folds.z, fkaliredux_folds.w) - vec4(fkaliredux_minus, 0.0);
 

@@ -8,12 +8,15 @@ func add_option(option_name: String) -> void:
 
 func reload_popup() -> void:
 	$OptionButton.clear()
+	$OptionButton.add_item('None')
 	for option in (options as Array[String]):
 		if filter:
 			if option.to_lower().begins_with(filter.to_lower()):
 				$OptionButton.add_item(option)
 		else:
 			$OptionButton.add_item(option)
+	
+	$OptionButton.selected = 1
 
 func get_formula_index_from_name(formatted_id: String) -> int:
 	for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
@@ -28,7 +31,7 @@ func _process(delta: float) -> void:
 		_on_option_button_item_selected($OptionButton.selected)
 
 func update_selected_item(value: String) -> void:
-	$OptionButton.selected = $"../../../..".index - 1
+	$OptionButton.selected = $"../../../..".index
 
 func _ready() -> void:
 	$"../../../..".connect('value_changed', update_selected_item)
@@ -51,3 +54,7 @@ func _on_popup_close_requested() -> void:
 func _on_line_edit_text_changed(new_text: String) -> void:
 	filter = new_text
 	reload_popup()
+
+func _on_popup_visibility_changed() -> void:
+	if $"../../..".visible:
+		$"../Filter/LineEdit".grab_focus()

@@ -6,7 +6,6 @@ extends MarginContainer
 var is_mouse_hovering: bool = false
 
 func _ready() -> void:
-	#print(formula_name)
 	$HBoxContainer/Label.text = formula_name
 	$HBoxContainer/Label.text = formula_description
 

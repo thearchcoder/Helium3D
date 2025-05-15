@@ -37,20 +37,15 @@ func save_project_data(path: String) -> void:
 		data["other"] = other_data
 		
 		file.store_var(data)
-		print("saving: ", data)
 		file.close()
-	else:
-		print("Error: Could not open file for writing: ", path)
 
 # Dedicated function to load project data
 func load_project_data(path: String) -> void:
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	if file:
 		var data: Dictionary = file.get_var()
-		print("loading: ", data)
 		
 		var other_data: Dictionary = data["other"]
-		print(other_data.get('app_version'))
 		
 		# Process gradient texture data - convert to Gradient objects, not GradientTexture1D
 		if other_data.has("gradienttexture1ds"):
@@ -76,8 +71,6 @@ func load_project_data(path: String) -> void:
 		%SubViewport.refresh_taa()
 		
 		file.close()
-	else:
-		print("Error: Could not open file for reading: ", path)
 
 # Save an image to the specified path
 func save_image(path: String) -> void:

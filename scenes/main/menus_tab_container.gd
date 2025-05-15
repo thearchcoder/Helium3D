@@ -80,7 +80,7 @@ func update_field_values(new_fields: Dictionary) -> void:
 	for field_name in (new_fields.keys() as Array[String]):
 		var field_val: Variant = new_fields[field_name]
 		
-		if field_val is EncodedObjectAsID or field_name in get_tree().current_scene.other_fields or field_name in ["other", 'keyframe_texture', 'bg_color', 'fjuliabulb_c_sqrt', 'fjuliaswirl_csqrt_multiplier']:
+		if field_val is EncodedObjectAsID or field_name in get_tree().current_scene.other_fields or field_name in ["other", 'keyframe_texture']:
 			continue
 		
 		var search_result: Array[Control] = value_nodes.filter(func(x: Control) -> bool: return x.name.to_snake_case() == field_name.to_snake_case())

@@ -12,6 +12,10 @@ signal value_changed(option: String)
 		$HBoxContainer/Label.text = label_overrides[index]
 		value_changed.emit(options[index])
 
+func _process(delta: float) -> void:
+	if $"../../../../../..".name == 'Formula' and $"../../../..".visible and Input.is_action_pressed('search formula shortcut'):
+		$HBoxContainer/Label.pressed.emit()
+
 func _ready() -> void:
 	Global.value_nodes.append(self)
 	$HBoxContainer/Label.text = label_overrides[index]

@@ -14,6 +14,10 @@ func _ready() -> void:
 	Global.value_nodes.append(self)
 	set_value(offsets, colors)
 	changed_gradient()
+	var initial_gradient: Gradient = Gradient.new()
+	initial_gradient.offsets = offsets
+	initial_gradient.colors = colors
+	value_changed.emit(initial_gradient)
 
 func i_am_a_palette_field() -> void: pass
 

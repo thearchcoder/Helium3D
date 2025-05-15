@@ -73,6 +73,7 @@ theme_override_font_sizes/font_size = 18
 text = "Close"
 
 [connection signal="close_requested" from="." to="MarginContainer/VBoxContainer/SearchMenu" method="_on_popup_close_requested"]
+[connection signal="visibility_changed" from="." to="MarginContainer/VBoxContainer/SearchMenu" method="_on_popup_visibility_changed"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/SearchMenu/OptionButton" to="MarginContainer/VBoxContainer/SearchMenu" method="_on_option_button_item_selected"]
 [connection signal="text_changed" from="MarginContainer/VBoxContainer/Filter/LineEdit" to="MarginContainer/VBoxContainer/SearchMenu" method="_on_line_edit_text_changed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/SearchCloseButton" to="MarginContainer/VBoxContainer/SearchMenu" method="_on_search_close_button_pressed"]

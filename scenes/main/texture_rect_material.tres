@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dggmsfkvwvli5"]
+
+[ext_resource type="Shader" path="res://scenes/main/main.gdshader" id="1_ytw0k"]
+
+[resource]
+shader = ExtResource("1_ytw0k")
+shader_parameter/sharpness = 1.0
+shader_parameter/display_tiled_render = false

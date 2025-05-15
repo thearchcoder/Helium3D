@@ -87,9 +87,11 @@ void spheretree_iter(inout vec4 z4, inout float scale, vec4 original_z, float or
 	else if (l2 < l0 && l2 < l1) p -= t2 * (2.0 * dot(p, t2) + 1.0);
 	p.z = h;
 
-	if (i == iterations) {
-		p.z -= 0.4;
-		p = decreaseLength(p, 0.4);
+	if (i >= iterations - 14) {
+		//p.z -= 0.4;
+		//p = decreaseLength(p, 0.4);
+		//p = vec3(0.0);
+		//scale = 0.0;
 	}
 
 	z4.xyz = p;

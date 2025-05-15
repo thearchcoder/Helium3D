@@ -1,13 +1,13 @@
-[gd_scene load_steps=50 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=49 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
-[ext_resource type="Shader" path="res://scenes/main/main.gdshader" id="3_1xdvd"]
 [ext_resource type="Shader" path="res://renderer/renderer.gdshader" id="3_4yvvm"]
 [ext_resource type="Script" path="res://scenes/main/tool_bar.gd" id="5_og0rs"]
 [ext_resource type="PackedScene" uid="uid://c6ykqwdde41of" path="res://ui/fields/selection field/selection_field.tscn" id="6_50v3j"]
 [ext_resource type="Script" path="res://scenes/main/texture_rect.gd" id="6_dbdf5"]
 [ext_resource type="Script" path="res://scenes/main/texture_rect_holder.gd" id="7_20ti0"]
+[ext_resource type="Material" uid="uid://dggmsfkvwvli5" path="res://scenes/main/texture_rect_material.tres" id="8_6lqo5"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="8_rhsly"]
 [ext_resource type="Script" path="res://scenes/main/menus_tab_container.gd" id="9_7154d"]
 [ext_resource type="PackedScene" uid="uid://db57n1ak0l5yd" path="res://ui/logs/logs.tscn" id="14_pnl7n"]
@@ -288,11 +288,6 @@ bg_color = Color(0, 0, 0, 0.207843)
 border_width_bottom = 3
 anti_aliasing = false
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_dqox0"]
-shader = ExtResource("3_1xdvd")
-shader_parameter/sharpness = 1.0
-shader_parameter/display_tiled_render = false
-
 [sub_resource type="ViewportTexture" id="ViewportTexture_qn1xg"]
 viewport_path = NodePath("SubViewport")
 
@@ -551,7 +546,7 @@ script = ExtResource("7_20ti0")
 
 [node name="TextureRect" type="TextureRect" parent="UI/HBoxContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-material = SubResource("ShaderMaterial_dqox0")
+material = ExtResource("8_6lqo5")
 layout_mode = 2
 size_flags_horizontal = 4
 texture = SubResource("ViewportTexture_qn1xg")

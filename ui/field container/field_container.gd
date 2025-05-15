@@ -114,12 +114,11 @@ func compute_tiled_render() -> void:
 		if dir.file_exists(path):
 			dir.remove(path)
 	
-	#print(final_image.get_pixel(0, 0))
 	final_image.save_png(get_tree().current_scene.HELIUM3D_PATH + "/tilerender/combined.png")
 	
 	%TextureRect.material.set_shader_parameter('display_tiled_render', true)
 	%TextureRect.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
-	%Logs.print_console("Tiled render complete, Total tiles rendered: " + str(tiles_x * tiles_y))
+	#%Logs.print_console("Tiled render complete, Total tiles rendered: " + str(tiles_x * tiles_y))
 	get_tree().current_scene.busy_rendering_tiles = false
 
 func _ready() -> void:
@@ -146,7 +145,6 @@ func _ready() -> void:
 			%SubViewport.refresh_taa()
 			},
 			{'name': 'reflection_bounces', 'type': 'int', 'from': 0, 'to': 6, 'default_value': 1},
-			{'name': 'bg_color', 'type': 'palette', 'offsets': [0.0], 'colors': [Color('#2e2e2e')]},
 		],
 		# Lighting / Background
 		19: [
@@ -298,7 +296,7 @@ func _ready() -> void:
 				%TextureRect.material.set_shader_parameter('display_tiled_render', false)
 			},
 			{'name': 'compute_tiles', 'type': 'bool', 'hidden': true, 'default_value': false, 'onchange_override': func(val: bool) -> void: 
-			compute_tiled_render()
+			if Engine.get_frames_drawn() != 0: compute_tiled_render()
 			},
 			{'name': 'tiles_x', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},
 			{'name': 'tiles_y', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},

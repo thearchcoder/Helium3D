@@ -469,7 +469,41 @@ void sphairahedron_iter(inout vec4 z4, inout float dr, vec4 original_z, float or
 	pos += PL3.p1;
 
 	if (inFund) escaped = true;
-	
+
 	z4.xyz = pos;
 	//return distInfSphairahedra(pos, s2, s4, s6, dividePlane_p1, dividePlane_normal) / abs(dr) * 0.25;
+}
+
+vec2 sphairahedron_sdf(vec4 z4) {
+	vec4 z = z4;
+	vec4 original_z = z;
+
+	float zb = fsphairahedron_zb;
+	float zc = fsphairahedron_zc;
+	vec4 s2 = getS2A(zb, zc);
+	vec4 s4 = getS4A(zb, zc);
+	vec4 s6 = getS6A(zb, zc);
+	vec4 inversionSphere = getInversionSphere(zb, zc);
+	vec4 g0 = computeGSpheres0(inversionSphere);
+	vec4 g1 = computeGSpheres1(inversionSphere, s2);
+	vec4 g2 = computeGSpheres2(inversionSphere);
+	vec4 g3 = computeGSpheres3(inversionSphere, s4);
+	vec4 g4 = computeGSpheres4(inversionSphere);
+	vec4 g5 = computeGSpheres5(inversionSphere, s6);
+	vec3 v0 = computeVertexes0(g0, g1, g2);
+	vec3 v1 = computeVertexes1(g0, g3, g4);
+	vec3 v2 = computeVertexes2(g2, g4, g5);
+	Plane dividePlane = computeDividePlane(inversionSphere, v0, v1, v2);
+	vec4 convexSphere = computeConvexSphere(inversionSphere, dividePlane);
+
+	float dz = 1.0;
+	float orbit = 100000.0;
+
+	for (int i = 0; i < iterations; i++) {
+		bool escaped = false;
+		sphairahedron_iter(z, dz, original_z, orbit, i, s2, s4, s6, dividePlane.normal, dividePlane.p1, escaped);
+		if (escaped) break;
+	}
+
+	return vec2(distInfSphairahedra(z.xyz, s2, s4, s6, dividePlane.p1, dividePlane.normal) / abs(dz) * 0.25, 0.0);
 }

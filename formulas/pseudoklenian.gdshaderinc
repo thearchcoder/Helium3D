@@ -5,15 +5,11 @@
 // [VARS]
 // vec4 min[(-2, -2, -2, -2), (2, 2, 2, 2)] = (-0.8323, -0.694, -0.5045, 2)
 // vec4 max[(-2, -2, -2, -2), (2, 2, 2, 2)] = (1, 1, 1, 1.316)
-// vec4 inversion_sphere[(-2, -2, -2, -2), (2, 2, 2, 2)] = (1.0, 1.0, 1.0, 1.0)
 // float sign[0.0, 0.2] = 0.0
 // float scale[1.0, 2.0] = 1.228
-// bool invert[false, true] = false
 // [CODE]
 uniform vec4 fpseudoklenian_min;
 uniform vec4 fpseudoklenian_max;
-uniform vec4 fpseudoklenian_inversion_sphere;
-uniform bool fpseudoklenian_invert;
 uniform float fpseudoklenian_sign;
 uniform float fpseudoklenian_scale;
 
@@ -27,7 +23,7 @@ void pseudoklenian_iter(inout vec4 z4, inout float dz, vec4 original_z, float or
 	float k1 = max(fpseudoklenian_min.w / rp2, 1.0);
 	q *= k1;
 	dz *= abs(k1);
-	
+
 	z4.xyz = q;
 }
 

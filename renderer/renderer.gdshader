@@ -80,21 +80,23 @@ uniform vec3 cut_normal = vec3(0.0, 1.0, 0.0);
 uniform vec3 cut_position = vec3(0.0, 0.0, 0.0);
 uniform bool sphere_inversion = false;
 uniform vec4 inversion_sphere = vec4(1.0, 1.0, 0.0, 1.0);
+uniform float inversion_angle = 0.0;
 uniform vec3 translation = vec3(0.0);
 uniform vec3 rotation = vec3(0.0);
 uniform vec3 kalaidoscope = vec3(1.0);
-// Performance
+// Tooling / Tiling
 uniform bool tiled = false;
 uniform int tiles_x = 4;
 uniform int tiles_y = 4;
-uniform int current_tile = 0; // first tile by default
+uniform int current_tile = 0;
 // Settings
 uniform bool transparent_bg = true;
-
 // Lighting / Background
 uniform int bg_type;
 uniform sampler2D bg_image;
 uniform sampler2D bg_color;
+// Other 
+uniform float number_of_active_formulas;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
@@ -135,6 +137,9 @@ vec2 scene_sdf(vec3 p) {
 	p -= translation;
 	p = rotate3d_point(p, rotation);
 
+	
+	vec3 original_p = p;
+	
 	if (sphere_inversion) {
 		p -= inversion_sphere.xyz;
 		d = length(p);
@@ -153,73 +158,73 @@ vec2 scene_sdf(vec3 p) {
 	float orbit = 100000.0;
 	float dz = 1.0;
 	float s = 1.2;
-
-	// sphairahedron precompute
-//float zb = fsphairahedron_zb;                                          //-@22
-//float zc = fsphairahedron_zc;                                          //-@22
-//vec4 s2 = getS2A(zb, zc);                                              //-@22
-//vec4 s4 = getS4A(zb, zc);                                              //-@22
-//vec4 s6 = getS6A(zb, zc);                                              //-@22
-//vec4 inversionSphere = getInversionSphere(zb, zc);                     //-@22
-//vec4 g0 = computeGSpheres0(inversionSphere);                           //-@22
-//vec4 g1 = computeGSpheres1(inversionSphere, s2);                       //-@22
-//vec4 g2 = computeGSpheres2(inversionSphere);                           //-@22
-//vec4 g3 = computeGSpheres3(inversionSphere, s4);                       //-@22
-//vec4 g4 = computeGSpheres4(inversionSphere);                           //-@22
-//vec4 g5 = computeGSpheres5(inversionSphere, s6);                       //-@22
-//vec3 v0 = computeVertexes0(g0, g1, g2);                                //-@22
-//vec3 v1 = computeVertexes1(g0, g3, g4);                                //-@22
-//vec3 v2 = computeVertexes2(g2, g4, g5);                                //-@22
-//Plane dividePlane = computeDividePlane(inversionSphere, v0, v1, v2);   //-@22
-//vec4 convexSphere = computeConvexSphere(inversionSphere, dividePlane); //-@22
-
-	// kleinian precompute
-	vec3 lz = z.xyz + vec3(1.0);
-	vec3 llz = z.xyz + vec3(-1.0);
-	float DF = 1.0;
-	float a = fklenian_x;
-	float b = fklenian_y;
-	float f = sign(b);
-
+	
+	bool using_klenian = false;
+	bool using_sphairahedron = false;
+	bool using_spheretree = false;
+	bool using_newton = false;
+	bool single_formula = false;
+	
+	vec3 previous_z = z.xyz;
+	
+	// Edited at runtime
 	for (int i = 0; i < iterations; i++) {
 		bool escaped = false;
-//mandelbulb_iter(z, dz, original_z, orbit, i);             //-@1
-//mandelbox_iter(z, dz, original_z, orbit, i);              //-@2
-//amazingsurf_iter(z, dz, original_z, orbit, i);            //-@3
-//bairddelta_iter(z, dz, original_z, orbit, i);             //-@4
-//sierpinskiicosahedron_iter(z, dz, original_z, orbit, i);  //-@5
-//sierpinskitetrahedron_iter(z, dz, original_z, orbit, i);  //-@6
-//mengersponge_iter(z, dz, original_z, orbit, i);           //-@7
-//sierpinskioctahedron_iter(z, dz, original_z, orbit, i);   //-@8
-//sierpinskidodecahedron_iter(z, dz, original_z, orbit, i); //-@9
-//pseudoklenian_iter(z, dz, original_z, orbit, i);          //-@10
-//klenian_iter(z, dz, original_z, orbit, i, DF, a, b, f, llz, lz, escaped); //-@11
-//spheretree_iter(z, dz, original_z, orbit, i, escaped);    //-@12
-//kaliredux_iter(z, dz, original_z, orbit, i);              //-@13
-//kochcube_iter(z, dz, original_z, orbit, i, s);            //-@14
-//quadratickoch_iter(z, dz, original_z, orbit, i);          //-@16
-//kaliliving_iter(z, dz, original_z, orbit, i);             //-@17
-//mixpinski4d_iter(z, dz, original_z, orbit, i);            //-@18
-//vicsek_iter(z, dz, original_z, orbit, i);                 //-@19
-//kochwire_iter(z, dz, original_z, orbit, i);               //-@20
-//kalibox_iter(z, dz, original_z, orbit, i);                //-@21
-//sphairahedron_iter(z, dz, original_z, orbit, i, s2, s4, s6, dividePlane.normal, dividePlane.p1, escaped); //-@22
-//lionbulb_iter(z, dz, original_z, orbit, i);               //-@23
-//jerusalemcube_iter(z, dz, original_z, orbit, i);          //-@24
+		int current_formula = formulas[int(mod(float(i), number_of_active_formulas))];
+//if (current_formula == 1) mandelbulb_iter(z, dz, original_z, orbit, i);             //-@1
+//if (current_formula == 2) mandelbox_iter(z, dz, original_z, orbit, i);              //-@2
+//if (current_formula == 3) amazingsurf_iter(z, dz, original_z, orbit, i);            //-@3
+//if (current_formula == 4) bairddelta_iter(z, dz, original_z, orbit, i);             //-@4
+//if (current_formula == 5) sierpinskiicosahedron_iter(z, dz, original_z, orbit, i);  //-@5
+//if (current_formula == 6) sierpinskitetrahedron_iter(z, dz, original_z, orbit, i);  //-@6
+//if (current_formula == 7) mengersponge_iter(z, dz, original_z, orbit, i);           //-@7
+//if (current_formula == 8) sierpinskioctahedron_iter(z, dz, original_z, orbit, i);   //-@8
+//if (current_formula == 9) sierpinskidodecahedron_iter(z, dz, original_z, orbit, i); //-@9
+//if (current_formula == 10) pseudoklenian_iter(z, dz, original_z, orbit, i);         //-@10
+//if (current_formula == 11) using_klenian = true;                                    //-@11
+//if (current_formula == 12) using_spheretree = true;                                 //-@12
+//if (current_formula == 13) kaliredux_iter(z, dz, original_z, orbit, i);             //-@13
+//if (current_formula == 14) kochcube_iter(z, dz, original_z, orbit, i, s);           //-@14
+//if (current_formula == 15) using_newton = true;                                     //-@15
+//if (current_formula == 16) quadratickoch_iter(z, dz, original_z, orbit, i);         //-@16
+//if (current_formula == 17) kaliliving_iter(z, dz, original_z, orbit, i);            //-@17
+//if (current_formula == 18) mixpinski4d_iter(z, dz, original_z, orbit, i);           //-@18
+//if (current_formula == 19) vicsek_iter(z, dz, original_z, orbit, i);                //-@19
+//if (current_formula == 20) kochwire_iter(z, dz, original_z, orbit, i);              //-@20
+//if (current_formula == 21) kalibox_iter(z, dz, original_z, orbit, i);               //-@21
+//if (current_formula == 22) using_sphairahedron = true;                              //-@22
+//if (current_formula == 23) lionbulb_iter(z, dz, original_z, orbit, i);              //-@23
+//if (current_formula == 24) jerusalemcube_iter(z, dz, original_z, orbit, i);         //-@24
 		orbit = min(orbit, process_orbit_trap4d(z, original_z, i));
 		if (length(z) > escape_radius || escaped) break;
 	}
 
 	float r = length(z);
-	float de;
+	float de = 0.0;
+	
+	if (formulas[1] <= 0) single_formula = true; // TODO: Use a better method
+	
+	if (de_mode == 0) de = r / dz;
+	else if (de_mode == 1) de = 0.5 * log(r) * r / dz;
+	else if (de_mode == 2) {
+		if (single_formula && formulas[0] == 14) de = r / dz;
+		else de = 0.5 * log(r) * r / dz;
+	}
 
-if (de_mode == 0) de = length(z) / dz;
-else if (de_mode == 1) de = 0.5 * log(r) * r / dz;
-//else if (de_mode == 2) de = distInfSphairahedra(z.xyz, s2, s4, s6, dividePlane.p1, dividePlane.normal) / abs(dz) * 0.25; //-@22
-//else if (de_mode == 3) de = min(fklenian_show_balls ? min(z.y, a - z.y) : z.y, 0.3) / max(DF, 2.0); //-@11
-
+if (single_formula) {
+//if (using_sphairahedron) de = sphairahedron_sdf(original_z).x; //-@22
+//if (using_spheretree) de = spheretree_sdf(original_z).x; //-@12
+//if (using_klenian) de = klenian_sdf(original_z).x; //-@11
+//if (using_newton) de = newton_sdf(original_z).x; //-@15
+} else {
+//if (using_sphairahedron) de = max(de, sphairahedron_sdf(original_z).x); //-@22
+//if (using_spheretree) de = max(de, spheretree_sdf(original_z).x); //-@12
+//if (using_klenian) de = max(de, klenian_sdf(original_z).x); //-@11
+//if (using_newton) de = max(de, newton_sdf(original_z).x); //-@15
+}
+	
+	if (cut) de = max(de, dot(original_p + cut_position, normalize(cut_normal)));
 	if (sphere_inversion) de = de * d2 / (inversion_sphere.w + d * de);
-	if (cut) de = max(de, dot(p + cut_position, normalize(cut_normal)));
 
 	return vec2(de, orbit).yx;
 }
@@ -233,15 +238,12 @@ vec3 ray_marcher(vec3 ro, vec3 rd) {
 
 	for (int i = 0; i < max_steps; i++) {
 		vec2 data = scene_sdf(ro + rd * dfo);
+		float calc_epsilon = relative_epsilon ? epsilon / 3.4 * dfo : epsilon;
 		float point_distance = data.y;
-		dfo += point_distance * raystep_multiplier;
+		dfo += max(point_distance * raystep_multiplier, calc_epsilon);
 		total_marches += 1.0;
 
-		float calc_epsilon = relative_epsilon ? epsilon / 3.4 * dfo : epsilon;
-		if (point_distance < 0.0) {
-			dfo += point_distance;
-			break;
-		} else if (point_distance < calc_epsilon || dfo > max_distance) {
+		if (point_distance < calc_epsilon || dfo > max_distance) {
 			orbit_trap_distance = data.x;
 			break;
 		};
@@ -429,6 +431,7 @@ void fragment() {
 	float error_margin = 1.0; // Controls the border thickness
 	vec3 ro = (inverse(MODEL_MATRIX) * vec4(CAMERA_POSITION_WORLD, 1.0)).xyz;
 	vec3 rd = normalize(vertex_ls - ro);
+	
 	#ifdef USING_TILING
 	if (tiled) {
 		float total_tiles = float(tiles_x * tiles_y);

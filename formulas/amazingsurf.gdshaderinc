@@ -5,14 +5,12 @@
 // [VARS]
 // vec3 c[(-2, -2, -2), (2, 2, 2)] = (-1, -2, 0)
 // vec3 rotation[(-2, -2, -2), (2, 2, 2)] = (2, -2, 1.6)
-// float fold_x[-1.0, 1.0] = 1.0
-// float fold_y[-1.0, 1.0] = 1.0
+// vec2 fold[(-1, -1), (1, 1)] = (1, 1)
 // float min_radius[0.0, 1.0] = 0.25
 // vec3 offset[(-2, -2, -2), (2, 2, 2)] = (0, 0, -0.5)
 // float scale[1.0, 3.0] = 1.5
 // [CODE]
-uniform float famazingsurf_fold_x;
-uniform float famazingsurf_fold_y;
+uniform vec2 famazingsurf_fold;
 uniform vec3 famazingsurf_rotation;
 uniform vec3 famazingsurf_offset;
 uniform vec3 famazingsurf_c;
@@ -24,7 +22,6 @@ void amazingsurf_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbi
 
 	if (i == 0) p.z = -p.z;
 
-	vec2 famazingsurf_fold = vec2(famazingsurf_fold_x, famazingsurf_fold_y);
 	float scale = famazingsurf_scale;
 
 	p.xy = famazingsurf_fold - abs(abs(p.xy) - famazingsurf_fold);

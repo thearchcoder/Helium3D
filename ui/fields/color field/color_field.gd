@@ -4,6 +4,7 @@ extends HBoxContainer
 	set(v):
 		value = v
 		$ColorPickerButton.color = v
+		value_changed.emit(v)
 
 signal value_changed(to: Color)
 

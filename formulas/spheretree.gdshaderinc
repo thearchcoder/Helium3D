@@ -12,7 +12,7 @@ void spheretree_iter(inout vec4 z4, inout float scale, vec4 original_z, float or
 	if (i == 0) {
 		p /= 3.0;
 		p.z += 0.5;
-		scale = 0.45;
+		scale = 1.0 / 0.45;
 	}
 
 	const float rad = 0.2;
@@ -87,12 +87,20 @@ void spheretree_iter(inout vec4 z4, inout float scale, vec4 original_z, float or
 	else if (l2 < l0 && l2 < l1) p -= t2 * (2.0 * dot(p, t2) + 1.0);
 	p.z = h;
 
-	if (i >= iterations - 14) {
-		//p.z -= 0.4;
-		//p = decreaseLength(p, 0.4);
-		//p = vec3(0.0);
-		//scale = 0.0;
+	z4.xyz = p;
+}
+
+vec2 spheretree_sdf(vec4 z4) {
+	vec4 z = z4;
+	vec4 original_z = z;
+	float dz = 1.0;
+	float orbit = 100000.0;
+
+	for (int i = 0; i < iterations; i++) {
+		bool escaped = false;
+		spheretree_iter(z, dz, original_z, orbit, i, escaped);
+		if (escaped) break;
 	}
 
-	z4.xyz = p;
+	return vec2((length(z.xyz - vec3(0.0, 0.0, 0.4)) - 0.4) / dz, 0.0);
 }

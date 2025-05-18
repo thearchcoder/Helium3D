@@ -32,18 +32,24 @@ func _ready() -> void:
 	set_formula('mandelbulb', 1)
 
 func field_changed(field_name: String, value: Variant) -> void:
-	if value is EncodedObjectAsID:
-		value = instance_from_id(value.object_id)
+	get_tree().current_scene.fields[field_name] = value
 	
-	if value is Gradient:
-		var texture: GradientTexture1D = GradientTexture1D.new()
-		texture.gradient = value.duplicate(true)
-		value = texture
+	if value is Dictionary and (value as Dictionary).has('special_field'):
+		if value['type'] == 'image':
+			if ResourceLoader.exists(value['path']):
+				value = load(value['path'])
+			else:
+				value = null
+		elif value['type'] == 'palette':
+			var gradient: Gradient = Gradient.new()
+			gradient.offsets = value['offsets']
+			gradient.colors = value['colors']
+			gradient.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CONSTANT if not value['is_blurry'] else Gradient.GRADIENT_INTERPOLATE_CUBIC
+			value = GradientTexture1D.new()
+			value.gradient = gradient
 	
 	%Fractal.material_override.set_shader_parameter(field_name, value)
-	
 	%SubViewport.refresh_taa()
-	get_tree().current_scene.fields[field_name] = value
 
 func set_formula(formula_name: String, for_page: int) -> void:
 	current_formulas[for_page - 1] = $Formula/TabContainer/Formula1/Fields/HBoxContainer/Values/Formulas.options.find(formula_name)
@@ -100,12 +106,7 @@ func update_field_values(new_fields: Dictionary) -> void:
 				target_value_node.emit_signal('value_changed', target_value_node.options[target_value_node.index])
 			continue
 		
-		if not target_value_node.has_method('i_am_a_selection_field') and not target_value_node.has_method('i_am_a_palette_field'):
+		if not target_value_node.has_method('i_am_a_selection_field'):
 			target_value_node.value = field_val
-		elif target_value_node.has_method('i_am_a_palette_field'):
-			if field_val is GradientTexture1D:
-				target_value_node.set_value(PackedFloat32Array(field_val.gradient.offsets), PackedColorArray(field_val.gradient.colors))
-			else:
-				target_value_node.set_value(PackedFloat32Array(field_val.offsets), PackedColorArray(field_val.colors))
 		else:
-			target_value_node.index = field_val - 1
+			target_value_node.index = field_val

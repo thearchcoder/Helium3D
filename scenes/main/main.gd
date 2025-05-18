@@ -10,7 +10,7 @@ var PATCH := VERSION.split('.')[2].split('-')[0]
 @onready var HELIUM3D_PATH: String = OS.get_environment("HOME") + "/.hlm"
 var taa_samples: int = 2
 var fields: Dictionary = {}
-var other_fields: Array = ['total_visible_formula_pages', 'player_position', 'head_rotation', 'camera_rotation', 'gradienttexture1ds']
+var other_fields: Array = ['total_visible_formula_pages', 'player_position', 'head_rotation', 'camera_rotation']
 var formulas: Array[Dictionary] = []
 var using_dof: bool = false
 var using_tiling: bool = false
@@ -23,6 +23,29 @@ func _ready() -> void:
 	var dir := DirAccess.open("res://")
 	if not dir.dir_exists(HELIUM3D_PATH):
 		dir.make_dir(HELIUM3D_PATH)
+
+func compute_voxels() -> void:
+	for i in range(50):
+		await get_tree().process_frame
+		%Camera.global_position.z += 0.01
+		%SubViewport.refresh_taa()
+		var mesh_slice_data: Image = (%SubViewport.get_texture() as ViewportTexture).get_image()
+		mesh_slice_data.save_png(get_tree().current_scene.HELIUM3D_PATH + '/voxelexport/slice_' + str(i) + '.png')
+
+func get_app_state() -> Dictionary:
+	var data: Dictionary = fields.duplicate(true)
+	var other_data: Dictionary = {}
+	
+	other_data["app_version"] = get_tree().current_scene.VERSION
+	other_data["total_visible_formula_pages"] = %TabContainer.total_visible_formulas
+	other_data["player_position"] = %Player.global_position
+	other_data["head_rotation"] = %Player.get_node("Head").global_rotation_degrees
+	other_data["camera_rotation"] = %Player.get_node("Head/Camera").global_rotation_degrees
+	other_data["keyframes"] = %AnimationTrack.keyframes
+	
+	data["other"] = other_data
+	
+	return data
 
 func initialize_formulas(path_to_formulas: String) -> void:
 	if formulas != []:
@@ -87,7 +110,7 @@ func parse_data(data: String) -> Dictionary:
 				"to": to_val,
 				"default_value": float(default_value) if "." in default_value else int(default_value)
 			}
-		elif var_type == "vec3" or var_type == "vec4":
+		elif var_type == "vec3" or var_type == "vec4" or var_type == "vec2":
 			var vec_parts: Array = values.trim_prefix("(").trim_suffix(")").split("), (")
 			var from_vec: Array = vec_parts[0].split(", ")
 			var to_vec: Array = vec_parts[1].split(", ")
@@ -100,12 +123,19 @@ func parse_data(data: String) -> Dictionary:
 					"to": Vector3(float(to_vec[0]), float(to_vec[1]), float(to_vec[2])),
 					"default_value": Vector3(float(default_vec[0]), float(default_vec[1]), float(default_vec[2]))
 				}
-			elif var_type == 'vec4': # vec4
+			elif var_type == 'vec4':
 				variables[var_name] = {
 					"type": "vec4",
 					"from": Vector4(float(from_vec[0]), float(from_vec[1]), float(from_vec[2]), float(from_vec[3])),
 					"to": Vector4(float(to_vec[0]), float(to_vec[1]), float(to_vec[2]), float(to_vec[3])),
 					"default_value": Vector4(float(default_vec[0]), float(default_vec[1]), float(default_vec[2]), float(default_vec[3]))
+				}
+			elif var_type == 'vec2':
+				variables[var_name] = {
+					"type": "vec2",
+					"from": Vector2(float(from_vec[0]), float(from_vec[1])),
+					"to": Vector2(float(to_vec[0]), float(to_vec[1])),
+					"default_value": Vector2(float(default_vec[0]), float(default_vec[1])),
 				}
 		elif var_type == "bool": # bool
 			variables[var_name] = {
@@ -121,47 +151,40 @@ func update_fields(new_fields: Dictionary) -> void:
 	for field_name in (new_fields.keys() as Array[String]):
 		var field_val: Variant = new_fields[field_name]
 		
-		if field_val is Gradient:
-			var gradient_texture: GradientTexture1D = GradientTexture1D.new()
-			gradient_texture.gradient = field_val
-			field_val = gradient_texture
+		if field_val is EncodedObjectAsID:
+			field_val = instance_from_id(field_val.object_id)
 		
 		if field_val is Color:
 			field_val = Vector3(field_val.r, field_val.g, field_val.b)
 		
+		if field_val is Dictionary and (field_val as Dictionary).has('special_field'):
+			if field_val['type'] == 'image':
+				if ResourceLoader.exists(field_val['path']):
+					field_val = load(field_val['path'])
+				else:
+					field_val = null
+			elif field_val['type'] == 'palette':
+				var gradient: Gradient = Gradient.new()
+				gradient.offsets = field_val['offsets']
+				gradient.colors = field_val['colors']
+				gradient.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CONSTANT if not field_val['is_blurry'] else Gradient.GRADIENT_INTERPOLATE_CUBIC
+				field_val = GradientTexture1D.new()
+				field_val.gradient = gradient
+		
 		%Fractal.material_override.set_shader_parameter(field_name, field_val)
 	
-	%TabContainer.update_field_values(fields)
+	%TabContainer.update_field_values(fields) # Update node values as well
 
 func update_app_state(data: Dictionary, update_app_fields: bool = true, use_lerp: bool = false, update_keyframes: bool = true, delta_multiplier: float = 1.0, use_fast_diff: bool = false) -> void:
 	var old_data: Dictionary = data.duplicate(true)
 	data = data.duplicate(true)
 	
 	if 'other' not in data:
-		data['other'] = {"keyframes": data.get("keyframes", {}), 'total_visible_formula_pages': data['total_visible_formula_pages'], 'player_position': data['player_position'], 'head_rotation': data['head_rotation'], 'camera_rotation': data['camera_rotation'], 'gradienttexture1ds': data['gradienttexture1ds']}
+		data['other'] = {"keyframes": data.get("keyframes", {}), 'total_visible_formula_pages': data['total_visible_formula_pages'], 'player_position': data['player_position'], 'head_rotation': data['head_rotation'], 'camera_rotation': data['camera_rotation']}
 		for other_field_name in (data['other'].keys() as Array[String]):
 			data.erase(other_field_name)
 	
 	var other_data: Dictionary = data['other']
-	
-	if other_data.get('gradienttexture1ds', {}):
-		data['gradienttexture1ds'] = other_data['gradienttexture1ds'].duplicate(true)
-		other_data.erase('gradienttexture1ds')
-	
-	if data.has("gradienttexture1ds"):
-		var gradient_data: Dictionary = data["gradienttexture1ds"].duplicate(true)
-		
-		for key in (gradient_data.keys() as Array[String]):
-			var gradient_info: Dictionary = gradient_data[key]
-			
-			var gradient: Gradient = Gradient.new()
-			gradient.offsets = gradient_info["offsets"]
-			gradient.colors = gradient_info["colors"]
-			
-			data[key] = gradient
-		
-		data.erase("gradienttexture1ds")
-	
 	var delta: float = get_process_delta_time() * delta_multiplier
 	var player: Node = %Player
 	var head: Node = %Player.get_node('Head')
@@ -265,18 +288,17 @@ func get_usable_formulas() -> Array[int]:
 	var lines: Array = shader_code.split("\n")
 	
 	for line in (lines as Array[String]):
-		# Regular expression to check if line ends with -@ followed by one or more digits
 		var regex := RegEx.new()
 		regex.compile("-@(\\d+)$")
 		var result := regex.search(line)
 		
 		if result:
-			var formula_id := result.get_string(1)  # Extract the digits after -@
-			list.append(int(formula_id))  # Convert to integer and add to list
+			var formula_id := result.get_string(1)
+			list.append(int(formula_id))
 	
 	return list
 
-# Shortcuts.
+# Shortcuts
 func _input(event: InputEvent) -> void:
 	# Animation button shortcuts
 	if %TextureRect.is_holding:

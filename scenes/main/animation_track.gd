@@ -148,17 +148,6 @@ func insert_keyframe(at_second: float) -> void:
 	data.merge({'total_visible_formula_pages': %TabContainer.total_visible_formulas, 'player_position': %Player.global_position, 'head_rotation': %Player.get_node('Head').global_rotation_degrees, 'camera_rotation': %Player.get_node('Head/Camera').global_rotation_degrees}, true)
 	data['keyframe_texture'] = ImageTexture.create_from_image(%SubViewport.get_texture().get_image())
 	
-	data["gradienttexture1ds"] = {}
-	for key in (data.keys() as Array[String]):
-		if data[key] is GradientTexture1D:
-			var gradient_texture: GradientTexture1D = data[key] as GradientTexture1D
-			if gradient_texture.gradient:
-				data["gradienttexture1ds"][key] = {
-					"offsets": gradient_texture.gradient.offsets,
-					"colors": gradient_texture.gradient.colors
-				}
-			data.erase(key)
-	
 	keyframes[at_second] = data.duplicate(true)
 	reload_keyframes()
 

@@ -45,7 +45,6 @@ offset_right = 0.849976
 offset_bottom = 0.439999
 theme_override_constants/separation = 0
 script = ExtResource("2_560la")
-offsets = PackedFloat32Array()
 
 [node name="MarginContainer" type="MarginContainer" parent="." index="0"]
 layout_mode = 2

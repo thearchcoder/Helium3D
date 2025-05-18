@@ -1,10 +1,5 @@
 extends SubViewport
 
-# scaling template fast: 0.55, 0.8
-# scaling template medium: 0.7, 1.0
-# scaling template heavy: 0.9, 1.5
-# scaling template responsive: 0.45, 0.9
-
 enum AntiAliasing { TAA, FXAA, NONE }
 
 var antialiasing := AntiAliasing.TAA
@@ -27,13 +22,6 @@ func _ready() -> void:
 	since_last_dynamic_update = 0.0
 	since_last_dynamic_update_frame = 0
 	set_antialiasing(antialiasing)
-	#var black_texture: ImageTexture
-	#var image := Image.new()
-	#image.create(1, 1, false, Image.FORMAT_RGB8)
-	#image.fill(Color(0, 0.0, 0))  # Fill with black color
-	#black_texture = ImageTexture.create_from_image(image)
-#
-	#%Fractal.material_override.set_shader_parameter('previous_frame', black_texture)
 
 func set_antialiasing(target_aa: AntiAliasing) -> void:
 	antialiasing = target_aa

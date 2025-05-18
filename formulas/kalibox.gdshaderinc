@@ -16,7 +16,7 @@ void kalibox_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, i
 	vec3 z = z4.xyz;
 	float scale = fkalibox_scale;
 	float MinR = 0.0;
-	
+
 	z = fkalibox_offset1 - abs(z);
 	float rr = dot(z, z);
 	float dividend = rr < MinR ? MinR : min(rr, 1.0);

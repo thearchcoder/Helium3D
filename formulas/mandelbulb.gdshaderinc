@@ -37,11 +37,11 @@ void mandelbulb_iter(inout vec4 z, inout float dz, vec4 original_z, float orbit,
 		if (fmandelbulb_number_system == 0) z.xyz = triplex_conj(z.xyz).xyz;
 		else z = quaternion_conj(z); // I assume bicomplex_conj(b) == quaternion_conj(q), no?
 	}
-	
+
 	if (fmandelbulb_number_system == 0) z.xyz = triplex_pow(z.xyz, power, fmandelbulb_phase) + c.xyz;
 	if (fmandelbulb_number_system == 1) z = quaternion_pow(z, power, fmandelbulb_phase, fmandelbulb_quaternion_mode) + c;
 	if (fmandelbulb_number_system == 2) z = bicomplex_pow(z, power) + c;
-	
+
 	if (fmandelbulb_abs_x) z.x = abs(z.x);
 	if (fmandelbulb_abs_y) z.y = abs(z.y);
 	if (fmandelbulb_abs_z) z.z = abs(z.z);

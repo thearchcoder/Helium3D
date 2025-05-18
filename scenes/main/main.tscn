@@ -84,6 +84,7 @@ shader_parameter/cut_normal = Vector3(0, 1, 0)
 shader_parameter/cut_position = Vector3(0, 0, 0)
 shader_parameter/sphere_inversion = false
 shader_parameter/inversion_sphere = Vector4(1, 1, 0, 1)
+shader_parameter/inversion_angle = 0.0
 shader_parameter/translation = Vector3(0, 0, 0)
 shader_parameter/rotation = Vector3(0, 0, 0)
 shader_parameter/kalaidoscope = Vector3(1, 1, 1)
@@ -93,6 +94,7 @@ shader_parameter/tiles_y = 4
 shader_parameter/current_tile = 0
 shader_parameter/transparent_bg = true
 shader_parameter/bg_type = null
+shader_parameter/number_of_active_formulas = null
 shader_parameter/fmandelbulb_is_julia = null
 shader_parameter/fmandelbulb_conjugate = null
 shader_parameter/fmandelbulb_abs_x = null
@@ -146,12 +148,9 @@ shader_parameter/fmengersponge_offset = null
 shader_parameter/fmengersponge_scale = null
 shader_parameter/fpseudoklenian_min = null
 shader_parameter/fpseudoklenian_max = null
-shader_parameter/fpseudoklenian_inversion_sphere = null
-shader_parameter/fpseudoklenian_invert = null
 shader_parameter/fpseudoklenian_sign = null
 shader_parameter/fpseudoklenian_scale = null
-shader_parameter/famazingsurf_fold_x = null
-shader_parameter/famazingsurf_fold_y = null
+shader_parameter/famazingsurf_fold = null
 shader_parameter/famazingsurf_rotation = null
 shader_parameter/famazingsurf_offset = null
 shader_parameter/famazingsurf_c = null
@@ -174,8 +173,8 @@ shader_parameter/fbairddelta_scale = null
 shader_parameter/fbairddelta_rotation1 = null
 shader_parameter/fbairddelta_rotation2 = null
 shader_parameter/fklenian_show_balls = null
-shader_parameter/fklenian_x = 1.8
-shader_parameter/fklenian_y = 1.8
+shader_parameter/fklenian_x = null
+shader_parameter/fklenian_y = null
 shader_parameter/fklenian_box_size_x = 1.0
 shader_parameter/fklenian_box_size_z = 1.0
 shader_parameter/fspheretree_symmetry = null
@@ -189,8 +188,6 @@ shader_parameter/fkaliliving_c = null
 shader_parameter/fkaliliving_rotation1 = null
 shader_parameter/fkaliliving_rotation2 = null
 shader_parameter/fkaliliving_scale = null
-shader_parameter/fnewton_epsilon = null
-shader_parameter/fnewton_relax = null
 shader_parameter/fnewton_plane = null
 shader_parameter/fnewton_intersection_mode = null
 shader_parameter/fnewton_pole1 = null
@@ -227,6 +224,10 @@ shader_parameter/flionbulb_power = null
 shader_parameter/flionbulb_c = null
 shader_parameter/flionbulb_phase = null
 shader_parameter/flionbulb_coral = null
+shader_parameter/fjerusalemcube_scale = null
+shader_parameter/fjerusalemcube_offset = null
+shader_parameter/fjerusalemcube_abs_add = null
+shader_parameter/fjerusalemcube_abs_minus = null
 shader_parameter/reflection_intensity = 1.0
 shader_parameter/reflection_bounces = 1
 
@@ -728,7 +729,7 @@ layout_mode = 2
 fields_list_id = 17
 metadata/_tab_index = 2
 
-[node name="Performance" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
+[node name="Tools" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 10
@@ -737,17 +738,17 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 metadata/_tab_index = 4
 
-[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Performance"]
+[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Tools"]
 layout_mode = 2
 theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_5by50")
 current_tab = 0
 
-[node name="Upscaling" parent="UI/HBoxContainer/TabContainer/Performance/TabContainer" instance=ExtResource("19_l42h1")]
+[node name="Upscaling" parent="UI/HBoxContainer/TabContainer/Tools/TabContainer" instance=ExtResource("19_l42h1")]
 layout_mode = 2
 fields_list_id = 12
 metadata/_tab_index = 0
 
-[node name="Tiling" parent="UI/HBoxContainer/TabContainer/Performance/TabContainer" instance=ExtResource("19_l42h1")]
+[node name="Tiling" parent="UI/HBoxContainer/TabContainer/Tools/TabContainer" instance=ExtResource("19_l42h1")]
 visible = false
 layout_mode = 2
 fields_list_id = 14

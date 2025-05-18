@@ -1,6 +1,6 @@
 extends MarginContainer
 
-enum FieldTypes { SELECTION, INT, FLOAT, VEC3, VEC4, BOOL }
+enum FieldTypes { SELECTION, INT, FLOAT, VEC2, VEC3, VEC4, BOOL }
 
 @export var fields_list_id: int = 1
 @export var light_id: int = 1  # only if fields_list_id is 7
@@ -9,6 +9,7 @@ var fields: Array = []
 const FONT = preload('res://resources/font/Rubik-SemiBold.ttf')
 const FLOAT_FIELD_SCENE = preload('res://ui/fields/float field/float_field.tscn')
 const INT_FIELD_SCENE = preload('res://ui/fields/int field/int_field.tscn')
+const VECTOR2_FIELD_SCENE = preload('res://ui/fields/vec2 field/vec2_field.tscn')
 const VECTOR3_FIELD_SCENE = preload('res://ui/fields/vec3 field/vec3_field.tscn')
 const VECTOR4_FIELD_SCENE = preload('res://ui/fields/vec4 field/vec4_field.tscn')
 const SELECTION_FIELD_SCENE = preload('res://ui/fields/selection field/selection_field.tscn')
@@ -149,7 +150,7 @@ func _ready() -> void:
 		# Lighting / Background
 		19: [
 			{'name': 'bg_type', 'type': 'selection', 'values': ['Color', 'Image'], 'default_value': 'Color'},
-			{'name': 'bg_color', 'type': 'palette', 'offsets': [0.0], 'colors': [Color('#2e2e2e')]},
+			{'name': 'bg_color', 'type': 'palette', 'default_value': {'special_field': true, 'type': 'palette', 'is_blurry': false, 'offsets': PackedFloat32Array([0.0]), 'colors': PackedColorArray([Color('#2e2e2e')])}},
 			{'name': 'bg_image', 'type': 'image', 'default_value': null},
 			{'name': 'transparent_bg', 'type': 'bool', 'default_value': false, 'onchange_override': func(value: bool) -> void: 
 				%SubViewport.transparent_bg = value
@@ -158,7 +159,7 @@ func _ready() -> void:
 		],
 		# Lighting / Material
 		15: [
-			{'name': 'palette', 'type': 'palette', 'offsets': [0.0], 'colors': [Color('#cccccc')]},
+			{'name': 'palette', 'type': 'palette', 'default_value': {'special_field': true, 'type': 'palette', 'is_blurry': false, 'offsets': PackedFloat32Array([0.0]), 'colors': PackedColorArray([Color('cccccc')])}},
 			{'name': 'color_offset', 'type': 'float', 'from': 0, 'to': 2, 'default_value': 0},
 			{'name': 'color_min_iterations', 'type': 'int', 'from': 0, 'to': 100, 'default_value': 0},
 			{'name': 'color_max_iterations', 'type': 'int', 'from': 0, 'to': 100, 'default_value': 30},
@@ -278,14 +279,14 @@ func _ready() -> void:
 			{'name': 'raystep_multiplier', 'type': 'float', 'from': 0.01, 'to': 6.0, 'default_value': 1.0},
 			{'name': 'epsilon', 'type': 'float', 'from': 0.0000001, 'to': 0.01, 'default_value': 0.001},
 			{'name': 'relative_epsilon', 'type': 'bool', 'default_value': true},
-			{'name': 'de_mode', 'type': 'selection', 'values': ['LinearDE', 'LogDE', 'SphairahedronDE', 'KlenianDE'], 'default_value': 'LogDE'},
+			{'name': 'de_mode', 'type': 'selection', 'values': ['LinearDE', 'LogDE', 'Automatic'], 'default_value': 'Automatic'},
 		],
-		# Performance / Upscaling
+		# Tools / Upscaling
 		12: [
 			{'name': 'sharpness', 'type': 'float', 'from': 0.0, 'to': 3.0, 'default_value': 0.0, 'onchange_override': func(val: float) -> void: %TextureRect.material.set_shader_parameter('sharpness', val)},
 			{'name': 'upscaling_factor', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 1.0, 'onchange_override': func(val: float) -> void: %SubViewport.set_upscaling_factor(val)},
 		],
-		# Performance / Tiling
+		# Tools / Tiling
 		14: [
 			{'name': 'tiled', 'type': 'bool', 'default_value': false, 'onchange_override': func(val: bool) -> void: 
 			%Fractal.material_override.set_shader_parameter('tiled', val)
@@ -301,7 +302,7 @@ func _ready() -> void:
 			{'name': 'tiles_x', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},
 			{'name': 'tiles_y', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},
 			{'name': 'current_tile', 'type': 'int', 'from': 0, 'to': 40, 'default_value': 0},
-		],
+		]
 	}
 	fields = ALL_FIELD_CONTAINER_FIELDS[fields_list_id]
 	update_fields_ui()
@@ -339,13 +340,20 @@ func update_fields_ui() -> void:
 			%Values.add_child(value_node)
 		elif variable_data['type'] == 'palette':
 			value_node = PALETTE_FIELD_SCENE.instantiate()
-			#value_node.value = variable_data['default_value']
+			value_node.value = variable_data['default_value']
 			value_node.name = variable_name.to_pascal_case()
 			value_node.connect('value_changed', variable_data.get('onchange_override', func(to: Variant) -> void: field_changed(uniform_name, to)))
 			%Values.add_child(value_node)
-			value_node.set_value(PackedFloat32Array(variable_data['offsets']), PackedColorArray(variable_data['colors']))
 		elif variable_data['type'] == 'vec3':
 			value_node = VECTOR3_FIELD_SCENE.instantiate()
+			value_node.range_min = variable_data['from']
+			value_node.range_max = variable_data['to']
+			value_node.value = variable_data['default_value']
+			value_node.name = variable_name.to_pascal_case()
+			value_node.connect('value_changed', variable_data.get('onchange_override', func(to: Variant) -> void: field_changed(uniform_name, to)))
+			%Values.add_child(value_node)
+		elif variable_data['type'] == 'vec2':
+			value_node = VECTOR2_FIELD_SCENE.instantiate()
 			value_node.range_min = variable_data['from']
 			value_node.range_max = variable_data['to']
 			value_node.value = variable_data['default_value']

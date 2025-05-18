@@ -6,6 +6,7 @@ var FORMULAS: Array[String] = []
 const FONT = preload('res://resources/font/Rubik-SemiBold.ttf')
 const FLOAT_FIELD_SCENE = preload('res://ui/fields/float field/float_field.tscn')
 const INT_FIELD_SCENE = preload('res://ui/fields/int field/int_field.tscn')
+const VECTOR2_FIELD_SCENE = preload('res://ui/fields/vec2 field/vec2_field.tscn')
 const VECTOR3_FIELD_SCENE = preload('res://ui/fields/vec3 field/vec3_field.tscn')
 const VECTOR4_FIELD_SCENE = preload('res://ui/fields/vec4 field/vec4_field.tscn')
 const SELECTION_FIELD_SCENE = preload('res://ui/fields/selection field/selection_field.tscn')
@@ -45,6 +46,14 @@ func initialize_formulas() -> void:
 				value_node.value = variable_data['default_value']
 				value_node.name = 'F' + formula['id'] + variable_name.to_pascal_case()
 				value_node.connect('value_changed', func(to: int) -> void: field_changed(uniform_name, to))
+				parent.add_child(value_node)
+			elif variable_data['type'] == 'vec2':
+				var value_node: Control = VECTOR2_FIELD_SCENE.instantiate()
+				value_node.range_min = variable_data['from']
+				value_node.range_max = variable_data['to']
+				value_node.value = variable_data['default_value']
+				value_node.name = 'F' + formula['id'] + variable_name.to_pascal_case()
+				value_node.connect('value_changed', func(to: Vector2) -> void: field_changed(uniform_name, to))
 				parent.add_child(value_node)
 			elif variable_data['type'] == 'vec3':
 				var value_node: Control = VECTOR3_FIELD_SCENE.instantiate()

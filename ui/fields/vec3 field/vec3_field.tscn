@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://blr2moe2ukfi4"]
 
 [ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_n31c4"]
-[ext_resource type="Script" path="res://ui/fields/vec3 field/vec_3_field.gd" id="2_axr7v"]
+[ext_resource type="Script" uid="uid://4u53lbxi4e4g" path="res://ui/fields/vec3 field/vec_3_field.gd" id="2_axr7v"]
 [ext_resource type="PackedScene" uid="uid://btv7ewx22x217" path="res://ui/fields/float field/float_field.tscn" id="2_j3xdo"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="2_qhts5"]
 

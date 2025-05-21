@@ -47,7 +47,7 @@ func update_animation_frames_data() -> void:
 	
 	var fps: int = 60
 	
-	var required_fields: Array[String] = ["keyframes", "total_visible_formula_pages", "player_position", "head_rotation", "camera_rotation"]
+	var required_fields: Array[String] = ["formulas", "keyframes", "total_visible_formula_pages", "player_position", "head_rotation", "camera_rotation"]
 	
 	var all_field_names: Array[String] = []
 	for time in (sorted_keyframes as Array[float]):

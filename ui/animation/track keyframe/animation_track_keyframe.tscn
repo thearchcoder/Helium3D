@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://042d7r7leq2o"]
 
-[ext_resource type="Script" path="res://ui/animation/track keyframe/animation_track_keyframe.gd" id="1_baysd"]
+[ext_resource type="Script" uid="uid://d3qm51fsyyltd" path="res://ui/animation/track keyframe/animation_track_keyframe.gd" id="1_baysd"]
 
 [sub_resource type="Gradient" id="Gradient_qr2ox"]
 

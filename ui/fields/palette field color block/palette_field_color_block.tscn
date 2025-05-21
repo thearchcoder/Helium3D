@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dv5u2gutb4uqn"]
 
-[ext_resource type="Script" path="res://ui/fields/palette field color block/palette_field_color_block.gd" id="1_skj65"]
+[ext_resource type="Script" uid="uid://dj4y17t2ma0ei" path="res://ui/fields/palette field color block/palette_field_color_block.gd" id="1_skj65"]
 [ext_resource type="Texture2D" uid="uid://em4me5v5s48x" path="res://resources/icons/circle.svg" id="2_74ubm"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c12m0"]

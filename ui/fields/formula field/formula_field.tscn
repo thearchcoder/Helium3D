@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_idpb3"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="2_788kb"]
-[ext_resource type="Script" path="res://ui/fields/formula field/formula_field.gd" id="2_t45rt"]
+[ext_resource type="Script" uid="uid://dpq6x78nkhf10" path="res://ui/fields/formula field/formula_field.gd" id="2_t45rt"]
 [ext_resource type="PackedScene" uid="uid://caa5e0qf2jkom" path="res://ui/formula search menu/formula_search_menu.tscn" id="4_7tgqj"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4o5ok"]

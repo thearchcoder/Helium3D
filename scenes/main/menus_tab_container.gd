@@ -96,11 +96,8 @@ func update_field_values(new_fields: Dictionary) -> void:
 		var target_value_node: Control = search_result[0]
 		
 		if field_name == 'formulas':
-			for current_page_number in range(1, 10 + 1):
-				if current_page_number >= 5:
-					continue
-				
-				target_value_node = value_nodes.filter(func(x: Control) -> bool: return x.name.to_snake_case() == field_name.to_snake_case() and x.get_parent().get_parent().get_parent().get_parent().page_number == current_page_number)[0]
+			for current_page_number in range(1, 5 + 1):
+				target_value_node = value_nodes.filter(func(x: Control) -> bool: return x.name.to_snake_case() == field_name.to_snake_case() and x.get_node('../../../..').page_number == current_page_number)[0]
 				
 				target_value_node.index = field_val[current_page_number - 1]
 				target_value_node.emit_signal('value_changed', target_value_node.options[target_value_node.index])

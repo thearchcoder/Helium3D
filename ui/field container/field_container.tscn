@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://owbf3siulolw"]
 
-[ext_resource type="Script" path="res://ui/field container/field_container.gd" id="1_jrlfu"]
+[ext_resource type="Script" uid="uid://bdpxx7gxw0lbj" path="res://ui/field container/field_container.gd" id="1_jrlfu"]
 
 [node name="FieldContainer" type="MarginContainer"]
 anchors_preset = -1

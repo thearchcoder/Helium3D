@@ -12,6 +12,43 @@ const VECTOR4_FIELD_SCENE = preload('res://ui/fields/vec4 field/vec4_field.tscn'
 const SELECTION_FIELD_SCENE = preload('res://ui/fields/selection field/selection_field.tscn')
 const BOOLEAN_FIELD_SCENE = preload('res://ui/fields/boolean field/boolean_field.tscn')
 
+func set_difficulty(difficulty: String) -> void:
+	# horrifying code below.
+	
+	if difficulty == 'advanced':
+		for value_container_node in $Fields/HBoxContainer/Values.get_children():
+			if value_container_node.name != 'Formulas':
+				
+				for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
+					if formula['id'].replace(' ', '') == value_container_node.name.trim_prefix('F'):
+						for value_node in value_container_node.get_children():
+							var snakecase_name: String = value_node.get_meta('snake_case_name', 'null')
+							var name_node: Control = $Fields/HBoxContainer/Names.get_node(NodePath(value_node.get_parent().name)).get_node(NodePath(value_node.name))
+							
+							if formula['variables'][snakecase_name]['difficulty'] == 'simple':
+								value_node.visible = false
+								name_node.visible = false
+							elif formula['variables'][snakecase_name]['difficulty'] == 'advanced':
+								value_node.visible = true
+								name_node.visible = true
+	if difficulty == 'simple':
+		for value_container_node in $Fields/HBoxContainer/Values.get_children():
+			if value_container_node.name != 'Formulas':
+				
+				for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
+					if formula['id'].replace(' ', '') == value_container_node.name.trim_prefix('F'):
+						for value_node in value_container_node.get_children():
+							var snakecase_name: String = value_node.get_meta('snake_case_name', 'null')
+							var name_node: Control = $Fields/HBoxContainer/Names.get_node(NodePath(value_node.get_parent().name)).get_node(NodePath(value_node.name))
+							
+							if formula['variables'][snakecase_name]['difficulty'] == 'advanced':
+								value_node.visible = false
+								name_node.visible = false
+							elif formula['variables'][snakecase_name]['difficulty'] == 'simple':
+								value_node.visible = true
+								name_node.visible = true
+							
+
 func initialize_formulas() -> void:
 	get_tree().current_scene.initialize_formulas('res://formulas/')
 	
@@ -32,23 +69,24 @@ func initialize_formulas() -> void:
 			var variable_data: Dictionary = variables[variable_name]
 			var parent: Control = $Fields/HBoxContainer/Values.get_node('F' + formula['id'].replace(' ', ''))
 			var uniform_name: String = 'f' + formula['id'] + '_' + variable_name
+			var value_node: Control
 			
 			if variable_data['type'] == 'float':
-				var value_node: Control = FLOAT_FIELD_SCENE.instantiate()
+				value_node = FLOAT_FIELD_SCENE.instantiate()
 				value_node.range = Vector2(variable_data['from'], variable_data['to'])
 				value_node.value = variable_data['default_value']
 				value_node.name = 'F' + formula['id'] + variable_name.to_pascal_case()
 				value_node.connect('value_changed', func(to: float) -> void: field_changed(uniform_name, to))
 				parent.add_child(value_node)
 			elif variable_data['type'] == 'int':
-				var value_node: Control = INT_FIELD_SCENE.instantiate()
+				value_node = INT_FIELD_SCENE.instantiate()
 				value_node.range = Vector2(variable_data['from'], variable_data['to'])
 				value_node.value = variable_data['default_value']
 				value_node.name = 'F' + formula['id'] + variable_name.to_pascal_case()
 				value_node.connect('value_changed', func(to: int) -> void: field_changed(uniform_name, to))
 				parent.add_child(value_node)
 			elif variable_data['type'] == 'vec2':
-				var value_node: Control = VECTOR2_FIELD_SCENE.instantiate()
+				value_node = VECTOR2_FIELD_SCENE.instantiate()
 				value_node.range_min = variable_data['from']
 				value_node.range_max = variable_data['to']
 				value_node.value = variable_data['default_value']
@@ -56,7 +94,7 @@ func initialize_formulas() -> void:
 				value_node.connect('value_changed', func(to: Vector2) -> void: field_changed(uniform_name, to))
 				parent.add_child(value_node)
 			elif variable_data['type'] == 'vec3':
-				var value_node: Control = VECTOR3_FIELD_SCENE.instantiate()
+				value_node = VECTOR3_FIELD_SCENE.instantiate()
 				value_node.range_min = variable_data['from']
 				value_node.range_max = variable_data['to']
 				value_node.value = variable_data['default_value']
@@ -64,7 +102,7 @@ func initialize_formulas() -> void:
 				value_node.connect('value_changed', func(to: Vector3) -> void: field_changed(uniform_name, to))
 				parent.add_child(value_node)
 			elif variable_data['type'] == 'vec4':
-				var value_node: Control = VECTOR4_FIELD_SCENE.instantiate()
+				value_node = VECTOR4_FIELD_SCENE.instantiate()
 				value_node.range_min = variable_data['from']
 				value_node.range_max = variable_data['to']
 				value_node.value = variable_data['default_value']
@@ -72,18 +110,20 @@ func initialize_formulas() -> void:
 				value_node.connect('value_changed', func(to: Vector4) -> void: field_changed(uniform_name, to))
 				parent.add_child(value_node)
 			elif variable_data['type'] == 'selection':
-				var value_node: Control = SELECTION_FIELD_SCENE.instantiate()
+				value_node = SELECTION_FIELD_SCENE.instantiate()
 				value_node.set_options(Array(variable_data['values']) as Array[String])
 				value_node.index = variable_data['values'].find(variable_data['default_value'])
 				value_node.name = 'F' + formula['id'] + variable_name.to_pascal_case()
 				value_node.connect('value_changed', func(to: String) -> void: field_changed(uniform_name, variable_data['values'].find(to)))
 				parent.add_child(value_node)
 			elif variable_data['type'] == 'bool':
-				var value_node: Control = BOOLEAN_FIELD_SCENE.instantiate()
+				value_node = BOOLEAN_FIELD_SCENE.instantiate()
 				value_node.value = variable_data['default_value']
 				value_node.name = 'F' + formula['id'] + variable_name.to_pascal_case()
 				value_node.connect('value_changed', func(to: bool) -> void: field_changed(uniform_name, to))
 				parent.add_child(value_node)
+			
+			value_node.set_meta('snake_case_name', variable_name)
 
 func add_spaces(text: String) -> String:
 	var result := ""
@@ -116,23 +156,27 @@ func _ready() -> void:
 			
 			var label: Label = Label.new()
 			label.text = text
-			label.name = text
+			label.name = node.name
 			label.add_theme_font_override('font', FONT)
 			
 			label.text += ': '
+			
+			if node.has_method('i_am_a_vec2_field'):
+				label.text += '\n'
+				label.add_theme_constant_override('line_spacing', 6)
 			
 			if node.has_method('i_am_a_vec3_field'):
 				label.text += '\n'
 				label.text += '\n'
 				label.text += '\n'
-				label.add_theme_constant_override('line_spacing', 8)
+				label.add_theme_constant_override('line_spacing', 0)
 			
 			if node.has_method('i_am_a_vec4_field'):
 				label.text += '\n'
 				label.text += '\n'
 				label.text += '\n'
 				label.text += '\n'
-				label.add_theme_constant_override('line_spacing', 8)
+				label.add_theme_constant_override('line_spacing', 3)
 			
 			var names: Node = $Fields/HBoxContainer/Names.get_node(NodePath(node.get_parent().name))
 			var label_already_exists: bool = false
@@ -144,6 +188,8 @@ func _ready() -> void:
 			
 			if not label_already_exists:
 				$Fields/HBoxContainer/Names.get_node(NodePath(node.get_parent().name)).add_child(label)
+
+	set_difficulty('simple')
 
 func i_am_a_formula_page() -> void: pass
 

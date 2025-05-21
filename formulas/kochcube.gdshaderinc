@@ -3,6 +3,7 @@
 // [INDEX]
 // 14
 // [VARS]
+// float scale[0, 3] = 1
 // int variant[0, 10] = 0
 // bool first_zrev[false, true] = true
 // bool pxyzminuss[false, true] = true
@@ -18,7 +19,8 @@
 // bool fold4[false, true] = true
 // bool reflection[false, true] = false
 // [CODE]
-uniform int  fkochcube_variant;
+uniform float fkochcube_scale;
+uniform int fkochcube_variant;
 uniform bool fkochcube_first_zrev;
 uniform bool fkochcube_pxyzminuss;
 uniform bool fkochcube_psortsymmetry1;
@@ -122,6 +124,9 @@ void kochcube_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, 
 
 	s /= 2.0;
 	p.xz = abs(p.xz) - s;
+	
+	p *= fkochcube_scale;
+	dz *= abs(fkochcube_scale);
 	
 	z4.xyz = p;
 

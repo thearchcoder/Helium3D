@@ -1,20 +1,19 @@
-[gd_scene load_steps=49 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=48 format=3 uid="uid://coqv5flg782mg"]
 
-[ext_resource type="Script" path="res://scenes/main/main.gd" id="1_yss2u"]
-[ext_resource type="Script" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
-[ext_resource type="Shader" path="res://renderer/renderer.gdshader" id="3_4yvvm"]
-[ext_resource type="Script" path="res://scenes/main/tool_bar.gd" id="5_og0rs"]
+[ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
+[ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
+[ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="3_4yvvm"]
+[ext_resource type="Script" uid="uid://bj6ithljpyig5" path="res://scenes/main/tool_bar.gd" id="5_og0rs"]
 [ext_resource type="PackedScene" uid="uid://c6ykqwdde41of" path="res://ui/fields/selection field/selection_field.tscn" id="6_50v3j"]
-[ext_resource type="Script" path="res://scenes/main/texture_rect.gd" id="6_dbdf5"]
-[ext_resource type="Script" path="res://scenes/main/texture_rect_holder.gd" id="7_20ti0"]
+[ext_resource type="Script" uid="uid://bss7wdopwtlls" path="res://scenes/main/texture_rect.gd" id="6_dbdf5"]
+[ext_resource type="Script" uid="uid://beio8vrwsvf2t" path="res://scenes/main/texture_rect_holder.gd" id="7_20ti0"]
 [ext_resource type="Material" uid="uid://dggmsfkvwvli5" path="res://scenes/main/texture_rect_material.tres" id="8_6lqo5"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="8_rhsly"]
-[ext_resource type="Script" path="res://scenes/main/menus_tab_container.gd" id="9_7154d"]
+[ext_resource type="Script" uid="uid://bll313qxnpxar" path="res://scenes/main/menus_tab_container.gd" id="9_7154d"]
 [ext_resource type="PackedScene" uid="uid://db57n1ak0l5yd" path="res://ui/logs/logs.tscn" id="14_pnl7n"]
-[ext_resource type="Script" path="res://scenes/main/formula_tab_container.gd" id="16_dmyle"]
+[ext_resource type="Script" uid="uid://77ccf8ixmtdl" path="res://scenes/main/formula_tab_container.gd" id="16_dmyle"]
 [ext_resource type="PackedScene" uid="uid://4bx65d7nnvmf" path="res://ui/pages/formula page/formula_page.tscn" id="16_hfvnl"]
-[ext_resource type="Script" path="res://scenes/main/bottom_bar.gd" id="18_wb8t8"]
-[ext_resource type="Script" path="res://scenes/main/animation_track.gd" id="19_fsmeo"]
+[ext_resource type="Script" uid="uid://d0v2vfon7rn3c" path="res://scenes/main/animation_track.gd" id="19_fsmeo"]
 [ext_resource type="PackedScene" uid="uid://owbf3siulolw" path="res://ui/field container/field_container.tscn" id="19_l42h1"]
 [ext_resource type="Texture2D" uid="uid://bxxblx70rjx10" path="res://resources/icons/film.svg" id="20_grqpr"]
 [ext_resource type="Texture2D" uid="uid://dhq5jlac5844f" path="res://resources/icons/play-solid.svg" id="20_k1hov"]
@@ -22,7 +21,7 @@
 [ext_resource type="Texture2D" uid="uid://bhl7ghqs734tv" path="res://resources/icons/backward-solid.svg" id="20_y77tv"]
 [ext_resource type="Texture2D" uid="uid://b2t5230wme2ra" path="res://resources/icons/forward-solid.svg" id="21_ka5o1"]
 [ext_resource type="Texture2D" uid="uid://em4me5v5s48x" path="res://resources/icons/circle.svg" id="22_an3xl"]
-[ext_resource type="Script" path="res://scenes/main/current_time.gd" id="22_s3o3g"]
+[ext_resource type="Script" uid="uid://b0xu3c1kn7vkv" path="res://scenes/main/current_time.gd" id="22_s3o3g"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ul884"]
 render_priority = 0
@@ -32,31 +31,34 @@ shader_parameter/dof_samples = 3
 shader_parameter/dof_focal_distance = 7.0
 shader_parameter/dof_lens_distance = 10.3
 shader_parameter/dof_aperture = 0.0
-shader_parameter/light1_intensity = 0.6
-shader_parameter/light2_intensity = 0.6
-shader_parameter/light1_position = Vector3(10, 10, -10)
-shader_parameter/light2_position = Vector3(-10, -10, 10)
-shader_parameter/light1_color = Color(1, 1, 1, 1)
-shader_parameter/light2_color = Color(1, 1, 1, 1)
-shader_parameter/ambient_light = 0.08
-shader_parameter/specular_intensity = 2.611
-shader_parameter/specular_sharpness = 8.0
+shader_parameter/light1_intensity = 0.0
+shader_parameter/light2_intensity = 0.0
+shader_parameter/light1_position = Vector3(0, 0, 0)
+shader_parameter/light2_position = Vector3(0, 0, 0)
+shader_parameter/light1_color = Vector3(0, 0, 0)
+shader_parameter/light2_color = Vector3(0, 0, 0)
+shader_parameter/ambient_light = 0.0
+shader_parameter/specular_intensity = 0.0
+shader_parameter/specular_sharpness = 0.0
+shader_parameter/reflection_intensity = 0.0
+shader_parameter/reflection_bounces = 0
 shader_parameter/shadow_steps = 32
 shader_parameter/shadow_raystep_multiplier = 1.0
 shader_parameter/shadow_epsilon = 0.01
-shader_parameter/coloring_mode = null
-shader_parameter/color_offset = null
-shader_parameter/color_min_iterations = null
-shader_parameter/color_max_iterations = null
+shader_parameter/coloring_mode = 0
+shader_parameter/color_offset = 0.0
+shader_parameter/color_min_iterations = 0
+shader_parameter/color_max_iterations = 0
 shader_parameter/iterations = 8
 shader_parameter/max_steps = 120
 shader_parameter/max_distance = 30.0
 shader_parameter/raystep_multiplier = 1.0
 shader_parameter/epsilon = 3e-06
 shader_parameter/relative_epsilon = false
-shader_parameter/escape_radius = null
+shader_parameter/interior_mode = false
+shader_parameter/escape_radius = 0.0
 shader_parameter/de_mode = 1
-shader_parameter/formulas = null
+shader_parameter/formulas = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/ambient_occlusion_steps = 6
 shader_parameter/ambient_occlusion_radius = 0.5
 shader_parameter/ambient_occlusion_color = Vector3(1, 1, 1)
@@ -93,143 +95,162 @@ shader_parameter/tiles_x = 4
 shader_parameter/tiles_y = 4
 shader_parameter/current_tile = 0
 shader_parameter/transparent_bg = true
-shader_parameter/bg_type = null
-shader_parameter/number_of_active_formulas = null
-shader_parameter/fmandelbulb_is_julia = null
-shader_parameter/fmandelbulb_conjugate = null
-shader_parameter/fmandelbulb_abs_x = null
-shader_parameter/fmandelbulb_abs_y = null
-shader_parameter/fmandelbulb_abs_z = null
-shader_parameter/fmandelbulb_julia_c = null
-shader_parameter/fmandelbulb_derivative_bias = null
-shader_parameter/fmandelbulb_power = null
-shader_parameter/fmandelbulb_phase = null
-shader_parameter/fmandelbulb_quaternion_mode = null
-shader_parameter/fmandelbulb_number_system = null
-shader_parameter/fkochcube_variant = null
-shader_parameter/fkochcube_first_zrev = null
-shader_parameter/fkochcube_pxyzminuss = null
-shader_parameter/fkochcube_psortsymmetry1 = null
-shader_parameter/fkochcube_psortsymmetry2 = null
-shader_parameter/fkochcube_foldzbefore = null
-shader_parameter/fkochcube_abs_x = null
-shader_parameter/fkochcube_abs_y = null
-shader_parameter/fkochcube_abs_z = null
-shader_parameter/fkochcube_fold1 = null
-shader_parameter/fkochcube_fold2 = null
-shader_parameter/fkochcube_fold3 = null
-shader_parameter/fkochcube_fold4 = null
-shader_parameter/fkochcube_reflection = null
-shader_parameter/fkochwire_abs_plus = null
-shader_parameter/fkochwire_abs_minus = null
-shader_parameter/fkochwire_fold1 = null
-shader_parameter/fkochwire_fold2 = null
-shader_parameter/fkochwire_fold3 = null
-shader_parameter/fkochwire_abs_x = null
-shader_parameter/fkochwire_abs_y = null
-shader_parameter/fkochwire_abs_z = null
-shader_parameter/fkochwire_abs2_zx = null
-shader_parameter/fkochwire_offset = null
-shader_parameter/fkochwire_scale = null
-shader_parameter/fkochwire_symmetry = null
-shader_parameter/fmandelbox_scale = null
-shader_parameter/fmandelbox_radius1 = null
-shader_parameter/fmandelbox_radius2 = null
-shader_parameter/fmandelbox_box_folds = null
-shader_parameter/fmandelbox_julia_c = null
-shader_parameter/fmandelbox_is_julia = null
-shader_parameter/fsierpinskitetrahedron_rotation1 = null
-shader_parameter/fsierpinskitetrahedron_rotation2 = null
-shader_parameter/fsierpinskitetrahedron_offset = null
-shader_parameter/fsierpinskitetrahedron_scale = null
-shader_parameter/fmengersponge_rotation1 = null
-shader_parameter/fmengersponge_rotation2 = null
-shader_parameter/fmengersponge_offset = null
-shader_parameter/fmengersponge_scale = null
-shader_parameter/fpseudoklenian_min = null
-shader_parameter/fpseudoklenian_max = null
-shader_parameter/fpseudoklenian_sign = null
-shader_parameter/fpseudoklenian_scale = null
-shader_parameter/famazingsurf_fold = null
-shader_parameter/famazingsurf_rotation = null
-shader_parameter/famazingsurf_offset = null
-shader_parameter/famazingsurf_c = null
-shader_parameter/famazingsurf_min_radius = null
-shader_parameter/famazingsurf_scale = null
-shader_parameter/fsierpinskidodecahedron_rotation1 = null
-shader_parameter/fsierpinskidodecahedron_rotation2 = null
-shader_parameter/fsierpinskidodecahedron_offset = null
-shader_parameter/fsierpinskidodecahedron_scale = null
-shader_parameter/fsierpinskiicosahedron_scale = null
-shader_parameter/fsierpinskiicosahedron_rotation1 = null
-shader_parameter/fsierpinskiicosahedron_rotation2 = null
-shader_parameter/fsierpinskiicosahedron_offset = null
-shader_parameter/fsierpinskioctahedron_scale = null
-shader_parameter/fsierpinskioctahedron_rotation1 = null
-shader_parameter/fsierpinskioctahedron_rotation2 = null
-shader_parameter/fsierpinskioctahedron_offset = null
-shader_parameter/fbairddelta_angle = null
-shader_parameter/fbairddelta_scale = null
-shader_parameter/fbairddelta_rotation1 = null
-shader_parameter/fbairddelta_rotation2 = null
-shader_parameter/fklenian_show_balls = null
-shader_parameter/fklenian_x = null
-shader_parameter/fklenian_y = null
-shader_parameter/fklenian_box_size_x = 1.0
-shader_parameter/fklenian_box_size_z = 1.0
-shader_parameter/fspheretree_symmetry = null
-shader_parameter/fkaliredux_folds = null
-shader_parameter/fkaliredux_minus = null
-shader_parameter/fkaliredux_scale = null
-shader_parameter/fquadratickoch_variant = null
-shader_parameter/fquadratickoch_scale = null
-shader_parameter/fquadratickoch_scale_octa = null
-shader_parameter/fkaliliving_c = null
-shader_parameter/fkaliliving_rotation1 = null
-shader_parameter/fkaliliving_rotation2 = null
-shader_parameter/fkaliliving_scale = null
-shader_parameter/fnewton_plane = null
-shader_parameter/fnewton_intersection_mode = null
-shader_parameter/fnewton_pole1 = null
-shader_parameter/fnewton_pole2 = null
-shader_parameter/fnewton_pole3 = null
-shader_parameter/fnewton_invsphere = null
-shader_parameter/fnewton_invert = null
-shader_parameter/fnewton_symmetry1 = null
-shader_parameter/fnewton_symmetry2 = null
-shader_parameter/fmixpinski4d_scale = null
-shader_parameter/fmixpinski4d_offset = null
-shader_parameter/fmixpinski4d_rotation1 = null
-shader_parameter/fmixpinski4d_rotation2 = null
-shader_parameter/fmixpinski4d_fold1_strength = null
-shader_parameter/fmixpinski4d_fold1 = null
-shader_parameter/fvicsek_scale = null
-shader_parameter/fvicsek_symmetry = null
-shader_parameter/fvicsek_abs1_x = null
-shader_parameter/fvicsek_abs1_z = null
-shader_parameter/fvicsek_limit = null
-shader_parameter/fvicsek_abs2_minus = null
-shader_parameter/fvicsek_abs2_plus = null
-shader_parameter/fvicsek_offset = null
-shader_parameter/fvicsek_hex_fold1 = null
-shader_parameter/fvicsek_preserve = null
-shader_parameter/fvicsek_hex_fold2 = null
-shader_parameter/fkalibox_scale = null
-shader_parameter/fkalibox_offset1 = null
-shader_parameter/fkalibox_offset2 = null
-shader_parameter/fsphairahedron_cube_type = null
-shader_parameter/fsphairahedron_zb = null
-shader_parameter/fsphairahedron_zc = null
-shader_parameter/flionbulb_power = null
-shader_parameter/flionbulb_c = null
-shader_parameter/flionbulb_phase = null
-shader_parameter/flionbulb_coral = null
-shader_parameter/fjerusalemcube_scale = null
-shader_parameter/fjerusalemcube_offset = null
-shader_parameter/fjerusalemcube_abs_add = null
-shader_parameter/fjerusalemcube_abs_minus = null
-shader_parameter/reflection_intensity = 1.0
-shader_parameter/reflection_bounces = 1
+shader_parameter/bg_type = 0
+shader_parameter/number_of_active_formulas = 0.0
+shader_parameter/fmandelbulb_is_julia = false
+shader_parameter/fmandelbulb_conjugate = false
+shader_parameter/fmandelbulb_abs_x = false
+shader_parameter/fmandelbulb_abs_y = false
+shader_parameter/fmandelbulb_abs_z = false
+shader_parameter/fmandelbulb_julia_c = Vector4(0, 0, 0, 0)
+shader_parameter/fmandelbulb_derivative_bias = 0.0
+shader_parameter/fmandelbulb_power = 0.0
+shader_parameter/fmandelbulb_phase = 0.0
+shader_parameter/fmandelbulb_quaternion_mode = 0
+shader_parameter/fmandelbulb_number_system = 0
+shader_parameter/fkochcube_scale = 0.0
+shader_parameter/fkochcube_variant = 0
+shader_parameter/fkochcube_first_zrev = false
+shader_parameter/fkochcube_pxyzminuss = false
+shader_parameter/fkochcube_psortsymmetry1 = false
+shader_parameter/fkochcube_psortsymmetry2 = false
+shader_parameter/fkochcube_foldzbefore = false
+shader_parameter/fkochcube_abs_x = false
+shader_parameter/fkochcube_abs_y = false
+shader_parameter/fkochcube_abs_z = false
+shader_parameter/fkochcube_fold1 = 0
+shader_parameter/fkochcube_fold2 = 0
+shader_parameter/fkochcube_fold3 = false
+shader_parameter/fkochcube_fold4 = false
+shader_parameter/fkochcube_reflection = false
+shader_parameter/fkochwire_abs_plus = Vector3(0, 0, 0)
+shader_parameter/fkochwire_abs_minus = Vector3(0, 0, 0)
+shader_parameter/fkochwire_fold1 = false
+shader_parameter/fkochwire_fold2 = false
+shader_parameter/fkochwire_fold3 = false
+shader_parameter/fkochwire_abs_x = false
+shader_parameter/fkochwire_abs_y = false
+shader_parameter/fkochwire_abs_z = false
+shader_parameter/fkochwire_abs2_zx = false
+shader_parameter/fkochwire_offset = Vector3(0, 0, 0)
+shader_parameter/fkochwire_scale = 0.0
+shader_parameter/fkochwire_symmetry = 0.0
+shader_parameter/fmandelbox_scale = 0.0
+shader_parameter/fmandelbox_radius1 = 0.0
+shader_parameter/fmandelbox_radius2 = 0.0
+shader_parameter/fmandelbox_box_folds = Vector3(0, 0, 0)
+shader_parameter/fmandelbox_julia_c = Vector3(0, 0, 0)
+shader_parameter/fmandelbox_is_julia = false
+shader_parameter/fmandelbox_fold1 = 0.0
+shader_parameter/fmandelbox_fold1_strength = 0.0
+shader_parameter/fsierpinskitetrahedron_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskitetrahedron_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskitetrahedron_offset = Vector3(0, 0, 0)
+shader_parameter/fsierpinskitetrahedron_scale = 0.0
+shader_parameter/fmengersponge_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fmengersponge_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fmengersponge_offset = Vector3(0, 0, 0)
+shader_parameter/fmengersponge_scale = 0.0
+shader_parameter/fpseudoklenian_min = Vector4(0, 0, 0, 0)
+shader_parameter/fpseudoklenian_max = Vector4(0, 0, 0, 0)
+shader_parameter/fpseudoklenian_sign = 0.0
+shader_parameter/fpseudoklenian_scale = 0.0
+shader_parameter/famazingsurf_fold = Vector2(0, 0)
+shader_parameter/famazingsurf_rotation = Vector3(0, 0, 0)
+shader_parameter/famazingsurf_offset = Vector3(0, 0, 0)
+shader_parameter/famazingsurf_c = Vector3(0, 0, 0)
+shader_parameter/famazingsurf_min_radius = 0.0
+shader_parameter/famazingsurf_scale = 0.0
+shader_parameter/fsierpinskidodecahedron_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskidodecahedron_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskidodecahedron_offset = Vector3(0, 0, 0)
+shader_parameter/fsierpinskidodecahedron_scale = 0.0
+shader_parameter/fsierpinskiicosahedron_scale = 0.0
+shader_parameter/fsierpinskiicosahedron_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskiicosahedron_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskiicosahedron_offset = Vector3(0, 0, 0)
+shader_parameter/fsierpinskioctahedron_scale = 0.0
+shader_parameter/fsierpinskioctahedron_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskioctahedron_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskioctahedron_offset = Vector3(0, 0, 0)
+shader_parameter/fbairddelta_angle = 0.0
+shader_parameter/fbairddelta_scale = 0.0
+shader_parameter/fbairddelta_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fbairddelta_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fklenian_show_balls = false
+shader_parameter/fklenian_x = 0.0
+shader_parameter/fklenian_y = 0.0
+shader_parameter/fklenian_box_size_x = 0.0
+shader_parameter/fklenian_box_size_z = 0.0
+shader_parameter/fspheretree_symmetry = 0.0
+shader_parameter/fkaliredux_folds = Vector4(0, 0, 0, 0)
+shader_parameter/fkaliredux_minus = Vector3(0, 0, 0)
+shader_parameter/fkaliredux_scale = 0.0
+shader_parameter/fquadratickoch_variant = 0
+shader_parameter/fquadratickoch_scale = 0.0
+shader_parameter/fquadratickoch_scale_octa = 0.0
+shader_parameter/fkaliliving_c = Vector3(0, 0, 0)
+shader_parameter/fkaliliving_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fkaliliving_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fkaliliving_scale = 0.0
+shader_parameter/fnewton_plane = 0
+shader_parameter/fnewton_intersection_mode = false
+shader_parameter/fnewton_pole1 = Vector4(0, 0, 0, 0)
+shader_parameter/fnewton_pole2 = Vector4(0, 0, 0, 0)
+shader_parameter/fnewton_pole3 = Vector4(0, 0, 0, 0)
+shader_parameter/fnewton_invsphere = Vector4(0, 0, 0, 0)
+shader_parameter/fnewton_invert = false
+shader_parameter/fnewton_symmetry1 = 0.0
+shader_parameter/fnewton_symmetry2 = 0.0
+shader_parameter/fmixpinski4d_scale = 0.0
+shader_parameter/fmixpinski4d_offset = Vector4(0, 0, 0, 0)
+shader_parameter/fmixpinski4d_rotation1 = Vector4(0, 0, 0, 0)
+shader_parameter/fmixpinski4d_rotation2 = Vector4(0, 0, 0, 0)
+shader_parameter/fmixpinski4d_fold1_strength = 0.0
+shader_parameter/fmixpinski4d_abs_minus = 0.0
+shader_parameter/fmixpinski4d_fold1 = Vector4(0, 0, 0, 0)
+shader_parameter/fmixpinski4d_pre_offset = Vector4(0, 0, 0, 0)
+shader_parameter/fvicsek_scale = 0.0
+shader_parameter/fvicsek_symmetry = 0.0
+shader_parameter/fvicsek_abs1_x = false
+shader_parameter/fvicsek_abs1_z = false
+shader_parameter/fvicsek_limit = Vector3(0, 0, 0)
+shader_parameter/fvicsek_abs2_minus = Vector3(0, 0, 0)
+shader_parameter/fvicsek_abs2_plus = Vector3(0, 0, 0)
+shader_parameter/fvicsek_offset = Vector3(0, 0, 0)
+shader_parameter/fvicsek_hex_fold1 = false
+shader_parameter/fvicsek_preserve = false
+shader_parameter/fvicsek_hex_fold2 = 0
+shader_parameter/fkalibox_scale = 0.0
+shader_parameter/fkalibox_offset1 = Vector3(0, 0, 0)
+shader_parameter/fkalibox_offset2 = Vector3(0, 0, 0)
+shader_parameter/fsphairahedron_cube_type = 0
+shader_parameter/fsphairahedron_zb = 0.0
+shader_parameter/fsphairahedron_zc = 0.0
+shader_parameter/flionbulb_power = 0.0
+shader_parameter/flionbulb_c = Vector3(0, 0, 0)
+shader_parameter/flionbulb_phase = 0.0
+shader_parameter/flionbulb_coral = false
+shader_parameter/fjerusalemcube_scale = Vector2(0, 0)
+shader_parameter/fjerusalemcube_offset = Vector3(0, 0, 0)
+shader_parameter/fjerusalemcube_abs_add = Vector3(0, 0, 0)
+shader_parameter/fjerusalemcube_abs_minus = Vector3(0, 0, 0)
+shader_parameter/fbristorbrot_is_julia = false
+shader_parameter/fbristorbrot_julia_c = Vector3(0, 0, 0)
+shader_parameter/fbristorbrot_derivative_bias = 0.0
+shader_parameter/fsintransform_axis = 0
+shader_parameter/fsintransform_offset = Vector2(0, 0)
+shader_parameter/fsintransform_scale = Vector2(0, 0)
+shader_parameter/fsintransform_range = Vector2(0, 0)
+shader_parameter/flogtransform_axis = 0
+shader_parameter/flogtransform_offset = 0.0
+shader_parameter/flogtransform_scale = 0.0
+shader_parameter/flogtransform_range = Vector2(0, 0)
+shader_parameter/fbasictransform_offset = Vector4(0, 0, 0, 0)
+shader_parameter/fbasictransform_scale = Vector4(0, 0, 0, 0)
+shader_parameter/fbasictransform_range = Vector2(0, 0)
+shader_parameter/finversiontransform_sphere = Vector4(0, 0, 0, 0)
+shader_parameter/finversiontransform_range = Vector2(0, 0)
 
 [sub_resource type="BoxMesh" id="BoxMesh_eu6rh"]
 size = Vector3(4000, 4000, -4000)
@@ -247,7 +268,7 @@ sky_material = SubResource("ProceduralSkyMaterial_462v4")
 
 [sub_resource type="Environment" id="Environment_4uuy8"]
 background_mode = 1
-background_color = Color(0.00711382, 0.107923, 0.0447466, 1)
+background_color = Color(0, 1, 0, 1)
 background_energy_multiplier = 0.0
 sky = SubResource("Sky_iv5uu")
 glow_enabled = true
@@ -637,6 +658,13 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_gox76")
 disabled = true
 text = " Remove "
 
+[node name="Difficulty" type="Button" parent="UI/HBoxContainer/TabContainer/Formula/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gox76")
+text = " Simple "
+
 [node name="Rendering" parent="UI/HBoxContainer/TabContainer" instance=ExtResource("19_l42h1")]
 unique_name_in_owner = true
 visible = false
@@ -786,7 +814,7 @@ layout_mode = 2
 fields_list_id = 6
 metadata/_tab_index = 2
 
-[node name="Coloring" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+[node name="Material" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
 visible = false
 layout_mode = 2
 fields_list_id = 15
@@ -838,7 +866,6 @@ theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_vljsl")
 current_tab = 0
 tabs_position = 1
 deselect_enabled = true
-script = ExtResource("18_wb8t8")
 
 [node name="Animation" type="VBoxContainer" parent="UI/BottomBar"]
 custom_minimum_size = Vector2(1.45519e-11, 200)
@@ -975,6 +1002,7 @@ offset_bottom = 144.0
 [connection signal="mouse_exited" from="UI/HBoxContainer/MarginContainer/VBoxContainer/TextureRect" to="UI/HBoxContainer/MarginContainer/VBoxContainer/TextureRect" method="_on_mouse_exited"]
 [connection signal="pressed" from="UI/HBoxContainer/TabContainer/Formula/Buttons/AddFormula" to="UI/HBoxContainer/TabContainer" method="_on_add_formula_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/TabContainer/Formula/Buttons/RemoveFormula" to="UI/HBoxContainer/TabContainer" method="_on_remove_formula_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/TabContainer/Formula/Buttons/Difficulty" to="." method="_on_difficulty_pressed"]
 [connection signal="tab_changed" from="UI/BottomBar" to="UI/BottomBar" method="_on_tab_changed"]
 [connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/SetTimeStartButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_set_time_start_button_pressed"]
 [connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/PlayingToggleButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_playing_toggle_button_pressed"]

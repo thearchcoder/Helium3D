@@ -119,7 +119,6 @@ func compute_tiled_render() -> void:
 	
 	%TextureRect.material.set_shader_parameter('display_tiled_render', true)
 	%TextureRect.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
-	#%Logs.print_console("Tiled render complete, Total tiles rendered: " + str(tiles_x * tiles_y))
 	get_tree().current_scene.busy_rendering_tiles = false
 
 func _ready() -> void:
@@ -156,6 +155,14 @@ func _ready() -> void:
 				%SubViewport.transparent_bg = value
 				field_changed('transparent_bg', value)
 				},
+			{'name': 'chroma_key_similarity', 'type': 'float', 'from': 0, 'to': 1, 'default_value': 0.25, 'onchange_override': func(value: float) -> void: 
+				%TextureRect.material.set_shader_parameter('chroma_key_similarity', value)
+				field_changed('chroma_key_similarity', value)
+				},
+			{'name': 'chroma_key_smoothness', 'type': 'float', 'from': 0, 'to': 1, 'default_value': 0.1, 'onchange_override': func(value: float) -> void: 
+				%TextureRect.material.set_shader_parameter('chroma_key_smoothness', value)
+				field_changed('chroma_key_smoothness', value)
+				},
 		],
 		# Lighting / Material
 		15: [
@@ -180,6 +187,7 @@ func _ready() -> void:
 		# Modifiers / Cut
 		10: [
 			{'name': 'cut', 'type': 'bool', 'default_value': false},
+			{'name': 'interior_mode', 'type': 'bool', 'default_value': false},
 			{'name': 'cut_normal', 'type': 'vec3', 'from': Vector3(0, 0, 0), 'to': Vector3(1, 1, 1), 'default_value': Vector3(0, 1, 0)},
 			{'name': 'cut_position', 'type': 'vec3', 'from': Vector3(-5, -5, -5), 'to': Vector3(5, 5, 5), 'default_value': Vector3(0, 0, 0)},
 		],
@@ -410,13 +418,13 @@ func update_fields_ui() -> void:
 			label.text += '\n'
 			label.text += '\n'
 			label.text += '\n'
-			label.add_theme_constant_override('line_spacing', 8)
+			label.add_theme_constant_override('line_spacing', 0)
 		
 		if %Values.get_node(variable_name.to_pascal_case()).has_method('i_am_a_vec4_field'):
 			label.text += '\n'
 			label.text += '\n'
 			label.text += '\n'
 			label.text += '\n'
-			label.add_theme_constant_override('line_spacing', 8)
+			label.add_theme_constant_override('line_spacing', 0)
 		
 		$Fields/Names.add_child(label)

@@ -16,6 +16,10 @@ var using_dof: bool = false
 var using_tiling: bool = false
 var using_reflections: bool = false
 var busy_rendering_tiles: bool = false
+var difficulty: String = 'simple':
+	set(value):
+		difficulty = value
+		%TabContainer.get_node('Formula/TabContainer').set_difficulty(difficulty)
 
 func _ready() -> void:
 	%Logs.print_console('Helium3D ' + VERSION)
@@ -23,14 +27,6 @@ func _ready() -> void:
 	var dir := DirAccess.open("res://")
 	if not dir.dir_exists(HELIUM3D_PATH):
 		dir.make_dir(HELIUM3D_PATH)
-
-func compute_voxels() -> void:
-	for i in range(50):
-		await get_tree().process_frame
-		%Camera.global_position.z += 0.01
-		%SubViewport.refresh_taa()
-		var mesh_slice_data: Image = (%SubViewport.get_texture() as ViewportTexture).get_image()
-		mesh_slice_data.save_png(get_tree().current_scene.HELIUM3D_PATH + '/voxelexport/slice_' + str(i) + '.png')
 
 func get_app_state() -> Dictionary:
 	var data: Dictionary = fields.duplicate(true)
@@ -52,6 +48,9 @@ func initialize_formulas(path_to_formulas: String) -> void:
 		return
 	
 	for formula_file_path in DirAccess.get_files_at(path_to_formulas):
+		if formula_file_path.get_file().get_extension().ends_with('uid'):
+			continue
+		
 		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
 		var formula_file_contents: String = formula_file.get_as_text()
 		var data: Dictionary = parse_data(formula_file_contents)
@@ -61,44 +60,41 @@ func initialize_formulas(path_to_formulas: String) -> void:
 
 func parse_data(data: String) -> Dictionary:
 	var result := {}
-
-	# Extract index using regex
 	var index_regex := RegEx.new()
 	index_regex.compile(r"\/\/\s+\[INDEX\]\n\/\/\s+(\d+)")
 	var index_match := index_regex.search(data)
 	if index_match:
 		result["index"] = int(index_match.get_string(1))
-
-	# Extract formula ID using regex
+	
 	var id_regex := RegEx.new()
 	id_regex.compile("// \\[ID\\]\\s*(.+)")
 	var id_match := id_regex.search(data)
 	if id_match:
 		result["id"] = id_match.get_string(1).strip_edges().lstrip('/ ').to_lower().replace(' ', '')
 		result["formatted_id"] = id_match.get_string(1).strip_edges().lstrip('/ ')
-
-	# Extract code
+	
 	var code_match := data.find("// [CODE]")
 	if code_match != -1:
 		result["code"] = data.substr(code_match + 9).strip_edges()
-
-	# Extract variables
+	
 	var var_regex := RegEx.new()
-	var_regex.compile(r"(\w+) (\w+)\[([^\]]*)\] = (.+)")
+	var_regex.compile(r"(?:(advanced|simple)\s+)?(\w+)\s+(\w+)\[([^\]]*)\]\s*=\s*(.+)")
 	var variables := {}
-
+	
 	for m in var_regex.search_all(data):
-		var var_type := m.get_string(1)
-		var var_name := m.get_string(2)
-		var values := m.get_string(3)
-		var default_value := m.get_string(4).strip_edges()
-
+		var difficulty := m.get_string(1)
+		var var_type := m.get_string(2)
+		var var_name := m.get_string(3)
+		var values := m.get_string(4)
+		var default_value := m.get_string(5).strip_edges()
+		
 		if var_type == "selection":
 			var values_list := values.split(", ")
 			variables[var_name] = {
 				"type": "selection",
 				"values": values_list,
-				"default_value": default_value
+				"default_value": default_value,
+				"difficulty": difficulty if difficulty else "medium"
 			}
 		elif var_type == "float" or var_type == "int":
 			var range_vals := values.split(", ")
@@ -108,27 +104,30 @@ func parse_data(data: String) -> Dictionary:
 				"type": var_type,
 				"from": from_val,
 				"to": to_val,
-				"default_value": float(default_value) if "." in default_value else int(default_value)
+				"default_value": float(default_value) if "." in default_value else int(default_value),
+				"difficulty": difficulty if difficulty else "medium"
 			}
 		elif var_type == "vec3" or var_type == "vec4" or var_type == "vec2":
 			var vec_parts: Array = values.trim_prefix("(").trim_suffix(")").split("), (")
 			var from_vec: Array = vec_parts[0].split(", ")
 			var to_vec: Array = vec_parts[1].split(", ")
 			var default_vec: Array = default_value.trim_prefix("(").trim_suffix(")").split(", ")
-
+			
 			if var_type == "vec3":
 				variables[var_name] = {
 					"type": "vec3",
 					"from": Vector3(float(from_vec[0]), float(from_vec[1]), float(from_vec[2])),
 					"to": Vector3(float(to_vec[0]), float(to_vec[1]), float(to_vec[2])),
-					"default_value": Vector3(float(default_vec[0]), float(default_vec[1]), float(default_vec[2]))
+					"default_value": Vector3(float(default_vec[0]), float(default_vec[1]), float(default_vec[2])),
+					"difficulty": difficulty if difficulty else "medium"
 				}
 			elif var_type == 'vec4':
 				variables[var_name] = {
 					"type": "vec4",
 					"from": Vector4(float(from_vec[0]), float(from_vec[1]), float(from_vec[2]), float(from_vec[3])),
 					"to": Vector4(float(to_vec[0]), float(to_vec[1]), float(to_vec[2]), float(to_vec[3])),
-					"default_value": Vector4(float(default_vec[0]), float(default_vec[1]), float(default_vec[2]), float(default_vec[3]))
+					"default_value": Vector4(float(default_vec[0]), float(default_vec[1]), float(default_vec[2]), float(default_vec[3])),
+					"difficulty": difficulty if difficulty else "medium"
 				}
 			elif var_type == 'vec2':
 				variables[var_name] = {
@@ -136,18 +135,20 @@ func parse_data(data: String) -> Dictionary:
 					"from": Vector2(float(from_vec[0]), float(from_vec[1])),
 					"to": Vector2(float(to_vec[0]), float(to_vec[1])),
 					"default_value": Vector2(float(default_vec[0]), float(default_vec[1])),
+					"difficulty": difficulty if difficulty else "medium"
 				}
-		elif var_type == "bool": # bool
+		elif var_type == "bool":
 			variables[var_name] = {
 				"type": "bool",
-				"default_value": default_value.to_lower() == "true"
+				"default_value": default_value.to_lower() == "true",
+				"difficulty": difficulty if difficulty else "medium"
 			}
-
+	
 	result["variables"] = variables
 	return result
 
 func update_fields(new_fields: Dictionary) -> void:
-	fields = new_fields
+	fields.merge(new_fields, true)
 	for field_name in (new_fields.keys() as Array[String]):
 		var field_val: Variant = new_fields[field_name]
 		
@@ -173,7 +174,7 @@ func update_fields(new_fields: Dictionary) -> void:
 		
 		%Fractal.material_override.set_shader_parameter(field_name, field_val)
 	
-	%TabContainer.update_field_values(fields) # Update node values as well
+	%TabContainer.update_field_values(new_fields) # Update node values as well
 
 func update_app_state(data: Dictionary, update_app_fields: bool = true, use_lerp: bool = false, update_keyframes: bool = true, delta_multiplier: float = 1.0, use_fast_diff: bool = false) -> void:
 	var old_data: Dictionary = data.duplicate(true)
@@ -309,12 +310,20 @@ func _input(event: InputEvent) -> void:
 	elif Input.is_key_pressed(KEY_TAB) and Input.is_key_pressed(KEY_W):
 		%AddKeyframeButton.emit_signal("pressed")
 
-	if Input.is_action_just_pressed('shortcut save all'):
+	if Input.is_action_just_pressed('shortcut save project'):
+		%Save.pressed.emit()
+	elif Input.is_action_just_pressed('shortcut save all'):
 		%SaveAll.pressed.emit()
 	elif Input.is_action_just_pressed('shortcut save image'):
 		%SavePicture.pressed.emit()
-	elif Input.is_action_just_pressed('shortcut save project'):
-		%Save.pressed.emit()
 	
 	if Input.is_action_just_pressed('shortcut load'):
 		%Load.pressed.emit()
+
+func _on_difficulty_pressed() -> void:
+	if difficulty == 'simple':
+		difficulty = 'advanced'
+	elif difficulty == 'advanced':
+		difficulty = 'simple'
+	
+	%Difficulty.text = difficulty.to_pascal_case()

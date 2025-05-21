@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://bsolmllue5hwt"]
 
 [ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_plag6"]
-[ext_resource type="Script" path="res://ui/fields/image field/image_field.gd" id="2_0hh4d"]
+[ext_resource type="Script" uid="uid://bbpqoandsgx8k" path="res://ui/fields/image field/image_field.gd" id="2_0hh4d"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="3_q1vc6"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fiq4o"]

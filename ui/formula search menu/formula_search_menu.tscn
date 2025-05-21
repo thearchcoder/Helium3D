@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://caa5e0qf2jkom"]
 
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="1_hhs3y"]
-[ext_resource type="Script" path="res://ui/fields/formula field/search_menu.gd" id="2_b44c0"]
+[ext_resource type="Script" uid="uid://60uhj6ud7guv" path="res://ui/fields/formula field/search_menu.gd" id="2_b44c0"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x5nan"]
 

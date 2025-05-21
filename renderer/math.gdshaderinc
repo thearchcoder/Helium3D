@@ -3,6 +3,9 @@ const float golden_ratio = (1.0 + sqrt(5.0)) * 0.5;
 /////////////
 // General //
 /////////////
+bool check_range(int i, vec2 range) {
+	return float(i) > range.x && float(i) < range.y;
+}
 vec3 decreaseLength(vec3 v, float amount) {
 	return normalize(v) * (length(v) - amount);
 }

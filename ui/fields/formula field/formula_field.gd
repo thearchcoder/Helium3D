@@ -15,6 +15,9 @@ signal value_changed(option: String)
 func _process(delta: float) -> void:
 	if $"../../../../../..".name == 'Formula' and $"../../../..".visible and Input.is_action_pressed('search formula shortcut'):
 		$HBoxContainer/Label.pressed.emit()
+	
+	if $"../../../../..".name == 'Buffer' and index != 0:
+		index = 0
 
 func _ready() -> void:
 	Global.value_nodes.append(self)

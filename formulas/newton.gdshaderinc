@@ -88,7 +88,7 @@ float newton_sdf2d(vec2 z0, inout float trap) {
 
 		vec2 temp = complex_div(sp2 - sz2, complex_mul(d, d));
 		dz = complex_mul(dz, temp + vec2(1.0, 0.0));
-		
+
 		if (k > color_min_iterations && k < color_max_iterations) trap = min(trap, dot(z, z));
 	}
 

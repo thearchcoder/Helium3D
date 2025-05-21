@@ -2,6 +2,13 @@ extends TabContainer
 
 func _process(delta: float) -> void:
 	%Fractal.material_override.set_shader_parameter('number_of_active_formulas', len(get_active_formula_pages()))
+	
+	for child in $Buffer.get_children():
+		child.visible = false
+
+func set_difficulty(difficulty: String) -> void:
+	for formula_page in get_active_formula_pages():
+		formula_page.set_difficulty(difficulty)
 
 func get_active_formula_pages() -> Array[Node]:
 	var used_pages: Array[Node] = get_children()

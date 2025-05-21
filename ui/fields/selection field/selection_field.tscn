@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://c6ykqwdde41of"]
 
 [ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_dylg4"]
-[ext_resource type="Script" path="res://ui/fields/selection field/selection_field.gd" id="2_xel7h"]
+[ext_resource type="Script" uid="uid://ea0mj75vlgtd" path="res://ui/fields/selection field/selection_field.gd" id="2_xel7h"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="3_xqcdh"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6h2g8"]
@@ -18,8 +18,8 @@ corner_radius_bottom_left = 3
 [node name="SelectionField" instance=ExtResource("1_dylg4")]
 anchor_right = 0.338
 anchor_bottom = 0.03
-offset_right = -0.100037
-offset_bottom = -0.400002
+offset_right = -0.0999756
+offset_bottom = -0.399998
 script = ExtResource("2_xel7h")
 options = Array[String](["Glow", "Shell", "Angle"])
 

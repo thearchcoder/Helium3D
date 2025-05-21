@@ -2,7 +2,7 @@ shader_type spatial;
 render_mode unshaded;
 
 // Disabled when possible to reduce shader compilation times.
-// Line numbers for these 2 lines must stay the same.
+// Line numbers for these 3 lines must stay the same.
 //#define USING_DOF
 //#define USING_TILING
 //#define USING_REFLECTIONS
@@ -15,21 +15,23 @@ uniform float dof_lens_distance = 10.3;
 uniform float dof_aperture = 0.0;
 
 // Lighting
-uniform float light1_intensity = 0.6;
-uniform float light2_intensity = 0.6;
-uniform vec3 light1_position = vec3(10.0, 10.0, -10.0);
-uniform vec3 light2_position = vec3(-10.0, -10.0, 10.0);
-uniform vec3 light1_color: source_color = vec3(1.0, 1.0, 1.0);
-uniform vec3 light2_color: source_color = vec3(1.0, 1.0, 1.0);
-uniform float ambient_light = 0.08;
-uniform float specular_intensity = 2.611;
-uniform float specular_sharpness = 8.0;
+uniform float light1_intensity;
+uniform float light2_intensity;
+uniform vec3 light1_position;
+uniform vec3 light2_position;
+uniform vec3 light1_color;
+uniform vec3 light2_color;
+uniform float ambient_light;
+uniform sampler2D palette;
+uniform float specular_intensity;
+uniform float specular_sharpness;
+uniform float reflection_intensity;
+uniform int reflection_bounces;
 
 uniform int shadow_steps = 32;
 uniform float shadow_raystep_multiplier = 1.0;
 uniform float shadow_epsilon = 0.01;
 
-uniform sampler2D palette;
 uniform int coloring_mode;
 uniform float color_offset;
 uniform int color_min_iterations;
@@ -42,6 +44,7 @@ uniform float max_distance = 30.0;
 uniform float raystep_multiplier = 1.0;
 uniform float epsilon = 0.000003;
 uniform bool relative_epsilon = false;
+uniform bool interior_mode = false;
 uniform float escape_radius;
 uniform int de_mode = 1;
 // Formula
@@ -95,7 +98,7 @@ uniform bool transparent_bg = true;
 uniform int bg_type;
 uniform sampler2D bg_image;
 uniform sampler2D bg_color;
-// Other 
+// Other
 uniform float number_of_active_formulas;
 
 #include "math.gdshaderinc"
@@ -124,9 +127,15 @@ uniform float number_of_active_formulas;
 #include "res://formulas/sphairahedron.gdshaderinc"
 #include "res://formulas/lionbulb.gdshaderinc"
 #include "res://formulas/jerusalemcube.gdshaderinc"
+#include "res://formulas/bristorbrot.gdshaderinc"
+#include "res://formulas/sintransform.gdshaderinc"
+#include "res://formulas/logtransform.gdshaderinc"
+#include "res://formulas/basictransform.gdshaderinc"
+#include "res://formulas/inversiontransform.gdshaderinc"
 
 vec2 scene_sdf(vec3 p) {
 	float d, d2;
+	vec3 original_p = p;
 
 	if (length(kalaidoscope) - 1.0 > 0.00001) {
 		p.xy = kalaido(p.xy, kalaidoscope.x);
@@ -137,9 +146,6 @@ vec2 scene_sdf(vec3 p) {
 	p -= translation;
 	p = rotate3d_point(p, rotation);
 
-	
-	vec3 original_p = p;
-	
 	if (sphere_inversion) {
 		p -= inversion_sphere.xyz;
 		d = length(p);
@@ -158,15 +164,15 @@ vec2 scene_sdf(vec3 p) {
 	float orbit = 100000.0;
 	float dz = 1.0;
 	float s = 1.2;
-	
+
 	bool using_klenian = false;
 	bool using_sphairahedron = false;
 	bool using_spheretree = false;
 	bool using_newton = false;
 	bool single_formula = false;
-	
+
 	vec3 previous_z = z.xyz;
-	
+
 	// Edited at runtime
 	for (int i = 0; i < iterations; i++) {
 		bool escaped = false;
@@ -195,15 +201,21 @@ vec2 scene_sdf(vec3 p) {
 //if (current_formula == 22) using_sphairahedron = true;                              //-@22
 //if (current_formula == 23) lionbulb_iter(z, dz, original_z, orbit, i);              //-@23
 //if (current_formula == 24) jerusalemcube_iter(z, dz, original_z, orbit, i);         //-@24
+//if (current_formula == 25) bristorbrot_iter(z, dz, original_z, orbit, i);           //-@25
+//if (current_formula == 26) sintransform_iter(z, dz, original_z, orbit, i);          //-@26
+//if (current_formula == 27) logtransform_iter(z, dz, original_z, orbit, i);          //-@27
+//if (current_formula == 28) basictransform_iter(z, dz, original_z, orbit, i);        //-@28
+//if (current_formula == 29) inversiontransform_iter(z, dz, original_z, orbit, i);    //-@29
 		orbit = min(orbit, process_orbit_trap4d(z, original_z, i));
-		if (length(z) > escape_radius || escaped) break;
+		
+		if (dot(z, z) > escape_radius * escape_radius || escaped) break;
 	}
 
 	float r = length(z);
 	float de = 0.0;
-	
+
 	if (formulas[1] <= 0) single_formula = true; // TODO: Use a better method
-	
+
 	if (de_mode == 0) de = r / dz;
 	else if (de_mode == 1) de = 0.5 * log(r) * r / dz;
 	else if (de_mode == 2) {
@@ -222,7 +234,8 @@ if (single_formula) {
 //if (using_klenian) de = max(de, klenian_sdf(original_z).x); //-@11
 //if (using_newton) de = max(de, newton_sdf(original_z).x); //-@15
 }
-	
+
+	if (interior_mode) de = abs(de);
 	if (cut) de = max(de, dot(original_p + cut_position, normalize(cut_normal)));
 	if (sphere_inversion) de = de * d2 / (inversion_sphere.w + d * de);
 
@@ -266,9 +279,6 @@ vec3 calculate_normal(vec3 p, float h) {
 varying vec3 vertex_ls;
 void vertex() { vertex_ls = VERTEX; }
 
-uniform float reflection_intensity = 1.0;
-uniform int reflection_bounces = 1;
-
 vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color) {
 	vec3 data = ray_marcher(ray_origin, ray_dir);
 	float orbit_trap = data.x;
@@ -290,8 +300,6 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 
 		uv.x = (theta / (2.0 * PI)) + 0.5;
 		uv.y = phi / PI;
-
-		// uv = ray_dir.xy * 0.5 + 0.5;
 
 		if (bg_type == 0) final_color = pow(texture(bg_color, vec2(screen_uv.y, 0.0)).xyz, vec3(2.0));
 		if (bg_type == 1) final_color = texture(bg_image, uv).xyz;
@@ -320,7 +328,7 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 		float fresnelFactor = fresnel_intensity * pow(1.0 - cosTheta, fresnel_falloff);
 		final_color = mix(final_color, fresnel_color, fresnelFactor);
 	}
-	
+
 	// Tone mapping and Gamma correction
 	if (dfo < max_distance || bg_type != 1) {
 		final_color = tonemap_color(final_color);
@@ -367,11 +375,11 @@ vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_m
 		dfo = data.y;
 		hit_point = current_origin + current_dir * dfo;
 		normal = calculate_normal(hit_point, relative_epsilon ? epsilon / 3.4 * dfo : epsilon);
-		
+
 		if (!hit_surface) break;
 	}
 #endif
-	
+
 	// Vignette
 	if (is_exponential) {
 		vec2 vignette_uv = screen_uv * (1.0 - screen_uv.yx);
@@ -431,7 +439,7 @@ void fragment() {
 	float error_margin = 1.0; // Controls the border thickness
 	vec3 ro = (inverse(MODEL_MATRIX) * vec4(CAMERA_POSITION_WORLD, 1.0)).xyz;
 	vec3 rd = normalize(vertex_ls - ro);
-	
+
 	#ifdef USING_TILING
 	if (tiled) {
 		float total_tiles = float(tiles_x * tiles_y);

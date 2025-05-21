@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://3bm0lhhd8bm0"]
 
 [ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_qyg35"]
-[ext_resource type="Script" path="res://ui/fields/color field/color_field.gd" id="2_mk370"]
+[ext_resource type="Script" uid="uid://cvi8i3ou8b2qt" path="res://ui/fields/color field/color_field.gd" id="2_mk370"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l6l4t"]
 

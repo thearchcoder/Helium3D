@@ -5,15 +5,15 @@
 // [VARS]
 // float phase[0.0, 30.0] = 13.901
 // float power[2.0, 16.0] = 8.0
-// bool conjugate[false, true] = false
-// bool abs_x[false, true] = false
-// bool abs_y[false, true] = false
-// bool abs_z[false, true] = false
+// advanced bool conjugate[false, true] = false
+// advanced bool abs_x[false, true] = false
+// advanced bool abs_y[false, true] = false
+// advanced bool abs_z[false, true] = false
 // bool is_julia[false, true] = false
 // vec4 julia_c[(-3, -3, -3, -3), (3, 3, 3, 3)] = (0.5, 0.5, 0.5, 0.3)
-// float derivative_bias[0.0, 2.0] = 1.0
-// selection number_system[Triplex, Quaternion, Bicomplex] = Triplex
-// selection quaternion_mode[Negative X, Negative Y] = Negative Y
+// advanced float derivative_bias[0.0, 2.0] = 1.0
+// advanced selection number_system[Triplex, Quaternion, Bicomplex] = Triplex
+// advanced selection quaternion_mode[Negative X, Negative Y] = Negative Y
 // [CODE]
 
 uniform bool fmandelbulb_is_julia;

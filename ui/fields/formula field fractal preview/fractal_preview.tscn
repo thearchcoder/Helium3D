@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://c4dsfw5bjf2fg"]
 
-[ext_resource type="Script" path="res://ui/fields/formula field fractal preview/fractal_preview.gd" id="1_r8tj0"]
+[ext_resource type="Script" uid="uid://bixmbolamqsbl" path="res://ui/fields/formula field fractal preview/fractal_preview.gd" id="1_r8tj0"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="2_hkpm3"]
 
 [node name="FractalPreview" type="MarginContainer"]

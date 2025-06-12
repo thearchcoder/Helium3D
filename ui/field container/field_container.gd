@@ -19,24 +19,32 @@ const COLOR_FIELD_SCENE = preload('res://ui/fields/color field/color_field.tscn'
 const PALETTE_FIELD_SCENE = preload('res://ui/fields/palette field/palette_field.tscn')
 
 @onready var world: WorldEnvironment = %WorldEnvironment
+var force_stop_tiled_render: bool = false
 
 func field_changed(field_name: String, to: Variant) -> void: %TabContainer.field_changed(field_name, to)
+func field_changed_non_shader(field_name: String, to: Variant) -> void: %TabContainer.field_changed_non_shader(field_name, to)
 func i_am_a_field_container() -> void: pass
 
 func set_bloom_enabled(to: bool) -> void: 
 	world.environment.glow_enabled = to
 	%SubViewport.refresh_taa()
-	field_changed('bloom', to)
+	field_changed_non_shader('bloom', to)
 
 func set_bloom_intensity(to: float) -> void: 
 	world.environment.glow_bloom = to
 	%SubViewport.refresh_taa()
-	field_changed('bloom_intensity', to)
+	field_changed_non_shader('bloom_intensity', to)
 
 func set_bloom_falloff(to: float) -> void: 
 	world.environment.glow_strength = to
 	%SubViewport.refresh_taa()
-	field_changed('bloom_falloff', to)
+	field_changed_non_shader('bloom_falloff', to)
+
+func stop_tiled_render() -> void:
+	force_stop_tiled_render = true
+	get_tree().current_scene.busy_rendering_tiles = false
+	await get_tree().process_frame
+	force_stop_tiled_render = false
 
 func compute_tiled_render() -> void:
 	get_tree().current_scene.busy_rendering_tiles = true
@@ -67,16 +75,17 @@ func compute_tiled_render() -> void:
 		current_tile_node.value = i
 		
 		if %SubViewport.antialiasing != %SubViewport.AntiAliasing.TAA:
+			if force_stop_tiled_render: return
 			await get_tree().process_frame
 		else:
 			for j in (get_tree().current_scene.taa_samples as int):
+				if force_stop_tiled_render: return
 				await get_tree().process_frame
 		
 		var texture: Texture = %TextureRect.texture
-		var dir := DirAccess.open(get_tree().current_scene.HELIUM3D_PATH)
-		if not dir.dir_exists("tilerender"):
-			dir.make_dir("tilerender")
-
+		var target_dir := DirAccess.open(get_tree().current_scene.HELIUM3D_PATH)
+		if not target_dir.dir_exists("tilerender"):
+			target_dir.make_dir("tilerender")
 		var image: Image = texture.get_image()
 		var path: String = get_tree().current_scene.HELIUM3D_PATH + "/tilerender/tile_" + str(i) + ".png"
 		image.save_png(path)
@@ -86,30 +95,30 @@ func compute_tiled_render() -> void:
 	var img_width: int = images[0].get_width()
 	var img_height: int = images[0].get_height()
 	
-	var final_image: Image = images[0]
+	var final_image: Image = images[0].duplicate()
 	
 	for y in tiles_y:
 		for x in tiles_x:
 			var idx: int = y * tiles_x + x
 			if idx < images.size():
-				var tile_width: int = img_width / tiles_x
-				var tile_height: int = img_height / tiles_y
+				@warning_ignore('integer_division')
+				var start_x: int = (x * img_width) / tiles_x
+				@warning_ignore('integer_division')
+				var end_x: int = ((x + 1) * img_width) / tiles_x
+				@warning_ignore('integer_division')
+				var start_y: int = (y * img_height) / tiles_y
+				@warning_ignore('integer_division')
+				var end_y: int = ((y + 1) * img_height) / tiles_y
 				
-				var src_rect: Rect2i = Rect2i(
-					x * tile_width, 
-					y * tile_height, 
-					tile_width, 
-					tile_height
-				)
+				var tile_width: int = end_x - start_x
+				var tile_height: int = end_y - start_y
 				
-				var dst_pos: Vector2i = Vector2i(
-					x * tile_width,
-					y * tile_height
-				)
+				var src_rect: Rect2i = Rect2i(start_x, start_y, tile_width, tile_height)
+				var dst_pos: Vector2i = Vector2i(start_x, start_y)
 				
-				final_image.blend_rect(images[idx], src_rect, dst_pos)
+				final_image.blit_rect(images[idx], src_rect, dst_pos)
+				if force_stop_tiled_render: return
 	
-	# Cleanup tile images
 	var dir := DirAccess.open(get_tree().current_scene.HELIUM3D_PATH)
 	for path in tile_paths:
 		if dir.file_exists(path):
@@ -127,22 +136,27 @@ func _ready() -> void:
 		# Lighting
 		7: [
 			{'name': 'light'+l+'_position', 'type': 'vec3', 'from': Vector3(-20, -20, -20), 'to': Vector3(20, 20, 20), 'default_value': Vector3(10, 10, 10)},
+			{'name': 'light'+l+'_enabled', 'type': 'bool', 'default_value': true if light_id == 1 else false},
 			{'name': 'light'+l+'_color', 'type': 'color', 'default_value': Color('white')},
-			{'name': 'light'+l+'_intensity', 'type': 'float', 'from': 0, 'to': 2, 'default_value': 0.6},
-
-			{'name': 'shadow_steps', 'type': 'int', 'from': 0, 'to': 128, 'default_value': 64},
-			{'name': 'shadow_epsilon', 'type': 'float', 'from': 0, 'to': 0.4, 'default_value': 0.004},
-			{'name': 'shadow_raystep_multiplier', 'type': 'float', 'from': 1.0, 'to': 3.0, 'default_value': 1.5},
-
-			{'name': 'ambient_light', 'type': 'float', 'from': 0.0, 'to': 0.05, 'default_value': 0.004},
+			{'name': 'light'+l+'_intensity', 'type': 'float', 'from': 0, 'to': 2, 'default_value': 0.725},
+		],
+		# Lighting / General
+		6: [
+			# Shadow
+			{'name': 'shadow_steps', 'type': 'int', 'from': 0, 'to': 128, 'default_value': 128},
+			{'name': 'shadow_epsilon', 'type': 'float', 'from': 0, 'to': 0.4, 'default_value': 0.001},
+			{'name': 'shadow_raystep_multiplier', 'type': 'float', 'from': 1.0, 'to': 3.0, 'default_value': 3.0},
+			
+			# Specular highlights
 			{'name': 'specular_intensity', 'type': 'float', 'from': 0.0, 'to': 100.0, 'default_value': 15},
 			{'name': 'specular_sharpness', 'type': 'float', 'from': 0.0, 'to': 40.0, 'default_value': 20},
-			
+
+			# Reflections
 			{'name': 'reflection_intensity', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 0.0, 'onchange_override': func(val: float) -> void:
 			%Fractal.material_override.set_shader_parameter('reflection_intensity', val)
 			get_tree().current_scene.using_reflections = val >= 0.000001
 			get_tree().current_scene.update_fractal_code(%TabContainer.current_formulas)
-			%SubViewport.refresh_taa()
+			field_changed_non_shader('reflection_intensity', val)
 			},
 			{'name': 'reflection_bounces', 'type': 'int', 'from': 0, 'to': 6, 'default_value': 1},
 		],
@@ -155,23 +169,44 @@ func _ready() -> void:
 				%SubViewport.transparent_bg = value
 				field_changed('transparent_bg', value)
 				},
-			{'name': 'chroma_key_similarity', 'type': 'float', 'from': 0, 'to': 1, 'default_value': 0.25, 'onchange_override': func(value: float) -> void: 
-				%TextureRect.material.set_shader_parameter('chroma_key_similarity', value)
-				field_changed('chroma_key_similarity', value)
-				},
-			{'name': 'chroma_key_smoothness', 'type': 'float', 'from': 0, 'to': 1, 'default_value': 0.1, 'onchange_override': func(value: float) -> void: 
-				%TextureRect.material.set_shader_parameter('chroma_key_smoothness', value)
-				field_changed('chroma_key_smoothness', value)
-				},
 		],
-		# Lighting / Material
+		# Material / Diffuse
 		15: [
 			{'name': 'palette', 'type': 'palette', 'default_value': {'special_field': true, 'type': 'palette', 'is_blurry': false, 'offsets': PackedFloat32Array([0.0]), 'colors': PackedColorArray([Color('cccccc')])}},
+			{'name': 'coloring_mode', 'type': 'int', 'from': 0, 'to': 10, 'default_value': 0},
 			{'name': 'color_offset', 'type': 'float', 'from': 0, 'to': 2, 'default_value': 0},
+			{'name': 'color_exponent', 'type': 'float', 'from': 0, 'to': 4, 'default_value': 2},
+			{'name': 'color_wrapping', 'type': 'int', 'from': 0, 'to': 6, 'default_value': 0},
 			{'name': 'color_min_iterations', 'type': 'int', 'from': 0, 'to': 100, 'default_value': 0},
 			{'name': 'color_max_iterations', 'type': 'int', 'from': 0, 'to': 100, 'default_value': 30},
-			{'name': 'coloring_mode', 'type': 'int', 'from': 0, 'to': 10, 'default_value': 0}
 		],
+		# Material / Normals
+		22: [
+			{'name': 'normal_map', 'type': 'image', 'default_value': null},
+			{'name': 'normal_map_enabled', 'type': 'bool', 'default_value': false},
+			{'name': 'normal_map_projection', 'type': 'selection', 'values': ['Spherical', 'Planar', 'Triplanar'], 'default_value': 'Triplanar'},
+			{'name': 'normal_map_scale', 'type': 'float', 'from': 0, 'to': 4, 'default_value': 0.8},
+			{'name': 'normal_map_triplanar_sharpness', 'type': 'float', 'from': 0, 'to': 64, 'default_value': 12},
+			{'name': 'normal_map_height', 'type': 'float', 'from': -12, 'to': 12, 'default_value': 1}
+		],
+		# Material / Ambient Occlusion
+		23: [
+			{'name': 'ambient_occlusion_radius', 'type': 'float', 'from': 0.01, 'to': 1.0, 'default_value': 0.439},
+			{'name': 'ambient_occlusion_steps', 'type': 'int', 'from': 1, 'to': 25, 'default_value': 12},
+			{'name': 'ambient_occlusion_light_affect', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 0},
+		],
+		# Material / Ambient
+		24: [
+			{'name': 'ambient_light', 'type': 'float', 'from': 0.0, 'to': 0.2, 'default_value': 0.005},
+			{'name': 'ambient_light_from_background', 'type': 'bool', 'default_value': false},
+			{'name': 'ambient_light_color', 'type': 'color', 'default_value': Color('white')},
+		],
+		## Search Menu
+		#25: [
+			#{'name': 'formula', 'type': 'selection', 'values': ['None', 'Mandelbulb'], 'default_value': 'Mandelbulb'},
+			#{'name': 'ambient_light_from_background', 'type': 'bool', 'default_value': false},
+			#{'name': 'ambient_light_color', 'type': 'color', 'default_value': Color('white')},
+		#],
 		# Effects / Vignette
 		8: [
 			{'name': 'vignette_radius', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 0.9},
@@ -201,7 +236,7 @@ func _ready() -> void:
 			# TAA max samples
 			{'name': 'taa_samples', 'type': 'int', 'from': 2, 'to': 32, 'default_value': 16, 'onchange_override': func(val: int) -> void:
 				get_tree().current_scene.taa_samples = val
-				%SubViewport.refresh_taa()
+				field_changed_non_shader('taa_samples', val)
 				},
 			
 			# Texture filter
@@ -210,6 +245,7 @@ func _ready() -> void:
 					%TextureRect.texture_filter = TEXTURE_FILTER_LINEAR
 				elif val == 'Nearest':
 					%TextureRect.texture_filter = TEXTURE_FILTER_NEAREST
+				field_changed_non_shader('texture_filter', val)
 				},
 			
 			# Progressive rendering strength
@@ -218,8 +254,20 @@ func _ready() -> void:
 				val -= iupscaling
 				val = clamp(val, 0.25, 1.0)
 				%SubViewport.low_scaling = val
-				%SubViewport.refresh_taa()
+				field_changed_non_shader('low_scaling', val)
 				},
+		],
+		# Settings / Debug
+		20: [
+			{'name': 'display', 'type': 'selection', 'values': ['Render', 'Occlusion', 'Normals', 'Depth'], 'default_value': 'Render'},
+			{'name': 'depth_scale', 'type': 'float', 'from': 0, 'to': 4, 'default_value': 0.3}
+		],
+		# Animation / Setting
+		21: [
+			{'name': 'animation_fps', 'type': 'int', 'from': 0, 'to': 480, 'default_value': 60, 'onchange_override': func(val: int) -> void:
+				field_changed_non_shader('animation_fps', val)
+				%AnimationTrack.fps = val
+				}
 		],
 		# Modifiers / Transform
 		16: [
@@ -228,6 +276,7 @@ func _ready() -> void:
 			{'name': 'translation', 'type': 'vec3', 'from': Vector3(-4, -4, -4), 'to': Vector3(4, 4, 4), 'default_value': Vector3(0, 0, 0)},
 			{'name': 'rotation', 'type': 'vec3', 'from': Vector3(-PI, -PI, -PI), 'to': Vector3(PI, PI, PI), 'default_value': Vector3(0, 0, 0)},
 			{'name': 'kalaidoscope', 'type': 'vec3', 'from': Vector3(1, 1, 1), 'to': Vector3(40, 40, 40), 'default_value': Vector3(1, 1, 1)},
+			{'name': 'kalaidoscope_mode', 'type': 'selection', 'values': ['Kite 1', 'Kite 2', 'Effie'], 'default_value': 'Kite 1'},
 		],
 		# Effects / Fresnel
 		11: [
@@ -242,12 +291,6 @@ func _ready() -> void:
 			{'name': 'outline_intensity', 'type': 'float', 'from': 0.0, 'to': 4.0, 'default_value': 0.74},
 			{'name': 'outline_threshold', 'type': 'float', 'from': 0.0, 'to': 80.0, 'default_value': 19.34},
 			{'name': 'outline_falloff', 'type': 'float', 'from': 0.0, 'to': 4.0, 'default_value': 3.2},
-		],
-		# Lighting / Ambient Occlusion
-		6: [
-			{'name': 'ambient_occlusion_radius', 'type': 'float', 'from': 0.01, 'to': 1.0, 'default_value': 0.425},
-			{'name': 'ambient_occlusion_steps', 'type': 'int', 'from': 1, 'to': 25, 'default_value': 12},
-			{'name': 'ambient_occlusion_color', 'type': 'color', 'default_value': Color('white')},
 		],
 		# Effects / Tone Mapping
 		4: [
@@ -264,10 +307,9 @@ func _ready() -> void:
 		# Effects / DOF
 		5: [
 			{'name': 'dof_enabled', 'type': 'bool', 'default_value': false, 'onchange_override': func(val: bool) -> void: 
-			%Fractal.material_override.set_shader_parameter('dof_enabled', val)
 			get_tree().current_scene.using_dof = val
 			get_tree().current_scene.update_fractal_code(%TabContainer.current_formulas)
-			%SubViewport.refresh_taa()
+			field_changed('dof_enabled', val)
 			},
 			{'name': 'dof_samples', 'type': 'int', 'from': 1, 'to': 20, 'default_value': 3},
 			{'name': 'dof_focal_distance', 'type': 'float', 'from': 0.0, 'to': 4.0, 'default_value': 1.2},
@@ -281,11 +323,11 @@ func _ready() -> void:
 			{'name': 'escape_radius', 'type': 'float', 'from': 0, 'to': 500, 'default_value': 16},
 			{'name': 'fov', 'type': 'float', 'from': 10, 'to': 300, 'default_value': 75, 'onchange_override': func(val: Variant) -> void: 
 			%Camera.fov = val
-			%SubViewport.refresh_taa()
+			field_changed_non_shader('fov', val)
 			},
 			{'name': 'max_distance', 'type': 'float', 'from': 0.0, 'to': 100.0, 'default_value': 30.0},
 			{'name': 'raystep_multiplier', 'type': 'float', 'from': 0.01, 'to': 6.0, 'default_value': 1.0},
-			{'name': 'epsilon', 'type': 'float', 'from': 0.0000001, 'to': 0.01, 'default_value': 0.001},
+			{'name': 'epsilon', 'type': 'float', 'from': 0.0000001, 'to': 0.001, 'default_value': 0.0004},
 			{'name': 'relative_epsilon', 'type': 'bool', 'default_value': true},
 			{'name': 'de_mode', 'type': 'selection', 'values': ['LinearDE', 'LogDE', 'Automatic'], 'default_value': 'Automatic'},
 		],
@@ -297,19 +339,20 @@ func _ready() -> void:
 		# Tools / Tiling
 		14: [
 			{'name': 'tiled', 'type': 'bool', 'default_value': false, 'onchange_override': func(val: bool) -> void: 
-			%Fractal.material_override.set_shader_parameter('tiled', val)
+			%SubViewport.refresh_taa()
 			get_tree().current_scene.using_tiling = val
 			get_tree().current_scene.update_fractal_code(%TabContainer.current_formulas)
-			%SubViewport.refresh_taa()
+			%Fractal.material_override.set_shader_parameter('tiled', val)
 			if not val:
 				%TextureRect.material.set_shader_parameter('display_tiled_render', false)
 			},
-			{'name': 'compute_tiles', 'type': 'bool', 'hidden': true, 'default_value': false, 'onchange_override': func(val: bool) -> void: 
-			if Engine.get_frames_drawn() != 0: compute_tiled_render()
-			},
 			{'name': 'tiles_x', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},
 			{'name': 'tiles_y', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},
+			{'name': 'progression_strength', 'type': 'float', 'from': 0, 'to': 100, 'default_value': 100},
 			{'name': 'current_tile', 'type': 'int', 'from': 0, 'to': 40, 'default_value': 0},
+			{'name': 'compute_tiled_render', 'type': 'bool', 'default_value': false, 'onchange_override': func(val: bool) -> void:
+				if Engine.get_frames_drawn() != 0: %Rendering.compute_tiled_render()
+				},
 		]
 	}
 	fields = ALL_FIELD_CONTAINER_FIELDS[fields_list_id]
@@ -397,7 +440,6 @@ func update_fields_ui() -> void:
 			%Values.add_child(value_node)
 		elif variable_data['type'] == 'image':
 			value_node = IMAGE_FIELD_SCENE.instantiate()
-			#value_node.value = variable_data['default_value']
 			value_node.name = variable_name.to_pascal_case()
 			value_node.connect('value_changed', variable_data.get('onchange_override', func(to: Variant) -> void: field_changed(uniform_name, to)))
 			%Values.add_child(value_node)
@@ -428,3 +470,7 @@ func update_fields_ui() -> void:
 			label.add_theme_constant_override('line_spacing', 0)
 		
 		$Fields/Names.add_child(label)
+		
+		if variable_data.has('hidden') and variable_data['hidden'] == true:
+			label.visible = false
+			value_node.visible = false

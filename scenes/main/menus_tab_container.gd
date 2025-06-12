@@ -9,7 +9,7 @@ var total_visible_formulas: int = 1:
 		
 		var formula_tabcontainer: TabContainer = %TabContainer.get_node('Formula/TabContainer')
 		var formula_pages: Array[Node] = formula_tabcontainer.get_formula_pages()
-		for formula_page in formula_pages: 
+		for formula_page in formula_pages:
 			formula_page.reparent(formula_tabcontainer.get_node('Buffer'))
 		
 		for i in total_visible_formulas + 1:
@@ -30,6 +30,11 @@ var total_visible_formulas: int = 1:
 func _ready() -> void:
 	await get_tree().process_frame
 	set_formula('mandelbulb', 1)
+
+func field_changed_non_shader(field_name: String, value: Variant) -> void:
+	# A field changed but isn't mean't to be set in the shader
+	get_tree().current_scene.fields[field_name] = value
+	%SubViewport.refresh_taa()
 
 func field_changed(field_name: String, value: Variant) -> void:
 	get_tree().current_scene.fields[field_name] = value
@@ -65,10 +70,10 @@ func set_formula(formula_name: String, for_page: int) -> void:
 		if name_node: name_node.visible = false
 	
 	if formula_name.to_lower() != 'none':
-		var value_node: Node = %TabContainer.get_node('Formula/TabContainer').get_formula_page(for_page).get_node('Fields/HBoxContainer/Values').get_node(formula_node_name)
-		var name_node: Node = %TabContainer.get_node('Formula/TabContainer').get_formula_page(for_page).get_node('Fields/HBoxContainer/Names').get_node(formula_node_name)
-		if value_node: value_node.visible = true
-		if name_node: name_node.visible = true
+		var value_parent: Node = %TabContainer.get_node('Formula/TabContainer').get_formula_page(for_page).get_node('Fields/HBoxContainer/Values')
+		var name_parent: Node = %TabContainer.get_node('Formula/TabContainer').get_formula_page(for_page).get_node('Fields/HBoxContainer/Names')
+		if value_parent.has_node(formula_node_name): value_parent.get_node(formula_node_name).visible = true
+		if name_parent.has_node(formula_node_name): name_parent.get_node(formula_node_name).visible = true
 	
 	get_tree().current_scene.update_fractal_code(current_formulas)
 
@@ -86,7 +91,7 @@ func update_field_values(new_fields: Dictionary) -> void:
 	for field_name in (new_fields.keys() as Array[String]):
 		var field_val: Variant = new_fields[field_name]
 		
-		if field_val is EncodedObjectAsID or field_name in get_tree().current_scene.other_fields or field_name in ["other", 'keyframe_texture']:
+		if field_val is EncodedObjectAsID or field_name in get_tree().current_scene.other_fields or field_name in ["other", "keyframe_texture"]:
 			continue
 		
 		var search_result: Array[Control] = value_nodes.filter(func(x: Control) -> bool: return x.name.to_snake_case() == field_name.to_snake_case())
@@ -104,6 +109,9 @@ func update_field_values(new_fields: Dictionary) -> void:
 			continue
 		
 		if not target_value_node.has_method('i_am_a_selection_field'):
-			target_value_node.value = field_val
+			if typeof(target_value_node.value) == typeof(field_val):
+				target_value_node.value = field_val
+			else:
+				%Logs.print_console("Failed to load field '" + field_name + "', Value: " + str(field_val))
 		else:
 			target_value_node.index = field_val

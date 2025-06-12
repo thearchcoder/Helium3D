@@ -4,16 +4,17 @@
 // 19
 // [VARS]
 // bool preserve[false, true] = false
-// bool hex_fold1[false, true] = false
-// selection hex_fold2[Disabled, xz, xy, zx, zy] = Disabled
-// bool abs1_x[false, true] = true
-// bool abs1_z[false, true] = true
+// advanced bool hex_fold1[false, true] = false
+// advanced selection hex_fold2[Disabled, xz, xy, zx, zy] = Disabled
+// advanced bool abs1_x[false, true] = true
+// advanced bool abs1_z[false, true] = true
 // vec3 limit[(-1, -1, -1), (1, 1, 1)] = (0, 0, 0)
-// vec3 abs2_minus[(0, 0, 0), (2, 2, 2)] = (0, 0, 0)
-// vec3 abs2_plus[(0, 0, 0), (2, 2, 2)] = (0, 0, 0)
+// advanced vec3 abs2_minus[(0, 0, 0), (2, 2, 2)] = (0, 0, 0)
+// advanced vec3 abs2_plus[(0, 0, 0), (2, 2, 2)] = (0, 0, 0)
 // vec3 offset[(-2, -2, -2), (2, 2, 2)] = (1, 1, 1)
+// vec2 foldt[(-2, -2), (2, 2)] = (1, 1)
 // float scale[1.0, 4.0] = 3.0
-// float symmetry[1.0, 100.0] = 1.0
+// advanced float symmetry[1.0, 100.0] = 1.0
 // [CODE]
 uniform float fvicsek_scale;
 uniform float fvicsek_symmetry;
@@ -24,6 +25,7 @@ uniform vec3 fvicsek_abs2_minus;
 uniform vec3 fvicsek_abs2_plus;
 uniform vec3 fvicsek_offset;
 uniform bool fvicsek_hex_fold1;
+uniform vec3 fvicsek_foldt;
 uniform bool fvicsek_preserve;
 uniform int fvicsek_hex_fold2;
 const vec2 fvicsek_pl1 = vec2(-0.5, 0.8657);
@@ -48,6 +50,8 @@ void vicsek_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, in
 	if (fvicsek_hex_fold2 == 2) z.xz -= fvicsek_pl2 * 2.0 * min(0.0, dot(z.xz, fvicsek_pl2));
 	if (fvicsek_hex_fold2 == 3) z.zx -= fvicsek_pl2 * 2.0 * min(0.0, dot(z.zx, fvicsek_pl2));
 	if (fvicsek_hex_fold2 == 4) z.yx -= fvicsek_pl2 * 2.0 * min(0.0, dot(z.yx, fvicsek_pl2));
+	
+	z.xy = fvicsek_foldt.xy - abs(abs(z.xy) - fvicsek_foldt.xy);
 
 	z = abs(z - fvicsek_abs2_minus) - fvicsek_abs2_plus;
 

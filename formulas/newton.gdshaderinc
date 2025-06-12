@@ -1,5 +1,6 @@
 // [ID]
 // Newton
+// [DIFS]
 // [INDEX]
 // 15
 // [VARS]
@@ -7,19 +8,15 @@
 // bool intersection_mode[false, true] = true
 // float symmetry1[1.0, 100.0] = 1.0
 // float symmetry2[1.0, 100.0] = 1.0
-// vec4 pole1[(-2, -2, -1, -1), (2, 2, 1, 1)] = (1.0, 0.0, 1.0, 0.0)
-// vec4 pole2[(-2, -2, -1, -1), (2, 2, 1, 1)] = (-0.5, 0.866, 1.0, 0.0)
-// vec4 pole3[(-2, -2, -1, -1), (2, 2, 1, 1)] = (-0.5, -0.866, 1.0, 0.0)
-// vec4 invsphere[(-2, -2, -2, -2), (2, 2, 2, 2)] = (1, 0.037, 0, 1)
-// bool invert[false, true] = false
+// advanced vec4 pole1[(-2, -2, -1, -1), (2, 2, 1, 1)] = (1.0, 0.0, 1.0, 0.0)
+// advanced vec4 pole2[(-2, -2, -1, -1), (2, 2, 1, 1)] = (-0.5, 0.866, 1.0, 0.0)
+// advanced vec4 pole3[(-2, -2, -1, -1), (2, 2, 1, 1)] = (-0.5, -0.866, 1.0, 0.0)
 // [CODE]
 uniform int fnewton_plane;
 uniform bool fnewton_intersection_mode;
 uniform vec4 fnewton_pole1;
 uniform vec4 fnewton_pole2;
 uniform vec4 fnewton_pole3;
-uniform vec4 fnewton_invsphere;
-uniform bool fnewton_invert;
 uniform float fnewton_symmetry1;
 uniform float fnewton_symmetry2;
 
@@ -192,20 +189,9 @@ vec2 newton_sdf(vec4 z4d) {
 	float d2 = 0.0;
 	float trap = 100000.0;
 
-	if (fnewton_invert) {
-		p -= fnewton_invsphere.xyz;
-		d = length(p);
-		d2 = d * d;
-		p = (fnewton_invsphere.w * fnewton_invsphere.w / d2) * p;
-		p += fnewton_invsphere.xyz;
-	}
-
 	float de;
 	if (fnewton_intersection_mode) de = newton3d_de_intersection(p, fnewton_plane, trap);
 	else de = newton3d_de_rotation(p, fnewton_plane, trap);
 
-	if (fnewton_invert) de = de * d2 / (fnewton_invsphere.w + d * de);
-	de *= 0.5;
-
-	return vec2(de, trap);
+	return vec2(de * 0.5, trap);
 }

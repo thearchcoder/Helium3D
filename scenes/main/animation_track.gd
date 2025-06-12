@@ -1,6 +1,8 @@
 extends MarginContainer
 
 const ANIMATION_TRACK_KEYFRAME_SCENE = preload('res://ui/animation/track keyframe/animation_track_keyframe.tscn')
+var fps: int = 60
+
 var is_mouse_hovering: bool = false
 var keyframes: Dictionary = {}
 var is_playing: bool = false
@@ -9,7 +11,7 @@ var animation_frames_data: Array[Dictionary] = []
 var currently_at_frame: float = 0:
 	set(value):
 		currently_at_frame = value
-		%Time.position.x = (value / 60 * 133.0) + 60.0
+		%Time.position.x = (value / fps * 133.0) + 60
 
 var taa_frame_counter: int = 0
 var waiting_for_taa: bool = false
@@ -39,13 +41,6 @@ func update_animation_frames_data() -> void:
 	
 	var sorted_keyframes: Array = keyframes.keys()
 	sorted_keyframes.sort()
-	
-	if sorted_keyframes.size() < 2:
-		for key in (sorted_keyframes as Array[String]):
-			animation_frames_data.append(keyframes[key].duplicate(true))
-		return
-	
-	var fps: int = 60
 	
 	var required_fields: Array[String] = ["formulas", "keyframes", "total_visible_formula_pages", "player_position", "head_rotation", "camera_rotation"]
 	
@@ -93,12 +88,11 @@ func update_animation_frames_data() -> void:
 		frame_data = keyframes[base_keyframe_time].duplicate(true)
 		
 		for field_name in (frame_data.keys() as Array[String]):
-			if not field_name in field_interpolation_data and not field_name in required_fields:
+			if not field_name in field_interpolation_data and not field_name in required_fields and not frame == 0:
 				frame_data.erase(field_name)
 		
 		for field_name in (field_interpolation_data.keys() as Array[String]):
 			var field_info: Dictionary = field_interpolation_data[field_name]
-			var values: Array[Variant] = field_info["values"]
 			var times: Array[float] = field_info["times"]
 			
 			var start_idx := 0
@@ -112,7 +106,6 @@ func update_animation_frames_data() -> void:
 			var segment_start_time: float = times[start_idx]
 			var segment_end_time: float = times[start_idx + 1]
 			var segment_length: float = segment_end_time - segment_start_time
-			var segment_t: float = (current_time - segment_start_time) / segment_length
 			
 			var keyframe_values: Array[Variant] = []
 			for t in (times as Array[float]):
@@ -140,13 +133,21 @@ func update_animation_frames_data() -> void:
 		
 		animation_frames_data.append(frame_data)
 	
-	if animation_frames_data.size() == 0 and sorted_keyframes.size() > 0:
-		animation_frames_data.append(keyframes[sorted_keyframes[-1]].duplicate(true))
+	animation_frames_data.append(keyframes[sorted_keyframes[-1]].duplicate(true))
 
 func insert_keyframe(at_second: float) -> void:
 	var data: Dictionary = get_tree().current_scene.fields
 	data.merge({'total_visible_formula_pages': %TabContainer.total_visible_formulas, 'player_position': %Player.global_position, 'head_rotation': %Player.get_node('Head').global_rotation_degrees, 'camera_rotation': %Player.get_node('Head/Camera').global_rotation_degrees}, true)
-	data['keyframe_texture'] = ImageTexture.create_from_image(%SubViewport.get_texture().get_image())
+	var viewport_image: Image = %SubViewport.get_texture().get_image()
+	viewport_image.resize(100, 100, Image.INTERPOLATE_NEAREST)
+	var keyframe_texture: ImageTexture = ImageTexture.create_from_image(viewport_image)
+	data['keyframe_texture'] = Marshalls.raw_to_base64(keyframe_texture.get_image().get_data())
+	
+	# These fields are not supposed to be animated. This is intentional.
+	data.erase('animation_fps')
+	data.erase('tiles_x')
+	data.erase('tiles_y')
+	data.erase('taa_samples')
 	
 	keyframes[at_second] = data.duplicate(true)
 	reload_keyframes()
@@ -166,7 +167,16 @@ func remove_keyframe(target_keyframe_data: Dictionary) -> void:
 		var keyframe_data: Dictionary = keyframes[at_second]
 		if target_keyframe_data == keyframe_data:
 			keyframes.erase(at_second)
+			break
 	
+	var sorted_times: Array = keyframes.keys()
+	sorted_times.sort()
+	
+	var temp_keyframes: Dictionary = {}
+	for i in range(sorted_times.size()):
+		temp_keyframes[float(i + 1)] = keyframes[sorted_times[i]]
+	
+	keyframes = temp_keyframes
 	reload_keyframes()
 
 func reload_keyframes() -> void:
@@ -177,45 +187,46 @@ func reload_keyframes() -> void:
 		var keyframe_data: Dictionary = keyframes[at_second]
 		var keyframe: Control = ANIMATION_TRACK_KEYFRAME_SCENE.instantiate()
 		if not keyframe_data['keyframe_texture'] is EncodedObjectAsID:
-			keyframe.image = keyframe_data['keyframe_texture']
+			keyframe.image = ImageTexture.create_from_image(Image.create_from_data(100, 100, false, Image.FORMAT_RGB8, Marshalls.base64_to_raw(keyframe_data['keyframe_texture'])))
 		
 		keyframe.data = keyframe_data
 		%Keyframes.add_child(keyframe)
 
-func update_timeline() -> void:
-	for child in %Timeline.get_children():
-		%Timeline.remove_child(child)
-	
-	for i in 100 + 1:
-		var label: Label = Label.new()
-		label.add_theme_font_override('font', preload('res://resources/font/Rubik-SemiBold.ttf'))
-		label.add_theme_font_size_override('font_size', 15)
-		label.text = str(float(i))
-		%Timeline.add_child(label)
+#func update_timeline() -> void:
+	#for child in %Timeline.get_children():
+		#%Timeline.remove_child(child)
+	#
+	#for i in 100 + 1:
+		#var label: Label = Label.new()
+		#label.add_theme_font_override('font', preload('res://resources/font/Rubik-SemiBold.ttf'))
+		#label.add_theme_font_size_override('font_size', 15)
+		#label.text = str(float(i))
+		#%Timeline.add_child(label)
 
 func process_frame() -> void:
+	%SubViewport.refresh_taa()
+	
 	var image: Image = %SubViewport.get_texture().get_image()
 	
 	if get_tree().current_scene.using_tiling and FileAccess.file_exists(get_tree().current_scene.HELIUM3D_PATH + '/tilerender/combined.png'):
 		image = Image.load_from_file(get_tree().current_scene.HELIUM3D_PATH + '/tilerender/combined.png')
 	
 	if image and is_rendering and currently_at_frame >= 2:
-		var path: String = get_tree().current_scene.HELIUM3D_PATH + "/renders/frame_" + str(currently_at_frame - 2) + ".png"
+		var path: String = get_tree().current_scene.HELIUM3D_PATH + "/renders/frame_" + str(int(currently_at_frame - 2) + 1).trim_suffix('.0') + ".png"
 		image.save_png(path)
 	
 	if not is_rendering:
-		currently_at_frame += 1.0 / get_process_delta_time()
+		currently_at_frame += fps * get_process_delta_time()
 	else:
-		currently_at_frame += 1.0
+		currently_at_frame += 1
 	
-	%SubViewport.refresh_taa()
 	waiting_for_taa = false
 	
 	if using_tiling:
 		await get_tree().process_frame
 		%Rendering.compute_tiled_render()
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	update_tiling_variables()
 	
 	if not using_tiling:
@@ -247,7 +258,7 @@ func _process(delta: float) -> void:
 			stop()
 			return
 		
-		get_tree().current_scene.update_app_state(animation_frames_data[round(currently_at_frame)], true, false, false, 0.51, true if currently_at_frame != 0 else false)
+		get_tree().current_scene.update_app_state(animation_frames_data[round(currently_at_frame)], false)
 		
 		if %SubViewport.antialiasing == %SubViewport.AntiAliasing.TAA and is_rendering and not using_tiling:
 			waiting_for_taa = true
@@ -266,7 +277,11 @@ func _on_add_keyframe_button_pressed() -> void:
 	stop()
 
 func _on_set_time_start_button_pressed() -> void: currently_at_frame = 0
-func _on_set_time_end_button_pressed() -> void: currently_at_frame = (len(keyframes) - 1) * 60.0
+func _on_set_time_end_button_pressed() -> void: 
+	if len(keyframes) > 0:
+		currently_at_frame = (len(keyframes) - 1) * fps
+	else:
+		currently_at_frame = 0
 
 func _on_render_button_pressed() -> void:
 	if is_playing:

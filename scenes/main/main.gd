@@ -1,7 +1,7 @@
 extends Node3D
 
 # Pseudo-constant variables
-var VERSION := '0.8.3-beta'
+var VERSION := '0.9.0-beta'
 var PHASE := VERSION.split('-')[-1]
 var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
@@ -27,8 +27,35 @@ func _ready() -> void:
 	var dir := DirAccess.open("res://")
 	if not dir.dir_exists(HELIUM3D_PATH):
 		dir.make_dir(HELIUM3D_PATH)
+	
+	# Make sure the BG panel is behind the fields in the %AnimationSettings node.
+	await get_tree().process_frame
+	%AnimationSettings.move_child(%AnimationSettings.get_node('BackPanel'), 0)
 
-func get_app_state() -> Dictionary:
+func get_formulas_forloop_code() -> Array:
+	initialize_formulas('res://formulas/')
+	var formulas_forloop_code: Array = []
+	for formula in formulas:
+		for i in range(formulas.size()):
+			if formula['difs']:
+				formulas_forloop_code.append('//if (current_formula == ' + str(formula['index']) + ') using_' + formula['id'] + ' = true; //-@' + str(formula['index']))
+			else:
+				var params: String = 'z, dz, original_z, orbit, i'
+				if formula['id'] == 'kochcube':
+					params += ', s'
+				
+				formulas_forloop_code.append('//if (current_formula == ' + str(formula['index']) + ') ' + formula['id'] + '_iter(' + params + '); //-@' + str(formula['index']))
+			break
+	
+	return formulas_forloop_code
+	#print('// -@Formulas' in %Fractal.material_override.shader.code)
+	#%Fractal.material_override.shader.code = %Fractal.material_override.shader.code.replace('// -@Formulas', '\n'.join(formulas_forloop_code))
+	#print('// -@Formulas' in %Fractal.material_override.shader.code)
+	#var file: FileAccess = FileAccess.open('shader_code_ready', FileAccess.WRITE)
+	#file.store_string(%Fractal.material_override.shader.code)
+	#file.close()
+
+func get_app_state(optimize_for_clipboard: bool = false) -> Dictionary:
 	var data: Dictionary = fields.duplicate(true)
 	var other_data: Dictionary = {}
 	
@@ -39,6 +66,12 @@ func get_app_state() -> Dictionary:
 	other_data["camera_rotation"] = %Player.get_node("Head/Camera").global_rotation_degrees
 	other_data["keyframes"] = %AnimationTrack.keyframes
 	
+	if optimize_for_clipboard:
+		for value_node in Global.value_nodes:
+			if value_node.get_node('../../../../../..').name == 'Buffer':
+				if value_node.get_meta('formula_index') != 0 and value_node.get_meta('formula_index') not in %TabContainer.current_formulas:
+					data.erase(value_node.get_meta('uniform_name'))
+	
 	data["other"] = other_data
 	
 	return data
@@ -47,14 +80,47 @@ func initialize_formulas(path_to_formulas: String) -> void:
 	if formulas != []:
 		return
 	
-	for formula_file_path in DirAccess.get_files_at(path_to_formulas):
-		if formula_file_path.get_file().get_extension().ends_with('uid'):
+	var directories_to_process: Array[String] = [path_to_formulas]
+	
+	while directories_to_process.size() > 0:
+		var current_dir_path: String = directories_to_process.pop_back()
+		var dir: DirAccess = DirAccess.open(current_dir_path)
+		
+		if dir == null:
 			continue
 		
-		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
-		var formula_file_contents: String = formula_file.get_as_text()
-		var data: Dictionary = parse_data(formula_file_contents)
-		formulas.append(data)
+		dir.list_dir_begin()
+		var file_name: String = dir.get_next()
+		
+		while file_name != "":
+			var full_path: String = current_dir_path + "/" + file_name
+			
+			if dir.current_is_dir():
+				directories_to_process.append(full_path)
+			else:
+				if not file_name.get_extension().ends_with('uid'):
+					var formula_file: FileAccess = FileAccess.open(full_path, FileAccess.READ)
+					if formula_file != null:
+						var formula_file_contents: String = formula_file.get_as_text()
+						var data: Dictionary = parse_data(formula_file_contents)
+						
+						# Some external tag data
+						if '// [DIFS]' in formula_file_contents:
+							data['difs'] = true
+						else:
+							data['difs'] = false
+						
+						if current_dir_path.get_file() == "mb3d":
+							data['software'] = 'Mandelbulb3D'
+						else:
+							data['software'] = 'Helium3D'
+						
+						formulas.append(data)
+						formula_file.close()
+			
+			file_name = dir.get_next()
+		
+		dir.list_dir_end()
 	
 	formulas.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["index"] < b["index"])
 
@@ -176,7 +242,7 @@ func update_fields(new_fields: Dictionary) -> void:
 	
 	%TabContainer.update_field_values(new_fields) # Update node values as well
 
-func update_app_state(data: Dictionary, update_app_fields: bool = true, use_lerp: bool = false, update_keyframes: bool = true, delta_multiplier: float = 1.0, use_fast_diff: bool = false) -> void:
+func update_app_state(data: Dictionary, update_keyframes: bool = true) -> void:
 	var old_data: Dictionary = data.duplicate(true)
 	data = data.duplicate(true)
 	
@@ -186,20 +252,31 @@ func update_app_state(data: Dictionary, update_app_fields: bool = true, use_lerp
 			data.erase(other_field_name)
 	
 	var other_data: Dictionary = data['other']
-	var delta: float = get_process_delta_time() * delta_multiplier
 	var player: Node = %Player
 	var head: Node = %Player.get_node('Head')
 	var camera: Node = %Player.get_node('Head').get_node('Camera')
 	data.erase('other')
 	
-	if update_app_fields:
-		update_fields(data)
+	if data.has('formulas') and data['formulas'] == %TabContainer.current_formulas:
+		# Switching formulas each frame in the animation is very expensive.
+		data.erase('formulas')
+	
+	update_fields(data)
 	
 	player.global_position = other_data['player_position']
 	head.global_rotation_degrees = other_data['head_rotation']
 	camera.global_rotation_degrees = other_data['camera_rotation']
 
-	%TabContainer.total_visible_formulas = other_data.get('total_visible_formulas', count_non_zero(data.get('formulas', [1])))
+	var new_total_visible_formulas: int = %TabContainer.total_visible_formulas
+	
+	if other_data.has('total_visible_formulas'):
+		new_total_visible_formulas = other_data['total_visible_formulas']
+	elif data.has('formulas'): 
+		new_total_visible_formulas = count_non_zero(data['formulas'])
+	
+	if %TabContainer.total_visible_formulas != new_total_visible_formulas:
+		%TabContainer.total_visible_formulas = new_total_visible_formulas
+	
 	%SubViewport.refresh_taa()
 	
 	if update_keyframes:
@@ -230,6 +307,10 @@ func _on_viewport_height_text_changed(new_text: String) -> void:
 func update_fractal_code(current_formulas: Array[int]) -> void:
 	var shader := %Fractal.material_override.shader as Shader
 	var shader_code := shader.code
+	var formulas_forloop_code: Array = get_formulas_forloop_code()
+	
+	if '// -@Formulas' in shader_code:
+		shader_code = shader_code.replace('// -@Formulas', '\n'.join(formulas_forloop_code))
 	
 	var lines := shader_code.split("\n")
 	var modified_lines := []
@@ -283,22 +364,6 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 	shader.code = "\n".join(modified_lines)
 	%Fractal.material_override.shader = shader
 
-func get_usable_formulas() -> Array[int]:
-	var list := []
-	var shader_code: String = %Fractal.material_override.shader.code
-	var lines: Array = shader_code.split("\n")
-	
-	for line in (lines as Array[String]):
-		var regex := RegEx.new()
-		regex.compile("-@(\\d+)$")
-		var result := regex.search(line)
-		
-		if result:
-			var formula_id := result.get_string(1)
-			list.append(int(formula_id))
-	
-	return list
-
 # Shortcuts
 func _input(event: InputEvent) -> void:
 	# Animation button shortcuts
@@ -311,14 +376,19 @@ func _input(event: InputEvent) -> void:
 		%AddKeyframeButton.emit_signal("pressed")
 
 	if Input.is_action_just_pressed('shortcut save project'):
-		%Save.pressed.emit()
+		%Save.get_popup().id_pressed.emit(1)
 	elif Input.is_action_just_pressed('shortcut save all'):
-		%SaveAll.pressed.emit()
+		%Save.get_popup().id_pressed.emit(0)
 	elif Input.is_action_just_pressed('shortcut save image'):
-		%SavePicture.pressed.emit()
+		%Save.get_popup().id_pressed.emit(2)
 	
 	if Input.is_action_just_pressed('shortcut load'):
-		%Load.pressed.emit()
+		%Load.get_popup().id_pressed.emit(1)
+	
+	if Input.is_action_just_pressed('shortcut load clipboard'):
+		%Load.get_popup().id_pressed.emit(0)
+	elif Input.is_action_just_pressed('shortcut save clipboard'):
+		%Save.get_popup().id_pressed.emit(3)
 
 func _on_difficulty_pressed() -> void:
 	if difficulty == 'simple':

@@ -30,7 +30,7 @@ void lionbulb_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, 
 
 	//dz = power * pow(length(z), (power - 1.0) * 0.5) * dz + 2.0;
 	dz = max(dz, pow(length(z), power - 1.0) * dz * power + 1.0);
-	
+
 	if (z.z > z.x) z.zx = z.xz;
 	if (z.z > z.y) z.zy = z.yz;
 	if (z.x > z.y) z.xy = z.yx;

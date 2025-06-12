@@ -17,6 +17,15 @@ func set_upscaling_factor(factor: float) -> void:
 		set_antialiasing(AntiAliasing.TAA)
 	else:
 		%SettingsBar._on_antialiasing_value_changed(%Antialiasing.options[%Antialiasing.index])
+	
+	var iupscaling: float = 1.0 - upscaling
+	var val: float = low_scaling
+	val -= iupscaling
+	val = clamp(val, 0.25, 1.0)
+	low_scaling = val
+	high_scaling = clamp(1.0 - iupscaling, 0.25, 1.0)
+	
+	refresh_taa()
 
 func _ready() -> void:
 	since_last_dynamic_update = 0.0
@@ -37,7 +46,7 @@ func set_antialiasing(target_aa: AntiAliasing) -> void:
 		screen_space_aa = SCREEN_SPACE_AA_DISABLED
 
 func _process(delta: float) -> void:
-	var low_scaling_time: float = 0.75 / Engine.get_frames_per_second()
+	var low_scaling_time: float = 0.0
 	var taa_samples: int = get_tree().current_scene.taa_samples
 	
 	var rendered_condition: bool = false
@@ -74,7 +83,17 @@ func refresh_taa() -> void:
 	if not %AnimationTrack.is_playing:
 		await get_tree().process_frame
 		scaling_3d_scale = old_scaling_3d_scale
+	
+	#if get_tree().current_scene.using_tiling:
+		#if get_tree().current_scene.busy_rendering_tiles:
+			#%Rendering.stop_tiled_render()
+			#%Rendering.compute_tiled_render()
+		#if not get_tree().current_scene.busy_rendering_tiles:
+			#%Rendering.compute_tiled_render()
 
 func refresh_no_taa() -> void:
 	since_last_dynamic_update = 0.0
 	since_last_dynamic_update_frame = 0
+	
+	#if get_tree().current_scene.using_tiling and not get_tree().current_scene.busy_rendering_tiles:
+		#%Rendering.compute_tiled_render()

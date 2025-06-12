@@ -10,7 +10,7 @@
 [node name="FloatField" instance=ExtResource("1_2r76m")]
 anchor_right = 0.108
 anchor_bottom = 0.025
-offset_right = 0.399994
+offset_right = 0.639999
 offset_bottom = 0.0
 script = ExtResource("2_tyxyw")
 

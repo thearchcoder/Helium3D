@@ -25,7 +25,7 @@ func get_formula_index_from_name(formatted_id: String) -> int:
 	
 	return 0
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if $"../../..".visible and Input.is_action_just_pressed('enter'):
 		$"../SearchCloseButton".emit_signal('pressed')
 		_on_option_button_item_selected($OptionButton.selected)

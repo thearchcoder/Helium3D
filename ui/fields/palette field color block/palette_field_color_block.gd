@@ -35,7 +35,7 @@ func set_block_offset(new_offset: float) -> void:
 func free_object(obj: Object) -> void:
 	obj.free()
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if not is_instance_valid(self):
 		return
 	
@@ -59,7 +59,6 @@ func _process(delta: float) -> void:
 		original_position_x = position.x
 	
 	if Input.is_action_just_released("mouse click"):
-		var mouse_delta := get_global_mouse_position().x - drag_start_x
 		is_dragging = false
 		$Circle/ColorPickerButton.visible = true
 	

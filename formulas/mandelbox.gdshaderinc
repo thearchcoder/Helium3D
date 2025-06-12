@@ -5,12 +5,12 @@
 // [VARS]
 // float scale[1.0, 3.0] = 2.5
 // float radius1[0.0, 3.0] = 1.0
-// float fold1[0.0, 3.0] = 0.2
-// float fold1_strength[0.0, 3.0] = 0.0
+// advanced float fold1[0.0, 3.0] = 0.2
+// advanced float fold1_strength[0.0, 3.0] = 0.0
 // float radius2[0.0, 3.0] = 0.0
 // vec3 box_folds[(-2, -2, -2), (2, 2, 2)] = (1, 0, 0)
-// bool is_julia[false, true] = false
-// vec3 julia_c[(-8, -8, -8), (8, 8, 8)] = (5, 5, 5)
+// advanced bool is_julia[false, true] = false
+// advanced vec3 julia_c[(-8, -8, -8), (8, 8, 8)] = (5, 5, 5)
 // [CODE]
 uniform float fmandelbox_scale;
 uniform float fmandelbox_radius1;
@@ -43,7 +43,7 @@ void mandelbox_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit,
 	vec3 z = z4.xyz;
 	vec3 c = fmandelbox_is_julia ? fmandelbox_julia_c : original_z.xyz * 5.5;
 	if (i == 0) z *= 5.5;
-
+	
 	//if (z.x - z.z < 0.0) z.xz = z.zx;
 	if (length(fmandelbox_box_folds.x) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.x));
 	if (length(fmandelbox_box_folds.y) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.y));

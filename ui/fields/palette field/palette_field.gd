@@ -10,6 +10,8 @@ var value: Dictionary = {'special_field': true, 'type': 'palette', 'is_blurry': 
 		var offsets: PackedFloat32Array = value['offsets']
 		var colors: PackedColorArray = value['colors']
 		
+		changed_gradient()
+		
 		for block in %Blocks.get_children():
 			%Blocks.remove_child(block)
 		
@@ -21,6 +23,22 @@ var value: Dictionary = {'special_field': true, 'type': 'palette', 'is_blurry': 
 			block.color = color
 			%Blocks.add_child(block)
 			block.set_block_offset(block.offset)
+			block.position.y = size.y - 23
+		
+		changed_gradient()
+		
+		for block in %Blocks.get_children():
+			%Blocks.remove_child(block)
+		
+		for i in len(offsets):
+			var color := colors[i]
+			var offset := offsets[i]
+			var block := BLOCK_SCENE.instantiate()
+			block.offset = offset
+			block.color = color
+			%Blocks.add_child(block)
+			block.set_block_offset(block.offset)
+			block.position.y = size.y - 23
 		
 		changed_gradient()
 
@@ -59,8 +77,7 @@ func _on_button_button_down() -> void:
 	block.offset = 0.5
 	
 	var first_pos: Vector2 = %Blocks.get_child(0).position
-	var mouse_offset: float = get_global_mouse_position().x - first_pos.x
-	block.position = Vector2(0, (size.y - 23))
+	block.position = Vector2(0, size.y - 23)
 	
 	block.is_dragging = true
 	block.prevent_opening_colorpicker = true
@@ -70,5 +87,4 @@ func _on_button_button_down() -> void:
 
 func _on_blur_button_pressed() -> void:
 	value['is_blurry'] = !value['is_blurry']
-	# Call setter
-	value = value
+	changed_gradient()

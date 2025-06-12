@@ -124,6 +124,9 @@ func initialize_formulas() -> void:
 				parent.add_child(value_node)
 			
 			value_node.set_meta('snake_case_name', variable_name)
+			value_node.set_meta('uniform_name', uniform_name)
+			value_node.set_meta('formula_name', formula['id'])
+			value_node.set_meta('formula_index', formula['index'])
 
 func add_spaces(text: String) -> String:
 	var result := ""

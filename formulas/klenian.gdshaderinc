@@ -51,7 +51,7 @@ void klenian_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, i
 vec2 klenian_sdf(vec4 z4) {
 	vec4 z = z4;
 	vec4 original_z = z;
-	
+
 	// kleinian precompute
 	vec3 lz = z.xyz + vec3(1.0);
 	vec3 llz = z.xyz + vec3(-1.0);
@@ -61,12 +61,13 @@ vec2 klenian_sdf(vec4 z4) {
 	float f = sign(b);
 	float dz = 1.0;
 	float orbit = 100000.0;
-	
+
 	for (int i = 0; i < iterations; i++) {
 		bool escaped = false;
 		klenian_iter(z, dz, original_z, orbit, i, DF, a, b, f, llz, lz, escaped);
 		if (escaped) break;
 	}
-	
-	return vec2(min(fklenian_show_balls ? min(z.y, a - z.y) : z.y, 0.3) / max(DF, 2.0), 0.0);
+
+	float de = min(fklenian_show_balls ? min(z.y, a - z.y) : z.y, 0.3) / max(DF, 2.0);
+	return vec2(de * 0.5, 0.0);
 }

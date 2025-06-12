@@ -1,8 +1,9 @@
-[gd_scene load_steps=48 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=51 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
 [ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="3_4yvvm"]
+[ext_resource type="Script" uid="uid://l7fr1idjfuni" path="res://compositor/helium_compositor.gd" id="4_p8abn"]
 [ext_resource type="Script" uid="uid://bj6ithljpyig5" path="res://scenes/main/tool_bar.gd" id="5_og0rs"]
 [ext_resource type="PackedScene" uid="uid://c6ykqwdde41of" path="res://ui/fields/selection field/selection_field.tscn" id="6_50v3j"]
 [ext_resource type="Script" uid="uid://bss7wdopwtlls" path="res://scenes/main/texture_rect.gd" id="6_dbdf5"]
@@ -27,26 +28,37 @@
 render_priority = 0
 shader = ExtResource("3_4yvvm")
 shader_parameter/dof_enabled = false
-shader_parameter/dof_samples = 3
-shader_parameter/dof_focal_distance = 7.0
-shader_parameter/dof_lens_distance = 10.3
+shader_parameter/dof_samples = 0
+shader_parameter/dof_focal_distance = 0.0
+shader_parameter/dof_lens_distance = 0.0
 shader_parameter/dof_aperture = 0.0
 shader_parameter/light1_intensity = 0.0
 shader_parameter/light2_intensity = 0.0
+shader_parameter/light1_enabled = false
+shader_parameter/light2_enabled = false
 shader_parameter/light1_position = Vector3(0, 0, 0)
 shader_parameter/light2_position = Vector3(0, 0, 0)
 shader_parameter/light1_color = Vector3(0, 0, 0)
 shader_parameter/light2_color = Vector3(0, 0, 0)
+shader_parameter/ambient_light_from_background = false
 shader_parameter/ambient_light = 0.0
+shader_parameter/ambient_light_color = Vector3(0, 0, 0)
+shader_parameter/color_exponent = 0.0
 shader_parameter/specular_intensity = 0.0
 shader_parameter/specular_sharpness = 0.0
 shader_parameter/reflection_intensity = 0.0
 shader_parameter/reflection_bounces = 0
+shader_parameter/normal_map_enabled = false
+shader_parameter/normal_map_projection = 0
+shader_parameter/normal_map_triplanar_sharpness = 0.0
+shader_parameter/normal_map_scale = 0.0
+shader_parameter/normal_map_height = 0.0
 shader_parameter/shadow_steps = 32
 shader_parameter/shadow_raystep_multiplier = 1.0
 shader_parameter/shadow_epsilon = 0.01
 shader_parameter/coloring_mode = 0
 shader_parameter/color_offset = 0.0
+shader_parameter/color_wrapping = 0
 shader_parameter/color_min_iterations = 0
 shader_parameter/color_max_iterations = 0
 shader_parameter/iterations = 8
@@ -60,8 +72,8 @@ shader_parameter/escape_radius = 0.0
 shader_parameter/de_mode = 1
 shader_parameter/formulas = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/ambient_occlusion_steps = 6
+shader_parameter/ambient_occlusion_light_affect = 0.0
 shader_parameter/ambient_occlusion_radius = 0.5
-shader_parameter/ambient_occlusion_color = Vector3(1, 1, 1)
 shader_parameter/vignette_strength = 0.7
 shader_parameter/vignette_radius = 0.8
 shader_parameter/is_exponential = true
@@ -75,28 +87,33 @@ shader_parameter/tone_mapping = 0
 shader_parameter/exposure = 1.0
 shader_parameter/gamma = 2.2
 shader_parameter/outline_color = Color(1, 0.5, 0.2, 1)
-shader_parameter/outline_intensity = 1.0
-shader_parameter/outline_threshold = 30.0
-shader_parameter/outline_falloff = 2.0
+shader_parameter/outline_intensity = 0.0
+shader_parameter/outline_threshold = 0.0
+shader_parameter/outline_falloff = 0.0
 shader_parameter/outline = false
-shader_parameter/repeat_gap = Vector3(2, 2, 2)
+shader_parameter/repeat_gap = Vector3(0, 0, 0)
 shader_parameter/repeat = false
 shader_parameter/cut = false
-shader_parameter/cut_normal = Vector3(0, 1, 0)
+shader_parameter/cut_normal = Vector3(0, 0, 0)
 shader_parameter/cut_position = Vector3(0, 0, 0)
 shader_parameter/sphere_inversion = false
-shader_parameter/inversion_sphere = Vector4(1, 1, 0, 1)
+shader_parameter/inversion_sphere = Vector4(0, 0, 0, 0)
 shader_parameter/inversion_angle = 0.0
 shader_parameter/translation = Vector3(0, 0, 0)
 shader_parameter/rotation = Vector3(0, 0, 0)
-shader_parameter/kalaidoscope = Vector3(1, 1, 1)
+shader_parameter/kalaidoscope = Vector3(0, 0, 0)
+shader_parameter/kalaidoscope_mode = 0
 shader_parameter/tiled = false
-shader_parameter/tiles_x = 4
-shader_parameter/tiles_y = 4
+shader_parameter/tiles_x = 0
+shader_parameter/tiles_y = 0
 shader_parameter/current_tile = 0
-shader_parameter/transparent_bg = true
+shader_parameter/transparent_bg = false
+shader_parameter/display = 0
+shader_parameter/depth_scale = 0.0
 shader_parameter/bg_type = 0
 shader_parameter/number_of_active_formulas = 0.0
+shader_parameter/progression_strength = 100.0
+shader_parameter/fmandelbulb_z_mul = 0.0
 shader_parameter/fmandelbulb_is_julia = false
 shader_parameter/fmandelbulb_conjugate = false
 shader_parameter/fmandelbulb_abs_x = false
@@ -108,6 +125,60 @@ shader_parameter/fmandelbulb_power = 0.0
 shader_parameter/fmandelbulb_phase = 0.0
 shader_parameter/fmandelbulb_quaternion_mode = 0
 shader_parameter/fmandelbulb_number_system = 0
+shader_parameter/fmandelbox_scale = 0.0
+shader_parameter/fmandelbox_radius1 = 0.0
+shader_parameter/fmandelbox_radius2 = 0.0
+shader_parameter/fmandelbox_box_folds = Vector3(0, 0, 0)
+shader_parameter/fmandelbox_julia_c = Vector3(0, 0, 0)
+shader_parameter/fmandelbox_is_julia = false
+shader_parameter/fmandelbox_fold1 = 0.0
+shader_parameter/fmandelbox_fold1_strength = 0.0
+shader_parameter/famazingsurf_fold = Vector3(0, 0, 0)
+shader_parameter/famazingsurf_rotation = Vector3(0, 0, 0)
+shader_parameter/famazingsurf_offset = Vector3(0, 0, 0)
+shader_parameter/famazingsurf_julia_c = Vector3(0, 0, 0)
+shader_parameter/famazingsurf_fold2 = Vector2(0, 0)
+shader_parameter/famazingsurf_min_radius = 0.0
+shader_parameter/famazingsurf_scale = 0.0
+shader_parameter/famazingsurf_fold_z = false
+shader_parameter/famazingsurf_is_julia = false
+shader_parameter/fbairddelta_angle = 0.0
+shader_parameter/fbairddelta_scale = 0.0
+shader_parameter/fbairddelta_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fbairddelta_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskiicosahedron_scale = 0.0
+shader_parameter/fsierpinskiicosahedron_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskiicosahedron_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskiicosahedron_offset = Vector3(0, 0, 0)
+shader_parameter/fsierpinskitetrahedron_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskitetrahedron_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskitetrahedron_offset = Vector3(0, 0, 0)
+shader_parameter/fsierpinskitetrahedron_scale = 0.0
+shader_parameter/fmengersponge_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fmengersponge_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fmengersponge_offset = Vector3(0, 0, 0)
+shader_parameter/fmengersponge_scale = 0.0
+shader_parameter/fsierpinskioctahedron_scale = 0.0
+shader_parameter/fsierpinskioctahedron_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskioctahedron_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskioctahedron_offset = Vector3(0, 0, 0)
+shader_parameter/fsierpinskidodecahedron_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskidodecahedron_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fsierpinskidodecahedron_offset = Vector3(0, 0, 0)
+shader_parameter/fsierpinskidodecahedron_scale = 0.0
+shader_parameter/fpseudoklenian_min = Vector4(0, 0, 0, 0)
+shader_parameter/fpseudoklenian_max = Vector4(0, 0, 0, 0)
+shader_parameter/fpseudoklenian_sign = 0.0
+shader_parameter/fpseudoklenian_scale = 0.0
+shader_parameter/fklenian_show_balls = false
+shader_parameter/fklenian_x = 0.0
+shader_parameter/fklenian_y = 0.0
+shader_parameter/fklenian_box_size_x = 0.0
+shader_parameter/fklenian_box_size_z = 0.0
+shader_parameter/fspheretree_symmetry = 0.0
+shader_parameter/fkaliredux_folds = Vector4(0, 0, 0, 0)
+shader_parameter/fkaliredux_minus = Vector3(0, 0, 0)
+shader_parameter/fkaliredux_scale = 0.0
 shader_parameter/fkochcube_scale = 0.0
 shader_parameter/fkochcube_variant = 0
 shader_parameter/fkochcube_first_zrev = false
@@ -123,85 +194,24 @@ shader_parameter/fkochcube_fold2 = 0
 shader_parameter/fkochcube_fold3 = false
 shader_parameter/fkochcube_fold4 = false
 shader_parameter/fkochcube_reflection = false
-shader_parameter/fkochwire_abs_plus = Vector3(0, 0, 0)
-shader_parameter/fkochwire_abs_minus = Vector3(0, 0, 0)
-shader_parameter/fkochwire_fold1 = false
-shader_parameter/fkochwire_fold2 = false
-shader_parameter/fkochwire_fold3 = false
-shader_parameter/fkochwire_abs_x = false
-shader_parameter/fkochwire_abs_y = false
-shader_parameter/fkochwire_abs_z = false
-shader_parameter/fkochwire_abs2_zx = false
-shader_parameter/fkochwire_offset = Vector3(0, 0, 0)
-shader_parameter/fkochwire_scale = 0.0
-shader_parameter/fkochwire_symmetry = 0.0
-shader_parameter/fmandelbox_scale = 0.0
-shader_parameter/fmandelbox_radius1 = 0.0
-shader_parameter/fmandelbox_radius2 = 0.0
-shader_parameter/fmandelbox_box_folds = Vector3(0, 0, 0)
-shader_parameter/fmandelbox_julia_c = Vector3(0, 0, 0)
-shader_parameter/fmandelbox_is_julia = false
-shader_parameter/fmandelbox_fold1 = 0.0
-shader_parameter/fmandelbox_fold1_strength = 0.0
-shader_parameter/fsierpinskitetrahedron_rotation1 = Vector3(0, 0, 0)
-shader_parameter/fsierpinskitetrahedron_rotation2 = Vector3(0, 0, 0)
-shader_parameter/fsierpinskitetrahedron_offset = Vector3(0, 0, 0)
-shader_parameter/fsierpinskitetrahedron_scale = 0.0
-shader_parameter/fmengersponge_rotation1 = Vector3(0, 0, 0)
-shader_parameter/fmengersponge_rotation2 = Vector3(0, 0, 0)
-shader_parameter/fmengersponge_offset = Vector3(0, 0, 0)
-shader_parameter/fmengersponge_scale = 0.0
-shader_parameter/fpseudoklenian_min = Vector4(0, 0, 0, 0)
-shader_parameter/fpseudoklenian_max = Vector4(0, 0, 0, 0)
-shader_parameter/fpseudoklenian_sign = 0.0
-shader_parameter/fpseudoklenian_scale = 0.0
-shader_parameter/famazingsurf_fold = Vector2(0, 0)
-shader_parameter/famazingsurf_rotation = Vector3(0, 0, 0)
-shader_parameter/famazingsurf_offset = Vector3(0, 0, 0)
-shader_parameter/famazingsurf_c = Vector3(0, 0, 0)
-shader_parameter/famazingsurf_min_radius = 0.0
-shader_parameter/famazingsurf_scale = 0.0
-shader_parameter/fsierpinskidodecahedron_rotation1 = Vector3(0, 0, 0)
-shader_parameter/fsierpinskidodecahedron_rotation2 = Vector3(0, 0, 0)
-shader_parameter/fsierpinskidodecahedron_offset = Vector3(0, 0, 0)
-shader_parameter/fsierpinskidodecahedron_scale = 0.0
-shader_parameter/fsierpinskiicosahedron_scale = 0.0
-shader_parameter/fsierpinskiicosahedron_rotation1 = Vector3(0, 0, 0)
-shader_parameter/fsierpinskiicosahedron_rotation2 = Vector3(0, 0, 0)
-shader_parameter/fsierpinskiicosahedron_offset = Vector3(0, 0, 0)
-shader_parameter/fsierpinskioctahedron_scale = 0.0
-shader_parameter/fsierpinskioctahedron_rotation1 = Vector3(0, 0, 0)
-shader_parameter/fsierpinskioctahedron_rotation2 = Vector3(0, 0, 0)
-shader_parameter/fsierpinskioctahedron_offset = Vector3(0, 0, 0)
-shader_parameter/fbairddelta_angle = 0.0
-shader_parameter/fbairddelta_scale = 0.0
-shader_parameter/fbairddelta_rotation1 = Vector3(0, 0, 0)
-shader_parameter/fbairddelta_rotation2 = Vector3(0, 0, 0)
-shader_parameter/fklenian_show_balls = false
-shader_parameter/fklenian_x = 0.0
-shader_parameter/fklenian_y = 0.0
-shader_parameter/fklenian_box_size_x = 0.0
-shader_parameter/fklenian_box_size_z = 0.0
-shader_parameter/fspheretree_symmetry = 0.0
-shader_parameter/fkaliredux_folds = Vector4(0, 0, 0, 0)
-shader_parameter/fkaliredux_minus = Vector3(0, 0, 0)
-shader_parameter/fkaliredux_scale = 0.0
-shader_parameter/fquadratickoch_variant = 0
-shader_parameter/fquadratickoch_scale = 0.0
-shader_parameter/fquadratickoch_scale_octa = 0.0
-shader_parameter/fkaliliving_c = Vector3(0, 0, 0)
-shader_parameter/fkaliliving_rotation1 = Vector3(0, 0, 0)
-shader_parameter/fkaliliving_rotation2 = Vector3(0, 0, 0)
-shader_parameter/fkaliliving_scale = 0.0
 shader_parameter/fnewton_plane = 0
 shader_parameter/fnewton_intersection_mode = false
 shader_parameter/fnewton_pole1 = Vector4(0, 0, 0, 0)
 shader_parameter/fnewton_pole2 = Vector4(0, 0, 0, 0)
 shader_parameter/fnewton_pole3 = Vector4(0, 0, 0, 0)
-shader_parameter/fnewton_invsphere = Vector4(0, 0, 0, 0)
-shader_parameter/fnewton_invert = false
 shader_parameter/fnewton_symmetry1 = 0.0
 shader_parameter/fnewton_symmetry2 = 0.0
+shader_parameter/fquadratickoch_hybrid_octahedron = false
+shader_parameter/fquadratickoch_octahedron_offset = Vector3(0, 0, 0)
+shader_parameter/fquadratickoch_octahedron_offset2 = Vector3(0, 0, 0)
+shader_parameter/fquadratickoch_octahedron_limit = Vector3(0, 0, 0)
+shader_parameter/fquadratickoch_abs_offset = 0.0
+shader_parameter/fquadratickoch_offset = Vector3(0, 0, 0)
+shader_parameter/fquadratickoch_scale = Vector2(0, 0)
+shader_parameter/fkaliliving_c = Vector3(0, 0, 0)
+shader_parameter/fkaliliving_rotation1 = Vector3(0, 0, 0)
+shader_parameter/fkaliliving_rotation2 = Vector3(0, 0, 0)
+shader_parameter/fkaliliving_scale = 0.0
 shader_parameter/fmixpinski4d_scale = 0.0
 shader_parameter/fmixpinski4d_offset = Vector4(0, 0, 0, 0)
 shader_parameter/fmixpinski4d_rotation1 = Vector4(0, 0, 0, 0)
@@ -219,8 +229,21 @@ shader_parameter/fvicsek_abs2_minus = Vector3(0, 0, 0)
 shader_parameter/fvicsek_abs2_plus = Vector3(0, 0, 0)
 shader_parameter/fvicsek_offset = Vector3(0, 0, 0)
 shader_parameter/fvicsek_hex_fold1 = false
+shader_parameter/fvicsek_foldt = Vector3(0, 0, 0)
 shader_parameter/fvicsek_preserve = false
 shader_parameter/fvicsek_hex_fold2 = 0
+shader_parameter/fkochwire_abs_plus = Vector3(0, 0, 0)
+shader_parameter/fkochwire_abs_minus = Vector3(0, 0, 0)
+shader_parameter/fkochwire_fold1 = false
+shader_parameter/fkochwire_fold2 = false
+shader_parameter/fkochwire_fold3 = false
+shader_parameter/fkochwire_abs_x = false
+shader_parameter/fkochwire_abs_y = false
+shader_parameter/fkochwire_abs_z = false
+shader_parameter/fkochwire_abs2_zx = false
+shader_parameter/fkochwire_offset = Vector3(0, 0, 0)
+shader_parameter/fkochwire_scale = 0.0
+shader_parameter/fkochwire_symmetry = 0.0
 shader_parameter/fkalibox_scale = 0.0
 shader_parameter/fkalibox_offset1 = Vector3(0, 0, 0)
 shader_parameter/fkalibox_offset2 = Vector3(0, 0, 0)
@@ -237,7 +260,7 @@ shader_parameter/fjerusalemcube_abs_add = Vector3(0, 0, 0)
 shader_parameter/fjerusalemcube_abs_minus = Vector3(0, 0, 0)
 shader_parameter/fbristorbrot_is_julia = false
 shader_parameter/fbristorbrot_julia_c = Vector3(0, 0, 0)
-shader_parameter/fbristorbrot_derivative_bias = 0.0
+shader_parameter/fbristorbrot_multiply = Vector3(0, 0, 0)
 shader_parameter/fsintransform_axis = 0
 shader_parameter/fsintransform_offset = Vector2(0, 0)
 shader_parameter/fsintransform_scale = Vector2(0, 0)
@@ -251,6 +274,13 @@ shader_parameter/fbasictransform_scale = Vector4(0, 0, 0, 0)
 shader_parameter/fbasictransform_range = Vector2(0, 0)
 shader_parameter/finversiontransform_sphere = Vector4(0, 0, 0, 0)
 shader_parameter/finversiontransform_range = Vector2(0, 0)
+shader_parameter/fwobbletransform_axis = 0
+shader_parameter/fwobbletransform_offset = Vector2(0, 0)
+shader_parameter/fwobbletransform_scale = Vector2(0, 0)
+shader_parameter/fwobbletransform_range = Vector2(0, 0)
+shader_parameter/freciprocaltransform_axis = 0
+shader_parameter/freciprocaltransform_offset = 0.0
+shader_parameter/freciprocaltransform_range = Vector2(0, 0)
 
 [sub_resource type="BoxMesh" id="BoxMesh_eu6rh"]
 size = Vector3(4000, 4000, -4000)
@@ -261,36 +291,32 @@ size = Vector3(4000, 4000, -4000)
 dof_blur_far_distance = 115.51
 dof_blur_far_transition = 66.15
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_462v4"]
-
-[sub_resource type="Sky" id="Sky_iv5uu"]
-sky_material = SubResource("ProceduralSkyMaterial_462v4")
-
 [sub_resource type="Environment" id="Environment_4uuy8"]
-background_mode = 1
-background_color = Color(0, 1, 0, 1)
-background_energy_multiplier = 0.0
-sky = SubResource("Sky_iv5uu")
+background_energy_multiplier = 0.4
 glow_enabled = true
-glow_levels/1 = 1.0
-glow_levels/2 = 1.0
-glow_levels/4 = 1.0
-glow_levels/6 = 1.0
-glow_levels/7 = 1.0
-glow_intensity = 0.36
-glow_strength = 2.0
+glow_intensity = 0.25
+glow_strength = 0.83
 glow_bloom = 1.0
 glow_blend_mode = 0
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_p0jhq"]
+[sub_resource type="CompositorEffect" id="CompositorEffect_p8abn"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("4_p8abn")
+metadata/_custom_type_script = "uid://l7fr1idjfuni"
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vjvc1"]
-bg_color = Color(0.355314, 0.355314, 0.355314, 0.0313726)
-border_width_left = 5
-border_width_top = 5
-border_width_right = 5
-border_width_bottom = 5
-border_color = Color(0.356863, 0.356863, 0.356863, 0.0313726)
+[sub_resource type="Compositor" id="Compositor_s17dp"]
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_p8abn")])
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w2tj6"]
+bg_color = Color(0, 0, 0, 0.207843)
+
+[sub_resource type="Theme" id="Theme_m4h2d"]
+MenuButton/fonts/font = ExtResource("8_rhsly")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dw2n5"]
 bg_color = Color(0, 0, 0, 0.207843)
@@ -299,9 +325,6 @@ border_width_top = 6
 border_width_right = 5
 border_width_bottom = 6
 border_color = Color(0, 0, 0, 0.207843)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w2tj6"]
-bg_color = Color(0, 0, 0, 0.207843)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fti0q"]
 
@@ -315,7 +338,13 @@ viewport_path = NodePath("SubViewport")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0eucc"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p8abn"]
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dmava"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s17dp"]
+bg_color = Color(0.101961, 0.101961, 0.101961, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gox76"]
 
@@ -350,25 +379,39 @@ border_color = Color(1, 1, 1, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gubch"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m4h2d"]
+bg_color = Color(0.101961, 0.101961, 0.101961, 1)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.105882, 0.105882, 0.105882, 1)
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+
 [node name="Main" type="Node3D"]
 script = ExtResource("1_yss2u")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
-title = "Open a File or Directory"
 initial_position = 2
 size = Vector2i(1152, 648)
 content_scale_factor = 1.28
 ok_button_text = "Open"
 dialog_hide_on_ok = true
-cancel_button_text = "Close"
-file_mode = 3
+mode_overrides_title = false
+file_mode = 0
 access = 2
+option_count = 1
+option_0/name = "Load Lighting Only"
 
 [node name="SubViewport" type="SubViewport" parent="."]
 unique_name_in_owner = true
 scaling_3d_mode = 2
-fsr_sharpness = 2.0
+scaling_3d_scale = 0.25
+anisotropic_filtering_level = 4
+fsr_sharpness = 0.0
 size = Vector2i(450, 450)
 render_target_clear_mode = 1
 render_target_update_mode = 4
@@ -396,6 +439,7 @@ current = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewport"]
 unique_name_in_owner = true
 environment = SubResource("Environment_4uuy8")
+compositor = SubResource("Compositor_s17dp")
 
 [node name="UI" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
@@ -419,67 +463,54 @@ size_flags_stretch_ratio = 2.55
 theme_override_constants/separation = 0
 
 [node name="ToolBar" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(1.45519e-11, 31)
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_constants/separation = 0
 script = ExtResource("5_og0rs")
 
-[node name="Save" type="Button" parent="UI/HBoxContainer/MarginContainer/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-tooltip_text = "Shortcut: Ctrl + shift + s
-MacOS Shortcut: Cmd + shift + s
-"
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_p0jhq")
-theme_override_styles/hover = SubResource("StyleBoxFlat_vjvc1")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_dw2n5")
-theme_override_styles/normal = SubResource("StyleBoxFlat_dw2n5")
-text = " Save Project"
-
-[node name="SavePicture" type="Button" parent="UI/HBoxContainer/MarginContainer/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-tooltip_text = "Shortcut: Ctrl + shift + x
-MacOS Shortcut: Cmd + shift + x
-"
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_p0jhq")
-theme_override_styles/hover = SubResource("StyleBoxFlat_vjvc1")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_dw2n5")
-theme_override_styles/normal = SubResource("StyleBoxFlat_dw2n5")
-text = " Save Picture "
-
-[node name="SaveAll" type="Button" parent="UI/HBoxContainer/MarginContainer/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-tooltip_text = "Shortcut: Ctrl + s
-MacOS Shortcut: Cmd + s
-"
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_p0jhq")
-theme_override_styles/hover = SubResource("StyleBoxFlat_vjvc1")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_dw2n5")
-theme_override_styles/normal = SubResource("StyleBoxFlat_dw2n5")
-text = " Save All "
-
-[node name="Load" type="Button" parent="UI/HBoxContainer/MarginContainer/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-tooltip_text = "Shortcut: Ctrl + o
-MacOS Shortcut: Cmd + o
-"
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_p0jhq")
-theme_override_styles/hover = SubResource("StyleBoxFlat_vjvc1")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_dw2n5")
-theme_override_styles/normal = SubResource("StyleBoxFlat_dw2n5")
-text = " Load "
-
 [node name="Panel" type="Panel" parent="UI/HBoxContainer/MarginContainer/ToolBar"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_w2tj6")
+
+[node name="MenuBar" type="MenuBar" parent="UI/HBoxContainer/MarginContainer/ToolBar/Panel"]
+layout_mode = 2
+offset_right = 344.0
+offset_bottom = 31.0
+size_flags_horizontal = 3
+theme = SubResource("Theme_m4h2d")
+
+[node name="Save" type="MenuButton" parent="UI/HBoxContainer/MarginContainer/ToolBar/Panel/MenuBar"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 31.0
+tooltip_text = "Saving to clip board won't store animations. This is done to reduce the size of the clip board text."
+text = "Save"
+item_count = 4
+popup/item_0/text = "Save All"
+popup/item_0/id = 0
+popup/item_1/text = "Save Project"
+popup/item_1/id = 1
+popup/item_2/text = "Save Image"
+popup/item_2/id = 2
+popup/item_3/text = "Save to Clipboard"
+popup/item_3/id = 3
+
+[node name="Load" type="MenuButton" parent="UI/HBoxContainer/MarginContainer/ToolBar/Panel/MenuBar"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 50.0
+offset_right = 100.0
+offset_bottom = 31.0
+tooltip_text = "Loading from clip board won't load animations. "
+text = "Load"
+item_count = 2
+popup/item_0/text = "Load File"
+popup/item_0/id = 1
+popup/item_1/text = "Load Clipboard"
+popup/item_1/id = 0
 
 [node name="SettingsBar" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer"]
 unique_name_in_owner = true
@@ -584,6 +615,7 @@ size_flags_stretch_ratio = 2.1
 theme_override_constants/side_margin = 0
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_0eucc")
+theme_override_styles/panel = SubResource("StyleBoxFlat_p8abn")
 current_tab = 0
 drag_to_rearrange_enabled = true
 script = ExtResource("9_7154d")
@@ -594,16 +626,19 @@ size_flags_horizontal = 3
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
 metadata/_tab_index = 0
 
 [node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Formula"]
 layout_mode = 2
 theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_dmava")
+theme_override_styles/panel = SubResource("StyleBoxFlat_s17dp")
 current_tab = 0
 script = ExtResource("16_dmyle")
 
 [node name="Formula1" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer" instance=ExtResource("16_hfvnl")]
 layout_mode = 2
+theme_override_constants/margin_bottom = 5
 metadata/_tab_index = 0
 
 [node name="Buffer" type="Node" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer"]
@@ -808,23 +843,54 @@ fields_list_id = 7
 light_id = 2
 metadata/_tab_index = 1
 
-[node name="AO" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
-layout_mode = 2
-fields_list_id = 6
-metadata/_tab_index = 2
-
-[node name="Material" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
-layout_mode = 2
-fields_list_id = 15
-metadata/_tab_index = 3
-
 [node name="Background" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
 visible = false
 layout_mode = 2
 fields_list_id = 19
-metadata/_tab_index = 4
+metadata/_tab_index = 2
+
+[node name="General" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 6
+metadata/_tab_index = 3
+
+[node name="Material" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 6
+
+[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Material"]
+layout_mode = 2
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
+current_tab = 0
+
+[node name="Diffuse" parent="UI/HBoxContainer/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+fields_list_id = 15
+metadata/_tab_index = 0
+
+[node name="Ambient Occlusion" parent="UI/HBoxContainer/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 23
+metadata/_tab_index = 1
+
+[node name="Ambient" parent="UI/HBoxContainer/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 24
+metadata/_tab_index = 2
+
+[node name="Normals" parent="UI/HBoxContainer/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 22
+metadata/_tab_index = 3
 
 [node name="Settings" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
 visible = false
@@ -833,7 +899,7 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
-metadata/_tab_index = 6
+metadata/_tab_index = 7
 
 [node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Settings"]
 layout_mode = 2
@@ -845,11 +911,17 @@ layout_mode = 2
 fields_list_id = 18
 metadata/_tab_index = 0
 
+[node name="Debug" parent="UI/HBoxContainer/TabContainer/Settings/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 20
+metadata/_tab_index = 1
+
 [node name="Logs" parent="UI/HBoxContainer/TabContainer" instance=ExtResource("14_pnl7n")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-metadata/_tab_index = 7
+metadata/_tab_index = 8
 
 [node name="BottomBar" type="TabContainer" parent="UI"]
 layout_mode = 2
@@ -867,22 +939,26 @@ current_tab = 0
 tabs_position = 1
 deselect_enabled = true
 
-[node name="Animation" type="VBoxContainer" parent="UI/BottomBar"]
-custom_minimum_size = Vector2(1.45519e-11, 200)
+[node name="Animation" type="HBoxContainer" parent="UI/BottomBar"]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="ControlButtons" type="MarginContainer" parent="UI/BottomBar/Animation"]
+[node name="Animation" type="VBoxContainer" parent="UI/BottomBar/Animation"]
+custom_minimum_size = Vector2(1.45519e-11, 200)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ControlButtons" type="MarginContainer" parent="UI/BottomBar/Animation/Animation"]
 layout_mode = 2
 theme_override_constants/margin_left = 6
 theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 6
 theme_override_constants/margin_bottom = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Animation/ControlButtons"]
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons"]
 layout_mode = 2
 
-[node name="SetTimeStartButton" type="Button" parent="UI/BottomBar/Animation/ControlButtons/HBoxContainer"]
+[node name="SetTimeStartButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/HBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(1.45519e-11, 28)
 layout_mode = 2
@@ -891,7 +967,7 @@ theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("20_y77tv")
 
-[node name="PlayingToggleButton" type="Button" parent="UI/BottomBar/Animation/ControlButtons/HBoxContainer"]
+[node name="PlayingToggleButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/HBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(1.45519e-11, 28)
 layout_mode = 2
@@ -900,7 +976,7 @@ theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("20_k1hov")
 
-[node name="SetTimeEndButton" type="Button" parent="UI/BottomBar/Animation/ControlButtons/HBoxContainer"]
+[node name="SetTimeEndButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/HBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(1.45519e-11, 28)
 layout_mode = 2
@@ -909,7 +985,7 @@ theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("21_ka5o1")
 
-[node name="AddKeyframeButton" type="Button" parent="UI/BottomBar/Animation/ControlButtons/HBoxContainer"]
+[node name="AddKeyframeButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Add the current frame as a keyframe to animation."
@@ -918,7 +994,7 @@ theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("20_grqpr")
 
-[node name="RenderButton" type="Button" parent="UI/BottomBar/Animation/ControlButtons/HBoxContainer"]
+[node name="RenderButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Render animation and save to disk."
@@ -927,31 +1003,31 @@ theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("20_y04jv")
 
-[node name="CurrentTime" type="MarginContainer" parent="UI/BottomBar/Animation"]
+[node name="CurrentTime" type="MarginContainer" parent="UI/BottomBar/Animation/Animation"]
 layout_mode = 2
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_bottom = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Animation/CurrentTime"]
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/CurrentTime"]
 layout_mode = 2
 script = ExtResource("22_s3o3g")
 
-[node name="Time" type="Sprite2D" parent="UI/BottomBar/Animation/CurrentTime/HBoxContainer"]
+[node name="Time" type="Sprite2D" parent="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer"]
 unique_name_in_owner = true
 z_index = 1
 texture = ExtResource("22_an3xl")
 region_enabled = true
 region_rect = Rect2(0, 6, 12, 6)
 
-[node name="ColorRect" type="ColorRect" parent="UI/BottomBar/Animation/CurrentTime/HBoxContainer/Time"]
+[node name="ColorRect" type="ColorRect" parent="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer/Time"]
 z_index = 1
 offset_left = -1.0
 offset_right = 1.0
 offset_bottom = 144.0
 metadata/_edit_use_anchors_ = true
 
-[node name="AnimationTrack" type="MarginContainer" parent="UI/BottomBar/Animation"]
+[node name="AnimationTrack" type="MarginContainer" parent="UI/BottomBar/Animation/Animation"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -961,25 +1037,41 @@ theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 6
 script = ExtResource("19_fsmeo")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="UI/BottomBar/Animation/AnimationTrack"]
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/BottomBar/Animation/AnimationTrack/ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Timeline" type="HBoxContainer" parent="UI/BottomBar/Animation/AnimationTrack/ScrollContainer/VBoxContainer"]
+[node name="Timeline" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 93
 
-[node name="Keyframes" type="HBoxContainer" parent="UI/BottomBar/Animation/AnimationTrack/ScrollContainer/VBoxContainer"]
+[node name="Keyframes" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 0
+
+[node name="AnimationSettings" parent="UI/BottomBar/Animation" instance=ExtResource("19_l42h1")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.82
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_bottom = 0
+fields_list_id = 21
+
+[node name="BackPanel" type="Panel" parent="UI/BottomBar/Animation/AnimationSettings"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_m4h2d")
 
 [node name="DummyFocusButton" type="Button" parent="."]
 unique_name_in_owner = true
@@ -988,11 +1080,7 @@ offset_top = 136.0
 offset_right = -59.0
 offset_bottom = 144.0
 
-[connection signal="confirmed" from="FileDialog" to="UI/HBoxContainer/MarginContainer/ToolBar" method="_on_file_dialog_confirmed"]
-[connection signal="pressed" from="UI/HBoxContainer/MarginContainer/ToolBar/Save" to="UI/HBoxContainer/MarginContainer/ToolBar" method="_on_save_pressed"]
-[connection signal="pressed" from="UI/HBoxContainer/MarginContainer/ToolBar/SavePicture" to="UI/HBoxContainer/MarginContainer/ToolBar" method="_on_save_picture_pressed"]
-[connection signal="pressed" from="UI/HBoxContainer/MarginContainer/ToolBar/SaveAll" to="UI/HBoxContainer/MarginContainer/ToolBar" method="_on_save_all_pressed"]
-[connection signal="pressed" from="UI/HBoxContainer/MarginContainer/ToolBar/Load" to="UI/HBoxContainer/MarginContainer/ToolBar" method="_on_load_pressed"]
+[connection signal="file_selected" from="FileDialog" to="UI/HBoxContainer/MarginContainer/ToolBar" method="_on_file_dialog_confirmed"]
 [connection signal="text_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize/ViewportWidth" to="." method="_on_viewport_width_text_changed"]
 [connection signal="text_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize/ViewportHeight" to="." method="_on_viewport_height_text_changed"]
 [connection signal="value_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/AntiAliasing/Panel/Antialiasing" to="UI/HBoxContainer/MarginContainer/SettingsBar" method="_on_antialiasing_value_changed"]
@@ -1004,14 +1092,14 @@ offset_bottom = 144.0
 [connection signal="pressed" from="UI/HBoxContainer/TabContainer/Formula/Buttons/RemoveFormula" to="UI/HBoxContainer/TabContainer" method="_on_remove_formula_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/TabContainer/Formula/Buttons/Difficulty" to="." method="_on_difficulty_pressed"]
 [connection signal="tab_changed" from="UI/BottomBar" to="UI/BottomBar" method="_on_tab_changed"]
-[connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/SetTimeStartButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_set_time_start_button_pressed"]
-[connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/PlayingToggleButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_playing_toggle_button_pressed"]
-[connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/SetTimeEndButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_set_time_end_button_pressed"]
-[connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/AddKeyframeButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_add_keyframe_button_pressed"]
-[connection signal="pressed" from="UI/BottomBar/Animation/ControlButtons/HBoxContainer/RenderButton" to="UI/BottomBar/Animation/AnimationTrack" method="_on_render_button_pressed"]
-[connection signal="mouse_entered" from="UI/BottomBar/Animation/CurrentTime" to="UI/BottomBar/Animation/CurrentTime/HBoxContainer" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="UI/BottomBar/Animation/CurrentTime" to="UI/BottomBar/Animation/CurrentTime/HBoxContainer" method="_on_mouse_exited"]
-[connection signal="mouse_entered" from="UI/BottomBar/Animation/CurrentTime/HBoxContainer" to="UI/BottomBar/Animation/CurrentTime/HBoxContainer" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="UI/BottomBar/Animation/CurrentTime/HBoxContainer" to="UI/BottomBar/Animation/CurrentTime/HBoxContainer" method="_on_mouse_exited"]
-[connection signal="mouse_entered" from="UI/BottomBar/Animation/AnimationTrack" to="UI/BottomBar/Animation/AnimationTrack" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="UI/BottomBar/Animation/AnimationTrack" to="UI/BottomBar/Animation/AnimationTrack" method="_on_mouse_exited"]
+[connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/HBoxContainer/SetTimeStartButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_set_time_start_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/HBoxContainer/PlayingToggleButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_playing_toggle_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/HBoxContainer/SetTimeEndButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_set_time_end_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/HBoxContainer/AddKeyframeButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_add_keyframe_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/HBoxContainer/RenderButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_render_button_pressed"]
+[connection signal="mouse_entered" from="UI/BottomBar/Animation/Animation/CurrentTime" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="UI/BottomBar/Animation/Animation/CurrentTime" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="UI/BottomBar/Animation/Animation/AnimationTrack" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="UI/BottomBar/Animation/Animation/AnimationTrack" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_mouse_exited"]

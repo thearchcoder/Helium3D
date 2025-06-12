@@ -7,17 +7,17 @@
 // int variant[0, 10] = 0
 // bool first_zrev[false, true] = true
 // bool pxyzminuss[false, true] = true
-// bool psortsymmetry1[false, true] = false
+// advanced bool psortsymmetry1[false, true] = false
 // bool psortsymmetry2[false, true] = false
 // bool foldzbefore[false, true] = true
-// bool abs_x[false, true] = true
-// bool abs_y[false, true] = true
+// advanced bool abs_x[false, true] = true
+// advanced bool abs_y[false, true] = true
 // bool abs_z[false, true] = true
-// selection fold1[Disabled, Sign, Minus, Both] = Disabled
-// selection fold2[Disabled, Max, Min] = Disabled
+// advanced selection fold1[Disabled, Sign, Minus, Both] = Disabled
+// advanced selection fold2[Disabled, Max, Min] = Disabled
 // bool fold3[false, true] = true
 // bool fold4[false, true] = true
-// bool reflection[false, true] = false
+// advanced bool reflection[false, true] = false
 // [CODE]
 uniform float fkochcube_scale;
 uniform int fkochcube_variant;
@@ -87,14 +87,14 @@ void kochcube_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, 
 	if (fkochcube_variant == 2) {
 		if (p.x - p.z > 0.0) p.xz = -p.zx;
 		if (p.x < p.y) p.xy = -p.yx;
-	} else if (fkochcube_variant == 1) { 
+	} else if (fkochcube_variant == 1) {
 	    if (p.x - p.z > 0.0) p.xz = p.zx;
 	} else if (fkochcube_variant == 3) {
 	    if (p.x - p.z > 0.0) p.xz = -p.zx;
-	} else if (fkochcube_variant == 4) { 
+	} else if (fkochcube_variant == 4) {
 	    if (p.x - p.z > 0.0) p.xz = p.zx;
 	    if (p.x < p.y) p.xy = -p.yx;
-	} else if (fkochcube_variant == 5) { 
+	} else if (fkochcube_variant == 5) {
 	    if (p.x < p.y) p.xy = -p.yx;
 	} else if (fkochcube_variant == 6) {
 	    if (p.x - p.z > 0.0) p.xz = p.zx;
@@ -124,10 +124,10 @@ void kochcube_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, 
 
 	s /= 2.0;
 	p.xz = abs(p.xz) - s;
-	
+
 	p *= fkochcube_scale;
 	dz *= abs(fkochcube_scale);
-	
+
 	z4.xyz = p;
 
 	//s /= 2.0;

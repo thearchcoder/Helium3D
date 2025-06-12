@@ -11,7 +11,7 @@ var value: Dictionary = {'special_field': true, 'type': 'image', 'path': '!null'
 		var result: Resource = load(value['path'])
 		selected_image_name = value['path'].get_file()
 		
-		if value:
+		if value['path'] != '!null' && value:
 			$ImageButton.icon = result
 			$ImageButton.text = selected_image_name
 		else:

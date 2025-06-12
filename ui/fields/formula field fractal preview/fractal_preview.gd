@@ -9,7 +9,7 @@ func _ready() -> void:
 	$HBoxContainer/Label.text = formula_name
 	$HBoxContainer/Label.text = formula_description
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if is_mouse_hovering and Input.is_action_just_pressed('mouse click'):
 		$"../../../..".index = formula_id
 

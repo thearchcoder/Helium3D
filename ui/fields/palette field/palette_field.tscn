@@ -1,7 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://btjotc720lyxd"]
+[gd_scene load_steps=13 format=3 uid="uid://btjotc720lyxd"]
 
 [ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_x23c8"]
 [ext_resource type="Script" uid="uid://cjqhqftgkhuim" path="res://ui/fields/palette field/palette_field.gd" id="2_560la"]
+[ext_resource type="PackedScene" uid="uid://dv5u2gutb4uqn" path="res://ui/fields/palette field color block/palette_field_color_block.tscn" id="3_06evx"]
 [ext_resource type="Texture2D" uid="uid://xgfmikrv5y1t" path="res://resources/icons/gradientblur.svg" id="3_cbtqc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mnd2h"]
@@ -88,6 +89,28 @@ z_index = 1
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
+
+[node name="PaletteFieldColorBlock" parent="MarginContainer/Blocks" index="0" instance=ExtResource("3_06evx")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+offset = 1.45519e-11
+
+[node name="PaletteFieldColorBlock2" parent="MarginContainer/Blocks" index="1" instance=ExtResource("3_06evx")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+color = Color(4.13924e-06, 0.547273, 0.732185, 1)
 
 [node name="BlurButton" type="Button" parent="." index="2"]
 layout_mode = 2

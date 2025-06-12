@@ -411,14 +411,6 @@ float distInfSphairahedra(const vec3 pos, vec4 s2, vec4 s4, vec4 s6, vec3 divide
 	return d;
 }
 
-void SphereInvert(inout vec3 pos, inout float dr, vec4 s) {
-	vec3 diff = pos - s.xyz;
-	float lenSq = dot(diff, diff);
-	float k = (s.w * s.w) / lenSq;
-	dr *= k;
-	pos = (diff * k) + s.xyz;
-}
-
 vec4 getInversionSphere(float zb, float zc) {
 	if (fsphairahedron_cube_type == 0) return getInversionSphereA(zb, zc);
 	if (fsphairahedron_cube_type == 1) return getInversionSphereB(zb, zc);

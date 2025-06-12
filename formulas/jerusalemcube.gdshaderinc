@@ -18,7 +18,7 @@ void jerusalemcube_iter(inout vec4 z4, inout float dz, vec4 original_z, float or
 	float scale_large = fjerusalemcube_scale.x;
 	float scale_small = fjerusalemcube_scale.y;
 	vec3 offset = fjerusalemcube_offset;
-	
+
 	z = abs(z + fjerusalemcube_abs_add) - fjerusalemcube_abs_minus;
 	if (z.x - z.y < 0.0) z.xy = z.yx;
 	if (z.z - z.y < 0.0) z.zy = z.yz;
@@ -39,6 +39,6 @@ void jerusalemcube_iter(inout vec4 z4, inout float dz, vec4 original_z, float or
 		z = z2;
 		dz = dz * abs(scale_large) + 6.0;
 	}
-	
+
 	z4.xyz = z;
 }

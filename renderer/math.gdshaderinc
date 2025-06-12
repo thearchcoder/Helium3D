@@ -15,13 +15,31 @@ float continuousMod(float x, float y) {
 	return modValue <= y ? modValue : y * 2.0 - modValue;
 }
 
+void SphereInvert(inout vec3 pos, inout float dr, vec4 s) {
+	vec3 diff = pos - s.xyz;
+	float lenSq = dot(diff, diff);
+	float k = (s.w * s.w) / lenSq;
+	dr *= k;
+	pos = (diff * k) + s.xyz;
+}
+
 /////////////
 // Kalaido //
 /////////////
+// Effie's kalaidoscope method
+#define TAO 6.283
+vec2 effie_kalaido(vec2 v, float power) {
+	float angle = floor(0.5 + atan(v.x, -v.y) * power / TAO) * TAO / power;
+	return v * mat2(vec2(cos(angle), sin(angle)), vec2(-sin(angle), cos(angle)));
+}
+
 vec2 kalaido(vec2 p, float symmetry) {
+	if (kalaidoscope_mode == 2) return effie_kalaido(p, symmetry);
+
 	float angle = 3.14159265 / symmetry;
 	float theta = atan(p.y, p.x);
-	theta = continuousMod(theta + angle, 2.0 * angle) - angle;
+	if (kalaidoscope_mode == 0) theta = continuousMod(theta + angle, 2.0 * angle) - angle;
+	if (kalaidoscope_mode == 1) theta = mod(theta + angle, 2.0 * angle) - angle;
 	p = vec2(cos(theta), sin(theta)) * length(p);
 
 	return p;
@@ -92,20 +110,19 @@ vec3 triplex_mul(vec3 n1, vec3 n2) {
 	return vec3(r * cos(theta) * cos(phi), r * sin(theta) * cos(phi), r * sin(phi));
 }
 
-vec3 triplex_pow(vec3 v, float n, float phase) {
+vec3 triplex_pow(vec3 v, float n, float phase, float z_mul) {
 	// swap cos and sin around
 	float r = length(v);  // put negative here
-	float theta = n * atan(v.y, v.x);
+	float theta = n * atan(v.y, v.x);// + TIME;
 	float phi = n * asin(v.z / r) + phase;  // v.z > -v.z
 
 	// atan(tan(phi + 0.1) * 0.6) + 0.3
 	// sin(abs(phi) + 1.0)
 	float cos_phi = cos(phi);  // phi > sin(phi), cos(phi)  !  phi + a * b   !  tan(phi) * 0.1
-	// vec3(sin(theta) * cos(phi), sin(phi), cos(theta))
+	// sin(theta) * cos(phi), sin(phi), cos(theta)
+	// cos(theta) * cos_phi, sin(theta) * cos_phi, z_mul * sin(phi)
 
-	// vec3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta))
-
-	return pow(r, n) * vec3(cos(theta) * cos_phi, sin(theta) * cos_phi, sin(phi));
+	return pow(r, n) * vec3(cos(theta) * cos_phi, sin(theta) * cos_phi, z_mul * sin(phi));
 }
 
 vec4 quaternion_pow(vec4 q, float t, float phase, int negative_axis) {
@@ -242,10 +259,60 @@ float icosahedron_sdf3d(vec3 p, float r){
 	return d - r;
 }
 
+///////////////////
+// UV Projection //
+///////////////////
+vec2 spherical_uv(vec3 p) {
+	vec3 normalized = normalize(p);
+	float u = atan(normalized.z, normalized.x) / (2.0 * 3.14159) + 0.5;
+	float v = asin(normalized.y) / 3.14159 + 0.5;
+	return vec2(u, v);
+}
+
+vec2 planar_uv(vec3 p, float scale) {
+	return fract(p.xz * scale);
+}
+
+vec2 cylindrical_uv(vec3 p, float scale) {
+	float u = atan(p.z, p.x) / TAU + 0.5;
+	float v = p.y * scale;
+	return vec2(u, fract(v));
+}
+
+vec3 triplanar_normal(vec3 p, vec3 normal) {
+	if (!normal_map_enabled) return normal;
+
+	vec3 blend_weights = abs(normal);
+	blend_weights = pow(blend_weights, vec3(normal_map_triplanar_sharpness));
+	blend_weights /= dot(blend_weights, vec3(1.0));
+
+	vec3 normal_x = texture(normal_map, p.yz * normal_map_scale).rgb * 2.0 - 1.0;
+	vec3 normal_y = texture(normal_map, p.xz * normal_map_scale).rgb * 2.0 - 1.0;
+	vec3 normal_z = texture(normal_map, p.xy * normal_map_scale).rgb * 2.0 - 1.0;
+
+	normal_x = vec3(0.0, normal_x.y, normal_x.x) * normal_map_height;
+	normal_y = vec3(normal_y.x, 0.0, normal_y.y) * normal_map_height;
+	normal_z = vec3(normal_z.x, normal_z.y, 0.0) * normal_map_height;
+
+	return normalize(normal +
+		normal_x * blend_weights.x +
+		normal_y * blend_weights.y +
+		normal_z * blend_weights.z);
+}
+
+/////////
+// IBL //
+/////////
+vec3 sample_panorama_ibl(sampler2D panorama_tex, vec3 direction) {
+	vec2 uv;
+	uv.x = atan(direction.z, direction.x) / (2.0 * PI) + 0.5;
+	uv.y = acos(clamp(direction.y, -1.0, 1.0)) / PI;
+	return texture(panorama_tex, uv).rgb;
+}
+
 /////////////////////////
 // Random and Sampling //
 /////////////////////////
-
 float hash(vec2 p) {
 	p = fract(p * vec2(123.34, 345.45));
 	p += dot(p, p + 34.345);

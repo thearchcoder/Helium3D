@@ -3,14 +3,14 @@
 // [INDEX]
 // 20
 // [VARS]
-// bool fold1[false, true] = true
-// bool fold2[false, true] = true
-// bool fold3[false, true] = true
-// bool abs_x[false, true] = false
-// bool abs_y[false, true] = false
-// bool abs_z[false, true] = true
-// bool abs2_zx[false, true] = true
-// vec3 abs_plus[(-2, -2, -2), (2, 2, 2)] = (0.1, 0.1, 0.1)
+// advanced bool fold1[false, true] = true
+// advanced bool fold2[false, true] = true
+// advanced bool fold3[false, true] = true
+// advanced bool abs_x[false, true] = false
+// advanced bool abs_y[false, true] = false
+// advanced bool abs_z[false, true] = true
+// advanced bool abs2_zx[false, true] = true
+// advanced vec3 abs_plus[(-2, -2, -2), (2, 2, 2)] = (0.1, 0.1, 0.1)
 // vec3 abs_minus[(-2, -2, -2), (2, 2, 2)] = (0.0, 0.0, 0.0)
 // float scale[1.0, 4.0] = 3.0
 // float symmetry[1.0, 100.0] = 3.0

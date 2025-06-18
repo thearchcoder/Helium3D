@@ -5,7 +5,7 @@ signal value_changed(to: String)
 @export var placeholder := '...':
 	set(v):
 		placeholder = v
-		$LineEdit.placeholder = v
+		$LineEdit.placeholder_text = v
 
 @export var value := '':
 	set(v):

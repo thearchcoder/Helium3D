@@ -1,11 +1,11 @@
 // [ID]
 // Mengersponge
+// [KIFS]
 // [INDEX]
 // 7
 // [VARS]
 // vec3 offset[(0, 0, 0), (2.5, 2.5, 2.5)] = (1, 1, 1)
-// vec3 rotation1[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0.0, 0, 0)
-// vec3 rotation2[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0, 0, 0)
+// template kifs_rotation
 // float scale[2.0, 4.0] = 3.0
 // [CODE]
 uniform vec3 fmengersponge_rotation1;

@@ -201,12 +201,6 @@ func _ready() -> void:
 			{'name': 'ambient_light_from_background', 'type': 'bool', 'default_value': false},
 			{'name': 'ambient_light_color', 'type': 'color', 'default_value': Color('white')},
 		],
-		## Search Menu
-		#25: [
-			#{'name': 'formula', 'type': 'selection', 'values': ['None', 'Mandelbulb'], 'default_value': 'Mandelbulb'},
-			#{'name': 'ambient_light_from_background', 'type': 'bool', 'default_value': false},
-			#{'name': 'ambient_light_color', 'type': 'color', 'default_value': Color('white')},
-		#],
 		# Effects / Vignette
 		8: [
 			{'name': 'vignette_radius', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 0.9},
@@ -261,13 +255,6 @@ func _ready() -> void:
 		20: [
 			{'name': 'display', 'type': 'selection', 'values': ['Render', 'Occlusion', 'Normals', 'Depth'], 'default_value': 'Render'},
 			{'name': 'depth_scale', 'type': 'float', 'from': 0, 'to': 4, 'default_value': 0.3}
-		],
-		# Animation / Setting
-		21: [
-			{'name': 'animation_fps', 'type': 'int', 'from': 0, 'to': 480, 'default_value': 60, 'onchange_override': func(val: int) -> void:
-				field_changed_non_shader('animation_fps', val)
-				%AnimationTrack.fps = val
-				}
 		],
 		# Modifiers / Transform
 		16: [

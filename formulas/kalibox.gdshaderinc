@@ -1,5 +1,6 @@
 // [ID]
 // Kali box
+// [IFS]
 // [INDEX]
 // 21
 // [VARS]
@@ -27,31 +28,3 @@ void kalibox_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, i
 
 	dz = dz * abs(m) + 1.0;
 }
-
-//vec2 kalibox_sdf(vec3 z) {
-	//float scale = fkalibox_scale;
-	//float r;
-	//float de = 1.0;
-	//float orbit_trap = 10000.0;
-	//float MinR = 0.0;
-//
-	//int i = 0;
-	//for (; i < iterations; i++) {
-		//z = fkalibox_offset1 - abs(z);
-		//float rr = dot(z, z);
-		//float dividend = rr < MinR ? MinR : min(rr, 1.0);
-		//float m = -scale / dividend;
-		//z = z * m;
-		//z += fkalibox_offset2;
-//
-		//r = dot(z, z);
-		//de = de * abs(m) + 1.0;
-//
-		//if (coloring_mode == 0 && i > color_min_iterations && i < color_max_iterations) orbit_trap = min(orbit_trap, length(z));
-		//else orbit_trap = min(orbit_trap, process_orbit_trap(z, i));
-//
-		//if (r > escape_radius) break;
-	//}
-//
-	//return vec2(length(z) / abs(de), orbit_trap);
-//}

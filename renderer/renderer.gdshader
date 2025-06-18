@@ -122,38 +122,7 @@ uniform float progression_strength = 100.0;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
-#include "res://formulas/mandelbulb.gdshaderinc"                              //-@1
-#include "res://formulas/mandelbox.gdshaderinc"                               //-@2
-#include "res://formulas/amazingsurf.gdshaderinc"                             //-@3
-#include "res://formulas/bairddelta.gdshaderinc"                              //-@4
-#include "res://formulas/sierpinskiicosahedron.gdshaderinc"                   //-@5
-#include "res://formulas/sierpinskitetrahedron.gdshaderinc"                   //-@6
-#include "res://formulas/mengersponge.gdshaderinc"                            //-@7
-#include "res://formulas/sierpinskioctahedron.gdshaderinc"                    //-@8
-#include "res://formulas/sierpinskidodecahedron.gdshaderinc"                  //-@9
-#include "res://formulas/pseudoklenian.gdshaderinc"                           //-@10
-#include "res://formulas/klenian.gdshaderinc"                                 //-@11
-#include "res://formulas/spheretree.gdshaderinc"                              //-@12
-#include "res://formulas/kaliredux.gdshaderinc"                               //-@13
-#include "res://formulas/kochcube.gdshaderinc"                                //-@14
-#include "res://formulas/newton.gdshaderinc"                                  //-@15
-#include "res://formulas/quadratickoch.gdshaderinc"                           //-@16
-#include "res://formulas/kaliliving.gdshaderinc"                              //-@17
-#include "res://formulas/mixpinski4d.gdshaderinc"                             //-@18
-#include "res://formulas/vicsek.gdshaderinc"                                  //-@19
-#include "res://formulas/kochwire.gdshaderinc"                                //-@20
-#include "res://formulas/kalibox.gdshaderinc"                                 //-@21
-#include "res://formulas/sphairahedron.gdshaderinc"                           //-@22
-#include "res://formulas/lionbulb.gdshaderinc"                                //-@23
-#include "res://formulas/jerusalemcube.gdshaderinc"                           //-@24
-#include "res://formulas/bristorbrot.gdshaderinc"                             //-@25
-#include "res://formulas/sintransform.gdshaderinc"                            //-@26
-#include "res://formulas/logtransform.gdshaderinc"                            //-@27
-#include "res://formulas/basictransform.gdshaderinc"                          //-@28
-#include "res://formulas/inversiontransform.gdshaderinc"                      //-@29
-#include "res://formulas/wobbletransform.gdshaderinc"                         //-@30
-#include "res://formulas/reciprocaltransform.gdshaderinc"                     //-@31
-#include "res://formulas/MB3D/_reciprocalX.gdshaderinc"                       //-@32
+// -@Imports
 
 vec2 scene_sdf(vec3 p) {
 	float d, d2;
@@ -196,7 +165,7 @@ vec2 scene_sdf(vec3 p) {
 	vec3 previous_z = z.xyz;
 
 	// Edited at runtime
-	for (int i = 0; i < iterations; i++) {
+	for (int i = 0; i < iterations * int(number_of_active_formulas); i++) {
 		bool escaped = false;
 		int current_formula = formulas[int(mod(float(i), number_of_active_formulas))];
 // -@Formulas

@@ -7,6 +7,16 @@ var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
 var PATCH := VERSION.split('.')[2].split('-')[0]
 
+const VAR_TEMPLATES := {
+	'kifs_rotation': [
+		'vec3 rotation1[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0, 0, 0)',
+		'vec3 rotation2[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0, 0, 0)'
+	],
+	'transform_range': [
+		'vec2 range[(0, 0), (100, 100)] = (0, 100)'
+	]
+}
+
 @onready var HELIUM3D_PATH: String = OS.get_environment("HOME") + "/.hlm"
 var taa_samples: int = 2
 var fields: Dictionary = {}
@@ -21,23 +31,36 @@ var difficulty: String = 'simple':
 		difficulty = value
 		%TabContainer.get_node('Formula/TabContainer').set_difficulty(difficulty)
 
+var white_display: Image
+
 func _ready() -> void:
 	%Logs.print_console('Helium3D ' + VERSION)
 	
 	var dir := DirAccess.open("res://")
 	if not dir.dir_exists(HELIUM3D_PATH):
 		dir.make_dir(HELIUM3D_PATH)
+
+func expand_templates(formula_content: String) -> String:
+	var lines := formula_content.split('\n')
+	var expanded_lines: Array[String] = []
 	
-	# Make sure the BG panel is behind the fields in the %AnimationSettings node.
-	await get_tree().process_frame
-	%AnimationSettings.move_child(%AnimationSettings.get_node('BackPanel'), 0)
+	for line in lines:
+		var trimmed_line := line.strip_edges()
+		if trimmed_line.begins_with('// template '):
+			var template_name := trimmed_line.substr(12).strip_edges()
+			for template_var in (VAR_TEMPLATES[template_name] as Array[String]):
+				expanded_lines.append(template_var)
+		else:
+			expanded_lines.append(line)
+	
+	return '\n'.join(expanded_lines)
 
 func get_formulas_forloop_code() -> Array:
 	initialize_formulas('res://formulas/')
 	var formulas_forloop_code: Array = []
 	for formula in formulas:
 		for i in range(formulas.size()):
-			if formula['difs']:
+			if formula['type'] == 'difs':
 				formulas_forloop_code.append('//if (current_formula == ' + str(formula['index']) + ') using_' + formula['id'] + ' = true; //-@' + str(formula['index']))
 			else:
 				var params: String = 'z, dz, original_z, orbit, i'
@@ -48,12 +71,14 @@ func get_formulas_forloop_code() -> Array:
 			break
 	
 	return formulas_forloop_code
-	#print('// -@Formulas' in %Fractal.material_override.shader.code)
-	#%Fractal.material_override.shader.code = %Fractal.material_override.shader.code.replace('// -@Formulas', '\n'.join(formulas_forloop_code))
-	#print('// -@Formulas' in %Fractal.material_override.shader.code)
-	#var file: FileAccess = FileAccess.open('shader_code_ready', FileAccess.WRITE)
-	#file.store_string(%Fractal.material_override.shader.code)
-	#file.close()
+
+func get_formulas_import_code() -> Array:
+	var formulas_import_code := []
+	
+	for formula in formulas:
+		formulas_import_code.append('#include "res://formulas/' + formula['id'] + '.gdshaderinc"')
+	
+	return formulas_import_code
 
 func get_app_state(optimize_for_clipboard: bool = false) -> Dictionary:
 	var data: Dictionary = fields.duplicate(true)
@@ -80,47 +105,20 @@ func initialize_formulas(path_to_formulas: String) -> void:
 	if formulas != []:
 		return
 	
-	var directories_to_process: Array[String] = [path_to_formulas]
-	
-	while directories_to_process.size() > 0:
-		var current_dir_path: String = directories_to_process.pop_back()
-		var dir: DirAccess = DirAccess.open(current_dir_path)
-		
-		if dir == null:
+	for formula_file_path in DirAccess.get_files_at(path_to_formulas):
+		if formula_file_path.get_file().get_extension().ends_with('uid'):
 			continue
 		
-		dir.list_dir_begin()
-		var file_name: String = dir.get_next()
-		
-		while file_name != "":
-			var full_path: String = current_dir_path + "/" + file_name
-			
-			if dir.current_is_dir():
-				directories_to_process.append(full_path)
-			else:
-				if not file_name.get_extension().ends_with('uid'):
-					var formula_file: FileAccess = FileAccess.open(full_path, FileAccess.READ)
-					if formula_file != null:
-						var formula_file_contents: String = formula_file.get_as_text()
-						var data: Dictionary = parse_data(formula_file_contents)
-						
-						# Some external tag data
-						if '// [DIFS]' in formula_file_contents:
-							data['difs'] = true
-						else:
-							data['difs'] = false
-						
-						if current_dir_path.get_file() == "mb3d":
-							data['software'] = 'Mandelbulb3D'
-						else:
-							data['software'] = 'Helium3D'
-						
-						formulas.append(data)
-						formula_file.close()
-			
-			file_name = dir.get_next()
-		
-		dir.list_dir_end()
+		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
+		var formula_file_contents: String = formula_file.get_as_text()
+		var data: Dictionary = parse_data(formula_file_contents)
+		if    '// [DIFS]'      in formula_file_contents: data['type'] = 'difs'
+		elif  '// [IFS]'       in formula_file_contents: data['type'] = 'ifs'
+		elif  '// [ESCAPE]'    in formula_file_contents: data['type'] = 'escape'
+		elif  '// [KIFS]'      in formula_file_contents: data['type'] = 'kifs'
+		elif  '// [TRANSFORM]' in formula_file_contents: data['type'] = 'transform'
+		else: data['type'] = 'unknown'
+		formulas.append(data)
 	
 	formulas.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["index"] < b["index"])
 
@@ -240,7 +238,7 @@ func update_fields(new_fields: Dictionary) -> void:
 		
 		%Fractal.material_override.set_shader_parameter(field_name, field_val)
 	
-	%TabContainer.update_field_values(new_fields) # Update node values as well
+	%TabContainer.update_field_values(new_fields)
 
 func update_app_state(data: Dictionary, update_keyframes: bool = true) -> void:
 	var old_data: Dictionary = data.duplicate(true)
@@ -258,7 +256,6 @@ func update_app_state(data: Dictionary, update_keyframes: bool = true) -> void:
 	data.erase('other')
 	
 	if data.has('formulas') and data['formulas'] == %TabContainer.current_formulas:
-		# Switching formulas each frame in the animation is very expensive.
 		data.erase('formulas')
 	
 	update_fields(data)
@@ -308,9 +305,13 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 	var shader := %Fractal.material_override.shader as Shader
 	var shader_code := shader.code
 	var formulas_forloop_code: Array = get_formulas_forloop_code()
+	var formulas_import_code: Array = get_formulas_import_code()
 	
 	if '// -@Formulas' in shader_code:
 		shader_code = shader_code.replace('// -@Formulas', '\n'.join(formulas_forloop_code))
+	
+	if '// -@Imports' in shader_code:
+		shader_code = shader_code.replace('// -@Imports', '\n'.join(formulas_import_code))
 	
 	var lines := shader_code.split("\n")
 	var modified_lines := []
@@ -362,11 +363,14 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 		modified_lines[7] = '//' + (modified_lines[7] as String)
 	
 	shader.code = "\n".join(modified_lines)
+	
+	var file: FileAccess = FileAccess.open('shader_code.gdshader', FileAccess.WRITE)
+	file.store_string(shader.code)
+	file.close()
+	
 	%Fractal.material_override.shader = shader
 
-# Shortcuts
 func _input(event: InputEvent) -> void:
-	# Animation button shortcuts
 	if %TextureRect.is_holding:
 		return
 	

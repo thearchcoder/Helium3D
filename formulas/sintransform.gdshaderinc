@@ -1,12 +1,13 @@
 // [ID]
 // Sin transform
+// [TRANSFORM]
 // [INDEX]
 // 26
 // [VARS]
 // selection axis[X, Y, Z, W] = X
 // vec2 offset[(-4, -4), (4, 4)] = (0, 0)
 // vec2 scale[(-4, -4), (4, 4)] = (1, 1)
-// vec2 range[(0, 0), (100, 100)] = (0, 100)
+// template transform_range
 // [CODE]
 uniform int fsintransform_axis;
 uniform vec2 fsintransform_offset;

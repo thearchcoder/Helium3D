@@ -78,7 +78,6 @@ func _on_save_all_pressed() -> void:
 	%FileDialog.add_filter("*.hlm", "Helium3D Files")
 
 func _on_file_dialog_confirmed(path: String) -> void:
-	print('e')
 	if %FileDialog.title == "Save Picture":
 		save_image(path)
 	elif %FileDialog.title == "Save Project":

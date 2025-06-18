@@ -1,12 +1,13 @@
 // [ID]
 // Log transform
+// [TRANSFORM]
 // [INDEX]
 // 27
 // [VARS]
 // selection axis[X, Y, Z, W] = X
 // float offset[-5, 5] = 1
 // float scale[1, 10] = 1
-// vec2 range[(0, 0), (100, 100)] = (0, 100)
+// template transform_range
 // [CODE]
 uniform int flogtransform_axis;
 uniform float flogtransform_offset;

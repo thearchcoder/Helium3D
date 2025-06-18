@@ -1,5 +1,6 @@
 // [ID]
 // Sierpinski tetrahedron
+// [KIFS]
 // [INDEX]
 // 6
 // [VARS]
@@ -17,7 +18,7 @@ void sierpinskitetrahedron_iter(inout vec4 z4, inout float dz, vec4 original_z, 
 	vec3 z = z4.xyz;
 	float scale = fsierpinskitetrahedron_scale;
 	vec3 offset = fsierpinskitetrahedron_offset;
-	
+
 	z = rotate3d_point(z, fsierpinskitetrahedron_rotation1);
 
 	if (z.x + z.y < 0.0) z.xy = -z.yx;

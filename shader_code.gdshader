@@ -3,9 +3,9 @@ shader_type spatial;
 
 // Disabled when possible to reduce shader compilation times.
 // Line numbers for these 3 lines must stay the same.
-////////////////////////#define USING_DOF
-////////////////////////#define USING_TILING
-////////////////////////#define USING_REFLECTIONS
+//////////#define USING_DOF
+//////////#define USING_TILING
+//////////#define USING_REFLECTIONS
 
 // Effects / DOF
 uniform bool dof_enabled;
@@ -122,38 +122,36 @@ uniform float progression_strength = 100.0;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
-#include "res://formulas/mandelbulb.gdshaderinc"                              //-@1
-#include "res://formulas/mandelbox.gdshaderinc"                               //-@2
-#include "res://formulas/amazingsurf.gdshaderinc"                             //-@3
-#include "res://formulas/bairddelta.gdshaderinc"                              //-@4
-#include "res://formulas/sierpinskiicosahedron.gdshaderinc"                   //-@5
-#include "res://formulas/sierpinskitetrahedron.gdshaderinc"                   //-@6
-#include "res://formulas/mengersponge.gdshaderinc"                            //-@7
-#include "res://formulas/sierpinskioctahedron.gdshaderinc"                    //-@8
-#include "res://formulas/sierpinskidodecahedron.gdshaderinc"                  //-@9
-#include "res://formulas/pseudoklenian.gdshaderinc"                           //-@10
-#include "res://formulas/klenian.gdshaderinc"                                 //-@11
-#include "res://formulas/spheretree.gdshaderinc"                              //-@12
-#include "res://formulas/kaliredux.gdshaderinc"                               //-@13
-#include "res://formulas/kochcube.gdshaderinc"                                //-@14
-#include "res://formulas/newton.gdshaderinc"                                  //-@15
-#include "res://formulas/quadratickoch.gdshaderinc"                           //-@16
-#include "res://formulas/kaliliving.gdshaderinc"                              //-@17
-#include "res://formulas/mixpinski4d.gdshaderinc"                             //-@18
-#include "res://formulas/vicsek.gdshaderinc"                                  //-@19
-#include "res://formulas/kochwire.gdshaderinc"                                //-@20
-#include "res://formulas/kalibox.gdshaderinc"                                 //-@21
-#include "res://formulas/sphairahedron.gdshaderinc"                           //-@22
-#include "res://formulas/lionbulb.gdshaderinc"                                //-@23
-#include "res://formulas/jerusalemcube.gdshaderinc"                           //-@24
-#include "res://formulas/bristorbrot.gdshaderinc"                             //-@25
-#include "res://formulas/sintransform.gdshaderinc"                            //-@26
-#include "res://formulas/logtransform.gdshaderinc"                            //-@27
-#include "res://formulas/basictransform.gdshaderinc"                          //-@28
-#include "res://formulas/inversiontransform.gdshaderinc"                      //-@29
-#include "res://formulas/wobbletransform.gdshaderinc"                         //-@30
-#include "res://formulas/reciprocaltransform.gdshaderinc"                     //-@31
-#include "res://formulas/MB3D/_reciprocalX.gdshaderinc"                       //-@32
+#include "res://formulas/mandelbulb.gdshaderinc"
+#include "res://formulas/mandelbox.gdshaderinc"
+#include "res://formulas/amazingsurf.gdshaderinc"
+#include "res://formulas/bairddelta.gdshaderinc"
+#include "res://formulas/sierpinskiicosahedron.gdshaderinc"
+#include "res://formulas/sierpinskitetrahedron.gdshaderinc"
+#include "res://formulas/mengersponge.gdshaderinc"
+#include "res://formulas/sierpinskioctahedron.gdshaderinc"
+#include "res://formulas/sierpinskidodecahedron.gdshaderinc"
+#include "res://formulas/pseudoklenian.gdshaderinc"
+#include "res://formulas/klenian.gdshaderinc"
+#include "res://formulas/spheretree.gdshaderinc"
+#include "res://formulas/kaliredux.gdshaderinc"
+#include "res://formulas/kochcube.gdshaderinc"
+#include "res://formulas/newton.gdshaderinc"
+#include "res://formulas/quadratickoch.gdshaderinc"
+#include "res://formulas/kaliliving.gdshaderinc"
+#include "res://formulas/mixpinski4d.gdshaderinc"
+#include "res://formulas/vicsek.gdshaderinc"
+#include "res://formulas/kochwire.gdshaderinc"
+#include "res://formulas/kalibox.gdshaderinc"
+#include "res://formulas/sphairahedron.gdshaderinc"
+#include "res://formulas/lionbulb.gdshaderinc"
+#include "res://formulas/jerusalemcube.gdshaderinc"
+#include "res://formulas/bristorbrot.gdshaderinc"
+#include "res://formulas/sintransform.gdshaderinc"
+#include "res://formulas/logtransform.gdshaderinc"
+#include "res://formulas/basictransform.gdshaderinc"
+#include "res://formulas/inversiontransform.gdshaderinc"
+#include "res://formulas/reciprocaltransform.gdshaderinc"
 
 vec2 scene_sdf(vec3 p) {
 	float d, d2;
@@ -196,10 +194,10 @@ vec2 scene_sdf(vec3 p) {
 	vec3 previous_z = z.xyz;
 
 	// Edited at runtime
-	for (int i = 0; i < iterations; i++) {
+	for (int i = 0; i < iterations * int(number_of_active_formulas); i++) {
 		bool escaped = false;
 		int current_formula = formulas[int(mod(float(i), number_of_active_formulas))];
-//if (current_formula == 1) mandelbulb_iter(z, dz, original_z, orbit, i); //-@1
+if (current_formula == 1) mandelbulb_iter(z, dz, original_z, orbit, i); //-@1
 //if (current_formula == 2) mandelbox_iter(z, dz, original_z, orbit, i); //-@2
 //if (current_formula == 3) amazingsurf_iter(z, dz, original_z, orbit, i); //-@3
 //if (current_formula == 4) bairddelta_iter(z, dz, original_z, orbit, i); //-@4
@@ -209,8 +207,8 @@ vec2 scene_sdf(vec3 p) {
 //if (current_formula == 8) sierpinskioctahedron_iter(z, dz, original_z, orbit, i); //-@8
 //if (current_formula == 9) sierpinskidodecahedron_iter(z, dz, original_z, orbit, i); //-@9
 //if (current_formula == 10) pseudoklenian_iter(z, dz, original_z, orbit, i); //-@10
-//if (current_formula == 11) klenian_iter(z, dz, original_z, orbit, i); //-@11
-//if (current_formula == 12) spheretree_iter(z, dz, original_z, orbit, i); //-@12
+//if (current_formula == 11) using_klenian = true; //-@11
+//if (current_formula == 12) using_spheretree = true; //-@12
 //if (current_formula == 13) kaliredux_iter(z, dz, original_z, orbit, i); //-@13
 //if (current_formula == 14) kochcube_iter(z, dz, original_z, orbit, i, s); //-@14
 //if (current_formula == 15) using_newton = true; //-@15
@@ -220,17 +218,15 @@ vec2 scene_sdf(vec3 p) {
 //if (current_formula == 19) vicsek_iter(z, dz, original_z, orbit, i); //-@19
 //if (current_formula == 20) kochwire_iter(z, dz, original_z, orbit, i); //-@20
 //if (current_formula == 21) kalibox_iter(z, dz, original_z, orbit, i); //-@21
-//if (current_formula == 22) sphairahedron_iter(z, dz, original_z, orbit, i); //-@22
+//if (current_formula == 22) using_sphairahedron = true; //-@22
 //if (current_formula == 23) lionbulb_iter(z, dz, original_z, orbit, i); //-@23
 //if (current_formula == 24) jerusalemcube_iter(z, dz, original_z, orbit, i); //-@24
 //if (current_formula == 25) bristorbrot_iter(z, dz, original_z, orbit, i); //-@25
 //if (current_formula == 26) sintransform_iter(z, dz, original_z, orbit, i); //-@26
-//if (current_formula == 26) wobbletransform_iter(z, dz, original_z, orbit, i); //-@26
 //if (current_formula == 27) logtransform_iter(z, dz, original_z, orbit, i); //-@27
 //if (current_formula == 28) basictransform_iter(z, dz, original_z, orbit, i); //-@28
 //if (current_formula == 29) inversiontransform_iter(z, dz, original_z, orbit, i); //-@29
 //if (current_formula == 31) reciprocaltransform_iter(z, dz, original_z, orbit, i); //-@31
-//if (current_formula == 32) _reciprocalx_iter(z, dz, original_z, orbit, i); //-@32
 		orbit = min(orbit, process_orbit_trap4d(z, original_z, i));
 
 		if (dot(z, z) > escape_radius * escape_radius || escaped) break;

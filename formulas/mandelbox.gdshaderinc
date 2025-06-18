@@ -1,5 +1,6 @@
 // [ID]
 // Mandelbox
+// [KIFS]
 // [INDEX]
 // 2
 // [VARS]
@@ -11,6 +12,7 @@
 // vec3 box_folds[(-2, -2, -2), (2, 2, 2)] = (1, 0, 0)
 // advanced bool is_julia[false, true] = false
 // advanced vec3 julia_c[(-8, -8, -8), (8, 8, 8)] = (5, 5, 5)
+// template kifs_rotation
 // [CODE]
 uniform float fmandelbox_scale;
 uniform float fmandelbox_radius1;
@@ -20,6 +22,8 @@ uniform vec3 fmandelbox_julia_c;
 uniform bool fmandelbox_is_julia;
 uniform float fmandelbox_fold1;
 uniform float fmandelbox_fold1_strength;
+uniform vec3 fmandelbox_rotation1;
+uniform vec3 fmandelbox_rotation2;
 
 void boxFold(inout vec3 z, vec3 r) {
 	z = 2.0 * clamp(z, -r, r) - z;
@@ -44,17 +48,19 @@ void mandelbox_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit,
 	vec3 c = fmandelbox_is_julia ? fmandelbox_julia_c : original_z.xyz * 5.5;
 	if (i == 0) z *= 5.5;
 	
-	//if (z.x - z.z < 0.0) z.xz = z.zx;
+	z = rotate3d_point(z, fmandelbox_rotation1);
+	
 	if (length(fmandelbox_box_folds.x) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.x));
 	if (length(fmandelbox_box_folds.y) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.y));
 	if (length(fmandelbox_box_folds.z) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.z));
-	//z.xz = abs(z.xz + 0.3) - abs(z.xz - 1.0) - z.xz;
 	z -= min(z, fmandelbox_fold1) * fmandelbox_fold1_strength;
 	sphereFold(z, dz);
 	z *= fmandelbox_scale;
 	z += c;
+	
+	z = rotate3d_point(z, fmandelbox_rotation2);
+	
 	dz = dz * abs(fmandelbox_scale) + 18.5;
-
 	if (fmandelbox_is_julia) dz += 6.0;
 
 	z4.xyz = z;

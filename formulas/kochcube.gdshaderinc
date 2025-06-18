@@ -1,5 +1,6 @@
 // [ID]
 // Koch cube
+// [IFS]
 // [INDEX]
 // 14
 // [VARS]

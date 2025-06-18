@@ -1,5 +1,6 @@
 // [ID]
 // Sierpinski octahedron
+// [KIFS]
 // [INDEX]
 // 8
 // [VARS]

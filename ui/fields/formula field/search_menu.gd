@@ -2,6 +2,7 @@ extends HBoxContainer
 
 var options: Array = []
 var filter: String = ''
+var type: String = 'any'
 
 func add_option(option_name: String) -> void:
 	options.append(option_name)
@@ -9,24 +10,35 @@ func add_option(option_name: String) -> void:
 func reload_popup() -> void:
 	$OptionButton.clear()
 	$OptionButton.add_item('None')
+	
 	for option in (options as Array[String]):
+		var should_add := true
+		
 		if filter:
-			if option.to_lower().begins_with(filter.to_lower()):
-				$OptionButton.add_item(option)
-		else:
+			if not option.to_lower().begins_with(filter.to_lower()):
+				should_add = false
+		
+		if type != 'any':
+			var formula_data: Dictionary = get_formula_data_from_name(option)
+			if formula_data.has('type'):
+				if formula_data['type'] != type and formula_data['type'] != 'unknown':
+					should_add = false
+			else:
+				should_add = false
+		
+		if should_add:
 			$OptionButton.add_item(option)
 	
 	$OptionButton.selected = 1
 
-func get_formula_index_from_name(formatted_id: String) -> int:
+func get_formula_data_from_name(formatted_id: String) -> Dictionary:
 	for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
 		if formula['formatted_id'] == formatted_id:
-			return formula['index']
-	
-	return 0
+			return formula
+	return {}
 
-func _process(_delta: float) -> void:
-	if $"../../..".visible and Input.is_action_just_pressed('enter'):
+func _process(delta: float) -> void:
+	if $"../../..".visible and (Input.is_action_just_pressed('enter') or Input.is_action_just_pressed('escape')):
 		$"../SearchCloseButton".emit_signal('pressed')
 		_on_option_button_item_selected($OptionButton.selected)
 
@@ -38,11 +50,13 @@ func _ready() -> void:
 	await get_tree().process_frame
 	for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
 		add_option(formula['formatted_id'])
-	
 	reload_popup()
 
 func _on_option_button_item_selected(index: int) -> void:
-	$"../../../..".index = get_formula_index_from_name($OptionButton.get_item_text(index))
+	if index != 0:
+		$"../../../..".index = get_formula_data_from_name($OptionButton.get_item_text(index))['index']
+	else:
+		$"../../../..".index = 0
 
 func _on_search_close_button_pressed() -> void:
 	$"../../..".visible = false
@@ -58,3 +72,8 @@ func _on_line_edit_text_changed(new_text: String) -> void:
 func _on_popup_visibility_changed() -> void:
 	if $"../../..".visible:
 		$"../Filter/LineEdit".grab_focus()
+		$"../Filter/LineEdit".text = ""
+
+func _on_types_item_selected(index: int) -> void:
+	type = %Types.get_item_text(index).to_lower()
+	reload_popup()

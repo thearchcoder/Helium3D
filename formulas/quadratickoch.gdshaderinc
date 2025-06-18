@@ -1,5 +1,6 @@
 // [ID]
 // Quadratic koch
+// [KIFS]
 // [INDEX]
 // 16
 // [VARS]
@@ -9,6 +10,7 @@
 // vec3 octahedron_[(-2, -2, -2), (2, 2, 2)] = (0, 0, 0)
 // vec3 offset[(-2, -2, -2), (2, 2, 2)] = (1, 1, 1)
 // vec2 scale[(1, 1), (5, 3)] = (3, 1)
+// template kifs_rotation
 // simple float abs_offset[-2, 2] = 0
 // [CODE]
 
@@ -18,6 +20,8 @@ uniform vec3 fquadratickoch_octahedron_offset2;
 uniform vec3 fquadratickoch_octahedron_limit;
 uniform float fquadratickoch_abs_offset;
 uniform vec3 fquadratickoch_offset;
+uniform vec3 fquadratickoch_rotation1;
+uniform vec3 fquadratickoch_rotation2;
 uniform vec2 fquadratickoch_scale;
 
 void quadratickoch_iter(inout vec4 p4, inout float dz, vec4 original_z, float orbit, int i) {
@@ -25,6 +29,8 @@ void quadratickoch_iter(inout vec4 p4, inout float dz, vec4 original_z, float or
 	float scale = fquadratickoch_scale.x;
 	float scale_octa = fquadratickoch_scale.y;
 	vec3 offset = fquadratickoch_offset;
+
+	z = rotate3d_point(z, fquadratickoch_rotation1);
 
 	if (mod(float(i), 2.0) != 1.0) {
 		z = abs(z);
@@ -61,6 +67,8 @@ void quadratickoch_iter(inout vec4 p4, inout float dz, vec4 original_z, float or
 		if (z.y > fquadratickoch_octahedron_limit.x) z.y -= fquadratickoch_octahedron_limit.y;
 		z += fquadratickoch_octahedron_offset;
 	}
+
+	z = rotate3d_point(z, fquadratickoch_rotation2);
 
 	p4.xyz = z;
 }

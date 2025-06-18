@@ -1,5 +1,6 @@
 // [ID]
 // Vicsek
+// [IFS]
 // [INDEX]
 // 19
 // [VARS]
@@ -50,7 +51,7 @@ void vicsek_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, in
 	if (fvicsek_hex_fold2 == 2) z.xz -= fvicsek_pl2 * 2.0 * min(0.0, dot(z.xz, fvicsek_pl2));
 	if (fvicsek_hex_fold2 == 3) z.zx -= fvicsek_pl2 * 2.0 * min(0.0, dot(z.zx, fvicsek_pl2));
 	if (fvicsek_hex_fold2 == 4) z.yx -= fvicsek_pl2 * 2.0 * min(0.0, dot(z.yx, fvicsek_pl2));
-	
+
 	z.xy = fvicsek_foldt.xy - abs(abs(z.xy) - fvicsek_foldt.xy);
 
 	z = abs(z - fvicsek_abs2_minus) - fvicsek_abs2_plus;
@@ -78,7 +79,7 @@ void vicsek_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, in
 	if (z.x > fvicsek_limit.x * 0.5f) z.x -= fvicsek_limit.x * scale;
 	if (z.y > fvicsek_limit.y * 0.5f) z.y -= fvicsek_limit.y;
 	if (z.z > fvicsek_limit.z) z.z -= 2.0f * fvicsek_limit.z;
-	
+
 	dz = dz * abs(scale) + 3.0;
 
 	//de = min(de, hollow_cube_sdf3d(z, vec3(1.0), fvicsek_thickness) * s);

@@ -1,5 +1,6 @@
 // [ID]
 // Sierpinski icosahedron
+// [KIFS]
 // [INDEX]
 // 5
 // [VARS]
@@ -21,7 +22,7 @@ void sierpinskiicosahedron_iter(inout vec4 p4, inout float dz, vec4 original_z, 
 	float scale = fsierpinskiicosahedron_scale;
 	vec3 offset = fsierpinskiicosahedron_offset;
 	float t = 0.0;
-	
+
 	if (i == 0) {
 		p = abs(p);
 		t = dot(p, fsierpinskiicosahedron_n1); if (t > 0.0) p -= 2.0 * t * fsierpinskiicosahedron_n1;
@@ -29,7 +30,7 @@ void sierpinskiicosahedron_iter(inout vec4 p4, inout float dz, vec4 original_z, 
 		t = dot(p, fsierpinskiicosahedron_n3); if (t > 0.0) p -= 2.0 * t * fsierpinskiicosahedron_n3;
 		t = dot(p, fsierpinskiicosahedron_n2); if (t > 0.0) p -= 2.0 * t * fsierpinskiicosahedron_n2;
 	}
-	
+
 	p = rotate3d_point(p, fsierpinskiicosahedron_rotation1);
 
 	p = abs(p);
@@ -40,7 +41,7 @@ void sierpinskiicosahedron_iter(inout vec4 p4, inout float dz, vec4 original_z, 
 	dz = dz * abs(scale) + 1.0;
 
 	p = rotate3d_point(p, fsierpinskiicosahedron_rotation2);
-	
+
 	p4.xyz = p;
 }
 

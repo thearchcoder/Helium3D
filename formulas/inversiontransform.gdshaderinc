@@ -1,10 +1,11 @@
 // [ID]
 // Inversion transform
+// [TRANSFORM]
 // [INDEX]
 // 29
 // [VARS]
-// vec2 range[(0, 0), (100, 100)] = (0, 100)
 // vec4 sphere[(-4, -4, -4, -4), (4, 4, 4, 4)] = (1, 1, 0, 1)
+// template transform_range
 // [CODE]
 uniform vec4 finversiontransform_sphere;
 uniform vec2 finversiontransform_range;

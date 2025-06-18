@@ -1,11 +1,12 @@
 // [ID]
 // Basic transform
+// [TRANSFORM]
 // [INDEX]
 // 28
 // [VARS]
-// vec2 range[(0, 0), (100, 100)] = (0, 100)
 // vec4 offset[(-4, -4, -4, -4), (4, 4, 4, 4)] = (0.3, 0, 0, 0)
 // vec4 scale[(-4, -4, -4, -4), (4, 4, 4, 4)] = (1, 1, 1, 1)
+// template transform_range
 // [CODE]
 uniform vec4 fbasictransform_offset;
 uniform vec4 fbasictransform_scale;

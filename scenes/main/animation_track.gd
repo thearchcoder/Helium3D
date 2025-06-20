@@ -31,7 +31,7 @@ func _on_playing_toggle_button_pressed() -> void:
 	
 	if is_playing:
 		update_animation_frames_data()
-		%PlayingToggleButton.icon = preload('res://resources/icons/play-solid.svg')
+		%PlayingToggleButton.icon = preload('res://resources/icons/pause-solid.svg')
 	else:
 		%PlayingToggleButton.icon = preload('res://resources/icons/play-solid.svg')
 		currently_at_frame = 0
@@ -244,7 +244,7 @@ func _process(_delta: float) -> void:
 		if not %Time.get_parent().dragging:
 			currently_at_frame = 0
 		
-		%PlayingToggleButton.icon = preload('res://resources/icons/play-solid.svg')
+		%PlayingToggleButton.icon = preload('res://resources/icons/pause-solid.svg')
 	
 	var wait := true
 	

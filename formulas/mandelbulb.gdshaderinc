@@ -18,19 +18,6 @@
 // advanced selection quaternion_mode[Negative X, Negative Y] = Negative Y
 // [CODE]
 
-uniform float fmandelbulb_z_mul;
-uniform bool fmandelbulb_is_julia;
-uniform bool fmandelbulb_conjugate;
-uniform bool fmandelbulb_abs_x;
-uniform bool fmandelbulb_abs_y;
-uniform bool fmandelbulb_abs_z;
-uniform vec4 fmandelbulb_julia_c;
-uniform float fmandelbulb_derivative_bias;
-uniform float fmandelbulb_power;
-uniform float fmandelbulb_phase;
-uniform int fmandelbulb_quaternion_mode;
-uniform int fmandelbulb_number_system;
-
 void mandelbulb_iter(inout vec4 z, inout float dz, vec4 original_z, float orbit, int i) {
 	float power = fmandelbulb_power;
 	vec4 c = fmandelbulb_is_julia ? fmandelbulb_julia_c : original_z;

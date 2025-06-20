@@ -1,12 +1,41 @@
 extends Node3D
 
-# Pseudo-constant variables
-var VERSION := '0.9.0-beta'
+var VERSION := '0.9.1-beta'
 var PHASE := VERSION.split('-')[-1]
 var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
 var PATCH := VERSION.split('.')[2].split('-')[0]
 
+# DONE | octkoch
+# about menu
+# animation keyframe length
+# animation keyframe interpolation (Linear, Bezier, Hermite)
+# DONE | remove wobble
+# DONE | uniform system
+# DONE | debug/shader_code dump
+# DONE | kalaido transform
+# DONE | ifs -> kifs
+# DONE | ambient occlusion max dist
+# DONE | transforms range template
+# DONE | update antialiasing entry when enabling upscaling
+# DONE | pause icon
+# ------------------------------------------------
+# animation estimate time
+# animation current frame label
+# multiple same formulas
+# edit keyframe
+# edit multiple keyframes
+# DONE | better formula search
+# DONE | shortcut tab switching
+# DONE | add option to not put // -@ after lines for formulas error checking
+# DONE | koch_cube
+# DONE | benesi1pow2
+# DONE | platonic_solid (koch_cube)
+# -----------------------------------------------------
+# koch_oct
+# mengerkochv2
+
+const LAZY_IMPORTING := false
 const VAR_TEMPLATES := {
 	'kifs_rotation': [
 		'vec3 rotation1[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0, 0, 0)',
@@ -14,6 +43,10 @@ const VAR_TEMPLATES := {
 	],
 	'transform_range': [
 		'vec2 range[(0, 0), (100, 100)] = (0, 100)'
+	],
+	'advanced_kifs_rotation': [
+		'advanced vec3 rotation1[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0, 0, 0)',
+		'advanced vec3 rotation2[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0, 0, 0)'
 	]
 }
 
@@ -76,7 +109,8 @@ func get_formulas_import_code() -> Array:
 	var formulas_import_code := []
 	
 	for formula in formulas:
-		formulas_import_code.append('#include "res://formulas/' + formula['id'] + '.gdshaderinc"')
+		var import_check: String = ' // -@' + str(formula['index']) if LAZY_IMPORTING else ''
+		formulas_import_code.append('#include "res://formulas/' + formula['id'] + '.gdshaderinc"' + import_check)
 	
 	return formulas_import_code
 
@@ -111,6 +145,7 @@ func initialize_formulas(path_to_formulas: String) -> void:
 		
 		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
 		var formula_file_contents: String = formula_file.get_as_text()
+		formula_file_contents = expand_templates(formula_file_contents)
 		var data: Dictionary = parse_data(formula_file_contents)
 		if    '// [DIFS]'      in formula_file_contents: data['type'] = 'difs'
 		elif  '// [IFS]'       in formula_file_contents: data['type'] = 'ifs'
@@ -141,11 +176,20 @@ func parse_data(data: String) -> Dictionary:
 	if code_match != -1:
 		result["code"] = data.substr(code_match + 9).strip_edges()
 	
+	var vars_start := data.find("// [VARS]")
+	var vars_end := data.find("// [CODE]")
+	if vars_end == -1:
+		vars_end = data.length()
+	
+	var vars_section := ""
+	if vars_start != -1:
+		vars_section = data.substr(vars_start + 9, vars_end - vars_start - 9)
+	
 	var var_regex := RegEx.new()
-	var_regex.compile(r"(?:(advanced|simple)\s+)?(\w+)\s+(\w+)\[([^\]]*)\]\s*=\s*(.+)")
+	var_regex.compile(r"(?:(advanced|simple)\s+)?(\w+)\s+(\w+)\[([^\]]*)\]\s*=\s*([^\n\r]+)")
 	var variables := {}
 	
-	for m in var_regex.search_all(data):
+	for m in var_regex.search_all(vars_section):
 		var difficulty := m.get_string(1)
 		var var_type := m.get_string(2)
 		var var_name := m.get_string(3)
@@ -313,6 +357,16 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 	if '// -@Imports' in shader_code:
 		shader_code = shader_code.replace('// -@Imports', '\n'.join(formulas_import_code))
 	
+	if '// -@Uniforms' in shader_code:
+		var uniforms_code: String = ""
+		for formula in formulas:
+			for variable_name in (formula['variables'].keys() as Array[String]):
+				var variable: Dictionary = formula['variables'][variable_name]
+				var import_check: String = ' // -@' + str(formula['index']) if LAZY_IMPORTING else ''
+				uniforms_code += 'uniform ' + variable['type'].replace('selection', 'int') + ' f' + formula['id'] + '_' + variable_name + ';' + import_check + '\n'
+		
+		shader_code = shader_code.replace('// -@Uniforms', uniforms_code)
+	
 	var lines := shader_code.split("\n")
 	var modified_lines := []
 	
@@ -364,7 +418,7 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 	
 	shader.code = "\n".join(modified_lines)
 	
-	var file: FileAccess = FileAccess.open('shader_code.gdshader', FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open('res://renderer/generated_shader_code.gdshader', FileAccess.WRITE)
 	file.store_string(shader.code)
 	file.close()
 	

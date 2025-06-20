@@ -1,6 +1,6 @@
 
 float calcAO(vec3 pos, vec3 normal) {
-	const float max_dist = 0.07;
+	float max_dist = ambient_occlusion_distance;
 	float diff = 0.0;
 
 	for (int i = 0; i < ambient_occlusion_steps; i++) {

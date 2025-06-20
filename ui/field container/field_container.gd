@@ -191,6 +191,7 @@ func _ready() -> void:
 		],
 		# Material / Ambient Occlusion
 		23: [
+			{'name': 'ambient_occlusion_distance', 'type': 'float', 'from': 0, 'to': 0.4, 'default_value': 0.07},
 			{'name': 'ambient_occlusion_radius', 'type': 'float', 'from': 0.01, 'to': 1.0, 'default_value': 0.439},
 			{'name': 'ambient_occlusion_steps', 'type': 'int', 'from': 1, 'to': 25, 'default_value': 12},
 			{'name': 'ambient_occlusion_light_affect', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 0},

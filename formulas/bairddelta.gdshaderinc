@@ -9,10 +9,6 @@
 // vec3 rotation2[(-2, -2, -2), (2, 2, 2)] = (0, 0, 0)
 // float scale[1.0, 3.0] = 2.0
 // [CODE]
-uniform float fbairddelta_angle;
-uniform float fbairddelta_scale;
-uniform vec3 fbairddelta_rotation1;
-uniform vec3 fbairddelta_rotation2;
 
 void bairddelta_iter(inout vec4 z, inout float dz, vec4 original_z, float orbit, int i) {
 	vec3 p = z.xyz;

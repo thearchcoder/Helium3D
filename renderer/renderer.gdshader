@@ -64,13 +64,14 @@ uniform int de_mode = 1;
 // Formula
 uniform int formulas[10];
 // Lighting / Ambient Occlusion
-uniform int ambient_occlusion_steps = 6;
-uniform float ambient_occlusion_light_affect = 0.0;
-uniform float ambient_occlusion_radius = 0.0;
+uniform int ambient_occlusion_steps;
+uniform float ambient_occlusion_distance;
+uniform float ambient_occlusion_light_affect;
+uniform float ambient_occlusion_radius;
 // Effects / Vignette
-uniform float vignette_strength = 0.7;
-uniform float vignette_radius = 0.8;
-uniform bool is_exponential = true;
+uniform float vignette_strength;
+uniform float vignette_radius;
+uniform bool is_exponential;
 // Effects / Fog
 uniform vec3 fog_color: source_color = vec3(0.5, 0.6, 0.7);
 uniform float fog_density = 0.01;
@@ -122,6 +123,7 @@ uniform float progression_strength = 100.0;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
+// -@Uniforms
 // -@Imports
 
 vec2 scene_sdf(vec3 p) {
@@ -129,9 +131,9 @@ vec2 scene_sdf(vec3 p) {
 	vec3 original_p = p;
 
 	if (length(kalaidoscope) - 1.0 > 0.00001) {
-		p.xy = kalaido(p.xy, kalaidoscope.x);
-		p.yz = kalaido(p.yz, kalaidoscope.y);
-		p.xz = kalaido(p.xz, kalaidoscope.z);
+		p.xy = kalaido(p.xy, kalaidoscope.x, kalaidoscope_mode);
+		p.yz = kalaido(p.yz, kalaidoscope.y, kalaidoscope_mode);
+		p.xz = kalaido(p.xz, kalaidoscope.z, kalaidoscope_mode);
 	}
 
 	p -= translation;
@@ -177,7 +179,7 @@ vec2 scene_sdf(vec3 p) {
 	float r = length(z);
 	float de = 0.0;
 
-	if (formulas[1] <= 0 || formulas[1] == 26 || formulas[1] == 27 || formulas[1] == 28 || formulas[1] == 29) single_formula = true; // TODO: Use a better method
+	if (formulas[1] <= 0) single_formula = true;
 
 	if (de_mode == 0) de = r / dz;
 	else if (de_mode == 1) de = 0.5 * log(r) * r / dz;

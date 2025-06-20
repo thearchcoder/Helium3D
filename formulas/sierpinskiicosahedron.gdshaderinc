@@ -9,10 +9,6 @@
 // vec3 rotation2[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0, 0, 0)
 // float scale[1.0, 3.0] = 2.0
 // [CODE]
-uniform float fsierpinskiicosahedron_scale;
-uniform vec3 fsierpinskiicosahedron_rotation1;
-uniform vec3 fsierpinskiicosahedron_rotation2;
-uniform vec3 fsierpinskiicosahedron_offset;
 const vec3 fsierpinskiicosahedron_n1 = vec3(-0.809, 0.309, 0.5);
 const vec3 fsierpinskiicosahedron_n2 = vec3(0.305, -0.494, 0.799);
 const vec3 fsierpinskiicosahedron_n3 = vec3(0.0, 0.0, -1.0);

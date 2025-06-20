@@ -8,9 +8,6 @@
 // vec3 minus[(-2, -2, -2), (2, 2, 2)] = (0, 2, 0)
 // float scale[1.0, 3.0] = 2.0
 // [CODE]
-uniform vec4 fkaliredux_folds;
-uniform vec3 fkaliredux_minus;
-uniform float fkaliredux_scale;
 
 void kaliredux_iter(inout vec4 p, inout float dz, vec4 original_z, float orbit, int i) {
 	p = rotate4d_point(p, vec4(0.0, 0.0, 0.0, fkaliredux_folds.x));

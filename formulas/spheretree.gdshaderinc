@@ -6,7 +6,6 @@
 // [VARS]
 // float symmetry[1, 100] = 1
 // [CODE]
-uniform float fspheretree_symmetry;
 
 void spheretree_iter(inout vec4 z4, inout float scale, vec4 original_z, float orbit, int i, inout bool escaped) {
 	vec3 p = z4.xyz;

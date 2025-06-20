@@ -8,9 +8,6 @@
 // vec4 scale[(-4, -4, -4, -4), (4, 4, 4, 4)] = (1, 1, 1, 1)
 // template transform_range
 // [CODE]
-uniform vec4 fbasictransform_offset;
-uniform vec4 fbasictransform_scale;
-uniform vec2 fbasictransform_range;
 
 void basictransform_iter(inout vec4 z, inout float dz, vec4 original_z, float orbit, int i) {
 	if (check_range(i, fbasictransform_range)) {

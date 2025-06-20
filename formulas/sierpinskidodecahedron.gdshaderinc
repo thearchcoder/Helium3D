@@ -9,10 +9,6 @@
 // vec3 rotation2[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0, 0, 0)
 // float scale[1.0, 3.0] = 2.61803398875
 // [CODE]
-uniform vec3 fsierpinskidodecahedron_rotation1;
-uniform vec3 fsierpinskidodecahedron_rotation2;
-uniform vec3 fsierpinskidodecahedron_offset;
-uniform float fsierpinskidodecahedron_scale;
 
 void sierpinskidodecahedron_iter(inout vec4 p4, inout float dz, vec4 original_z, float orbit, int i) {
 	vec3 z = p4.xyz;

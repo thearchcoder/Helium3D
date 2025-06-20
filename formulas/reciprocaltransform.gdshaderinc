@@ -2,15 +2,12 @@
 // Reciprocal Transform
 // [TRANSFORM]
 // [INDEX]
-// 31
+// 30
 // [VARS]
 // selection axis[X, Y, Z, W] = X
 // float offset[-4, 4] = 0
-// vec2 range[(0, 0), (100, 100)] = (0, 100)
+// template transform_range
 // [CODE]
-uniform int freciprocaltransform_axis;
-uniform float freciprocaltransform_offset;
-uniform vec2 freciprocaltransform_range;
 
 void reciprocaltransform_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i) {
 	if (check_range(i, freciprocaltransform_range)) {

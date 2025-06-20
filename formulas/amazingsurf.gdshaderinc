@@ -14,15 +14,6 @@
 // float scale[1.0, 3.0] = 1.5
 // advanced vec2 fold2[(-2, -2), (2, 2)] = (0.3, 0.0)
 // [CODE]
-uniform vec3 famazingsurf_fold;
-uniform vec3 famazingsurf_rotation;
-uniform vec3 famazingsurf_offset;
-uniform vec3 famazingsurf_julia_c;
-uniform vec2 famazingsurf_fold2;
-uniform float famazingsurf_min_radius;
-uniform float famazingsurf_scale;
-uniform bool famazingsurf_fold_z;
-uniform bool famazingsurf_is_julia;
 
 void amazingsurf_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i) {
 	vec3 p = z4.xyz;

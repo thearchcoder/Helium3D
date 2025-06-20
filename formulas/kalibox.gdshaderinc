@@ -9,10 +9,6 @@
 // vec3 offset2[(-2, -2, -2), (2, 2, 2)] = (1, 1, 1)
 // [CODE]
 
-uniform float fkalibox_scale;
-uniform vec3 fkalibox_offset1;
-uniform vec3 fkalibox_offset2;
-
 void kalibox_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i) {
 	vec3 z = z4.xyz;
 	float scale = fkalibox_scale;

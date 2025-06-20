@@ -9,10 +9,6 @@
 // float scale[1, 10] = 1
 // template transform_range
 // [CODE]
-uniform int flogtransform_axis;
-uniform float flogtransform_offset;
-uniform float flogtransform_scale;
-uniform vec2 flogtransform_range;
 
 void logtransform_iter(inout vec4 z, inout float dz, vec4 original_z, float orbit, int i) {
 	if (check_range(i, flogtransform_range)) {

@@ -15,8 +15,7 @@ func set_upscaling_factor(factor: float) -> void:
 	if upscaling <= 0.9999:
 		# Make sure TAA is enabled.
 		set_antialiasing(AntiAliasing.TAA)
-	else:
-		%SettingsBar._on_antialiasing_value_changed(%Antialiasing.options[%Antialiasing.index])
+		%Antialiasing.index = 0
 	
 	var iupscaling: float = 1.0 - upscaling
 	var val: float = low_scaling

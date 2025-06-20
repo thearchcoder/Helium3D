@@ -10,11 +10,6 @@
 // float box_size_x[0.0, 2.0] = 1.0
 // float box_size_z[0.0, 2.0] = 1.0
 // [CODE]
-uniform bool fklenian_show_balls;
-uniform float fklenian_x;
-uniform float fklenian_y;
-uniform float fklenian_box_size_x;
-uniform float fklenian_box_size_z;
 
 vec2 wrap(vec2 x, vec2 a, vec2 s){
 	x -= s;

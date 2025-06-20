@@ -9,10 +9,6 @@
 // vec3 rotation2[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (1.6, 0, 0)
 // float scale[1.0, 3.0] = 1.15
 // [CODE]
-uniform vec3 fkaliliving_c;
-uniform vec3 fkaliliving_rotation1;
-uniform vec3 fkaliliving_rotation2;
-uniform float fkaliliving_scale;
 
 void kaliliving_iter(inout vec4 p4, inout float dz, vec4 original_z, float orbit, int i) {
 	vec3 p = p4.xyz;

@@ -9,10 +9,6 @@
 // vec3 c[(-2, -2, -2), (2, 2, 2)] = (1.035, -0.317, 0.013)
 // bool coral[false, true] = false
 // [CODE]
-uniform float flionbulb_power;
-uniform vec3 flionbulb_c;
-uniform float flionbulb_phase;
-uniform bool flionbulb_coral;
 
 vec3 triplexPow(vec3 z, float phase, float power) {
 	float r = length(z);

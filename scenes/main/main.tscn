@@ -72,6 +72,7 @@ shader_parameter/escape_radius = 0.0
 shader_parameter/de_mode = 1
 shader_parameter/formulas = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/ambient_occlusion_steps = 6
+shader_parameter/ambient_occlusion_distance = 0.0
 shader_parameter/ambient_occlusion_light_affect = 0.0
 shader_parameter/ambient_occlusion_radius = 0.5
 shader_parameter/vignette_strength = 0.7
@@ -461,6 +462,7 @@ theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_0eucc")
 theme_override_styles/panel = SubResource("StyleBoxFlat_p8abn")
 current_tab = 0
 drag_to_rearrange_enabled = true
+tabs_rearrange_group = 1
 script = ExtResource("9_7154d")
 
 [node name="Formula" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
@@ -477,12 +479,9 @@ layout_mode = 2
 theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_dmava")
 theme_override_styles/panel = SubResource("StyleBoxFlat_s17dp")
 current_tab = 0
+drag_to_rearrange_enabled = true
+tabs_rearrange_group = 2
 script = ExtResource("16_dmyle")
-
-[node name="Formula1" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer" instance=ExtResource("16_hfvnl")]
-layout_mode = 2
-theme_override_constants/margin_bottom = 5
-metadata/_tab_index = 0
 
 [node name="Buffer" type="Node" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer"]
 
@@ -517,6 +516,11 @@ offset_top = 37.0
 offset_right = 142.0
 offset_bottom = 37.0
 page_number = 5
+
+[node name="Formula1" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer" instance=ExtResource("16_hfvnl")]
+layout_mode = 2
+theme_override_constants/margin_bottom = 5
+metadata/_tab_index = 0
 
 [node name="Buttons" type="HBoxContainer" parent="UI/HBoxContainer/TabContainer/Formula"]
 layout_mode = 2

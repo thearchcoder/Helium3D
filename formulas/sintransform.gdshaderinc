@@ -9,10 +9,6 @@
 // vec2 scale[(-4, -4), (4, 4)] = (1, 1)
 // template transform_range
 // [CODE]
-uniform int fsintransform_axis;
-uniform vec2 fsintransform_offset;
-uniform vec2 fsintransform_scale;
-uniform vec2 fsintransform_range;
 
 void sintransform_iter(inout vec4 z, inout float dz, vec4 original_z, float orbit, int i) {
 	if (check_range(i, fsintransform_range)) {

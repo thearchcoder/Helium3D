@@ -7,8 +7,6 @@
 // vec4 sphere[(-4, -4, -4, -4), (4, 4, 4, 4)] = (1, 1, 0, 1)
 // template transform_range
 // [CODE]
-uniform vec4 finversiontransform_sphere;
-uniform vec2 finversiontransform_range;
 
 void inversiontransform_iter(inout vec4 z, inout float dz, vec4 original_z, float orbit, int i) {
 	// func from sphairahedron formula

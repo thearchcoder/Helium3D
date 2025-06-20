@@ -13,14 +13,6 @@
 // advanced vec4 fold1[(-2, -2, -2, -2), (2, 2, 2, 2)] = (1.2, 1.2, 1.2, 1.2)
 // advanced vec4 pre_offset[(-3, -3, -3, -3), (3, 3, 3, 3)] = (0, 0, 0, 0)
 // [CODE]
-uniform float fmixpinski4d_scale;
-uniform vec4 fmixpinski4d_offset;
-uniform vec4 fmixpinski4d_rotation1;
-uniform vec4 fmixpinski4d_rotation2;
-uniform float fmixpinski4d_fold1_strength;
-uniform float fmixpinski4d_abs_minus;
-uniform vec4 fmixpinski4d_fold1;
-uniform vec4 fmixpinski4d_pre_offset;
 
 void mixpinski4d_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i) {
 	vec4 p = z4;

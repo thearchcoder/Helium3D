@@ -10,19 +10,13 @@
 // vec3 abs_add[(-1, -1, -1), (1, 1, 1)] = (0, 0, 0)
 // vec3 abs_minus[(-1, -1, -1), (1, 1, 1)] = (0, 0, 0)
 // [CODE]
-uniform vec2 fjerusalemcube_scale;
-uniform vec3 fjerusalemcube_offset;
-uniform vec3 fjerusalemcube_abs_add;
-uniform vec3 fjerusalemcube_abs_minus;
-uniform vec3 fjerusalemcube_rotation1;
-uniform vec3 fjerusalemcube_rotation2;
 
 void jerusalemcube_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i) {
 	vec3 z = z4.xyz;
 	float scale_large = fjerusalemcube_scale.x;
 	float scale_small = fjerusalemcube_scale.y;
 	vec3 offset = fjerusalemcube_offset;
-	
+
 	z = rotate3d_point(z, fjerusalemcube_rotation1);
 
 	z = abs(z + fjerusalemcube_abs_add) - fjerusalemcube_abs_minus;
@@ -47,6 +41,6 @@ void jerusalemcube_iter(inout vec4 z4, inout float dz, vec4 original_z, float or
 	}
 
 	z = rotate3d_point(z, fjerusalemcube_rotation2);
-	
+
 	z4.xyz = z;
 }

@@ -8,9 +8,6 @@
 // vec3 julia_c[(-2, -2, -2), (2, 2, 2)] = (-0.844, -0.031, -0.302)
 // vec3 multiply[(-2, -2, -2), (2, 2, 2)] = (2, 1, -1)
 // [CODE]
-uniform bool fbristorbrot_is_julia;
-uniform vec3 fbristorbrot_julia_c;
-uniform vec3 fbristorbrot_multiply;
 
 vec3 bristor_square(vec3 v) {
 	float new_x = v.x * v.x - v.y * v.y - v.z * v.z;

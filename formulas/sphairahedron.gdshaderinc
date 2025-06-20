@@ -8,7 +8,6 @@
 // float zc[0.0, 1.5] = 1.0;
 // float zb[0.0, 1.5] = 0.3;
 // [CODE]
-
 // Credit's to soma arc for the original code.
 // I've written the original license text below.
 
@@ -16,10 +15,6 @@
 Created by soma_arc - 2021
 This work is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported.
 */
-
-uniform int fsphairahedron_cube_type;
-uniform float fsphairahedron_zb;
-uniform float fsphairahedron_zc;
 
 // from Syntopia http://blog.hvidtfeldts.net/index.php/2015/01/path-tracing-3d-fractals/
 vec2 rand2n(vec2 co, float sampleIndex) {

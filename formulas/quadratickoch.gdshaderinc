@@ -14,16 +14,6 @@
 // simple float abs_offset[-2, 2] = 0
 // [CODE]
 
-uniform bool fquadratickoch_hybrid_octahedron;
-uniform vec3 fquadratickoch_octahedron_offset;
-uniform vec3 fquadratickoch_octahedron_offset2;
-uniform vec3 fquadratickoch_octahedron_limit;
-uniform float fquadratickoch_abs_offset;
-uniform vec3 fquadratickoch_offset;
-uniform vec3 fquadratickoch_rotation1;
-uniform vec3 fquadratickoch_rotation2;
-uniform vec2 fquadratickoch_scale;
-
 void quadratickoch_iter(inout vec4 p4, inout float dz, vec4 original_z, float orbit, int i) {
 	vec3 z = p4.xyz;
 	float scale = fquadratickoch_scale.x;

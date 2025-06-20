@@ -11,6 +11,8 @@ signal value_changed(to: float)
 
 @export var value: float = 0.0:
 	set(v):
+		if v > -0.00001 and v < 0.00001:
+			v = 0.0
 		value = v
 		$HSlider.set_value_no_signal(value)
 		var old_text_column: int = $LineEdit.caret_column

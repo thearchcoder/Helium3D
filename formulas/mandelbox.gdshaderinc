@@ -14,16 +14,6 @@
 // advanced vec3 julia_c[(-8, -8, -8), (8, 8, 8)] = (5, 5, 5)
 // template kifs_rotation
 // [CODE]
-uniform float fmandelbox_scale;
-uniform float fmandelbox_radius1;
-uniform float fmandelbox_radius2;
-uniform vec3 fmandelbox_box_folds;
-uniform vec3 fmandelbox_julia_c;
-uniform bool fmandelbox_is_julia;
-uniform float fmandelbox_fold1;
-uniform float fmandelbox_fold1_strength;
-uniform vec3 fmandelbox_rotation1;
-uniform vec3 fmandelbox_rotation2;
 
 void boxFold(inout vec3 z, vec3 r) {
 	z = 2.0 * clamp(z, -r, r) - z;

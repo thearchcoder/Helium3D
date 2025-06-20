@@ -3,9 +3,9 @@ shader_type spatial;
 
 // Disabled when possible to reduce shader compilation times.
 // Line numbers for these 3 lines must stay the same.
-//////////////////////////#define USING_DOF
-//////////////////////////#define USING_TILING
-//////////////////////////#define USING_REFLECTIONS
+////////////////////////#define USING_DOF
+////////////////////////#define USING_TILING
+////////////////////////#define USING_REFLECTIONS
 
 // Effects / DOF
 uniform bool dof_enabled;
@@ -390,7 +390,7 @@ vec2 scene_sdf(vec3 p) {
 	for (int i = 0; i < iterations * int(number_of_active_formulas); i++) {
 		bool escaped = false;
 		int current_formula = formulas[int(mod(float(i), number_of_active_formulas))];
-//if (current_formula == 1) mandelbulb_iter(z, dz, original_z, orbit, i); //-@1
+if (current_formula == 1) mandelbulb_iter(z, dz, original_z, orbit, i); //-@1
 //if (current_formula == 2) mandelbox_iter(z, dz, original_z, orbit, i); //-@2
 //if (current_formula == 3) amazingsurf_iter(z, dz, original_z, orbit, i); //-@3
 //if (current_formula == 4) bairddelta_iter(z, dz, original_z, orbit, i); //-@4
@@ -421,7 +421,7 @@ vec2 scene_sdf(vec3 p) {
 //if (current_formula == 29) inversiontransform_iter(z, dz, original_z, orbit, i); //-@29
 //if (current_formula == 30) reciprocaltransform_iter(z, dz, original_z, orbit, i); //-@30
 //if (current_formula == 31) kalaidotransform_iter(z, dz, original_z, orbit, i); //-@31
-if (current_formula == 32) octkoch_iter(z, dz, original_z, orbit, i); //-@32
+//if (current_formula == 32) octkoch_iter(z, dz, original_z, orbit, i); //-@32
 //if (current_formula == 33) platonickoch_iter(z, dz, original_z, orbit, i); //-@33
 //if (current_formula == 34) benesiship_iter(z, dz, original_z, orbit, i); //-@34
 		orbit = min(orbit, process_orbit_trap4d(z, original_z, i));

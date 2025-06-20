@@ -1,7 +1,8 @@
-[gd_scene load_steps=55 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=60 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
+[ext_resource type="Texture2D" uid="uid://d1vwtwnup6fgb" path="res://icon.png" id="2_s17dp"]
 [ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="3_4yvvm"]
 [ext_resource type="Script" uid="uid://l7fr1idjfuni" path="res://compositor/helium_compositor.gd" id="4_p8abn"]
 [ext_resource type="Script" uid="uid://bj6ithljpyig5" path="res://scenes/main/tool_bar.gd" id="5_og0rs"]
@@ -151,6 +152,17 @@ bg_color = Color(0, 0, 0, 0.207843)
 [sub_resource type="Theme" id="Theme_m4h2d"]
 MenuButton/fonts/font = ExtResource("8_rhsly")
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s17dp"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_37hlw"]
+bg_color = Color(0.10748, 0.10748, 0.10748, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0bhws"]
+bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i7in8"]
+bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dw2n5"]
 bg_color = Color(0, 0, 0, 0.207843)
 border_width_left = 5
@@ -236,6 +248,81 @@ border_color = Color(0.187, 0.187, 0.187, 0.724)
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_yss2u")
+
+[node name="Window" type="Window" parent="."]
+title = "About Helium3D"
+initial_position = 1
+size = Vector2i(680, 380)
+visible = false
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Window"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Window/HBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Window/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+
+[node name="TextureRect" type="TextureRect" parent="Window/HBoxContainer/VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture = ExtResource("2_s17dp")
+expand_mode = 1
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Window/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Window/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/line_separation = -8
+theme_override_fonts/normal_font = ExtResource("8_rhsly")
+theme_override_font_sizes/normal_font_size = 20
+text = "	
+	==== General
+
+		Version: {version}
+
+		License: GNU General Public License 3.0
+
+		Developer: Muhammad Ahmad
+		
+		Copyright © 2025
+	
+
+	==== Credits
+
+		Sphairahedron formula: Kento Nakamura
+
+		DE Information: Krzyzstof Marczak
+
+		Fractalforums: For helping me with this project
+"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Window/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+alignment = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Window/HBoxContainer/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="CloseButton" type="Button" parent="Window/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(100, 1.45519e-11)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_font_sizes/font_size = 20
+text = "OK"
 
 [node name="FileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
@@ -355,6 +442,18 @@ popup/item_0/text = "Load File"
 popup/item_0/id = 1
 popup/item_1/text = "Load Clipboard"
 popup/item_1/id = 0
+
+[node name="AboutButton" type="Button" parent="UI/HBoxContainer/MarginContainer/ToolBar/Panel"]
+layout_mode = 0
+offset_left = 100.0
+offset_right = 157.0
+offset_bottom = 31.0
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+text = "About"
 
 [node name="SettingsBar" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer"]
 unique_name_in_owner = true
@@ -950,7 +1049,10 @@ offset_top = 136.0
 offset_right = -59.0
 offset_bottom = 144.0
 
+[connection signal="close_requested" from="Window" to="." method="_on_window_close_requested"]
+[connection signal="pressed" from="Window/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/CloseButton" to="." method="_on_close_button_pressed"]
 [connection signal="file_selected" from="FileDialog" to="UI/HBoxContainer/MarginContainer/ToolBar" method="_on_file_dialog_confirmed"]
+[connection signal="pressed" from="UI/HBoxContainer/MarginContainer/ToolBar/Panel/AboutButton" to="." method="_on_about_button_pressed"]
 [connection signal="text_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize/ViewportWidth" to="." method="_on_viewport_width_text_changed"]
 [connection signal="text_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize/ViewportHeight" to="." method="_on_viewport_height_text_changed"]
 [connection signal="value_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/AntiAliasing/Panel/Antialiasing" to="UI/HBoxContainer/MarginContainer/SettingsBar" method="_on_antialiasing_value_changed"]

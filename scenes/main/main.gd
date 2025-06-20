@@ -6,10 +6,10 @@ var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
 var PATCH := VERSION.split('.')[2].split('-')[0]
 
-# DONE | octkoch
 # about menu
 # animation keyframe length
 # animation keyframe interpolation (Linear, Bezier, Hermite)
+# DONE | octkoch
 # DONE | remove wobble
 # DONE | uniform system
 # DONE | debug/shader_code dump
@@ -68,10 +68,15 @@ var white_display: Image
 
 func _ready() -> void:
 	%Logs.print_console('Helium3D ' + VERSION)
+	$Window/HBoxContainer/VBoxContainer2/RichTextLabel.text = $Window/HBoxContainer/VBoxContainer2/RichTextLabel.text.replace('{version}', VERSION)
 	
 	var dir := DirAccess.open("res://")
 	if not dir.dir_exists(HELIUM3D_PATH):
 		dir.make_dir(HELIUM3D_PATH)
+
+func _process(delta: float) -> void:
+	if $Window.visible and Input.is_action_just_pressed('escape'):
+		_on_window_close_requested()
 
 func expand_templates(formula_content: String) -> String:
 	var lines := formula_content.split('\n')
@@ -455,3 +460,7 @@ func _on_difficulty_pressed() -> void:
 		difficulty = 'simple'
 	
 	%Difficulty.text = difficulty.to_pascal_case()
+
+func _on_close_button_pressed() -> void: $Window.visible = false
+func _on_window_close_requested() -> void: $Window.visible = false
+func _on_about_button_pressed() -> void: $Window.visible = true

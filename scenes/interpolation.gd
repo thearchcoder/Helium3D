@@ -151,7 +151,7 @@ func linear_bool(from: bool, to: bool, steps: int) -> Array[bool]:
 		for i in range(steps):
 			result.append(from)
 	else:
-		var transition_point := steps / 2
+		var transition_point := int(steps / 2.0)
 		
 		for i in range(steps):
 			if i < transition_point:
@@ -205,67 +205,67 @@ func bezier_int(v0: int, v1: int, v2: int, v3: int, steps: int) -> Array[int]:
 	
 	return result
 
-func bezier_vector2_chain(target_points: Array[Vector2], steps_per_segment: int = 60) -> Array[Vector2]:
+func bezier_vector2_chain(target_points: Array, steps_per_segment: int = 60) -> Array[Vector2]:
 	var result: Array[Vector2] = []
 	var control_points := generate_control_points_vec2(target_points)
 	
 	for i in range(target_points.size() - 1):
-		var p0 := target_points[i]
-		var p3 := target_points[i + 1]
-		var p1 := control_points[i * 2]
-		var p2 := control_points[i * 2 + 1]
+		var p0: Vector2 = target_points[i]
+		var p3: Vector2 = target_points[i + 1]
+		var p1: Vector2 = control_points[i * 2]
+		var p2: Vector2 = control_points[i * 2 + 1]
 		
 		result.append_array(bezier_vec2(p0, p1, p2, p3, steps_per_segment))
 	
 	return result
-func bezier_vector3_chain(target_points: Array[Vector3], steps_per_segment: int = 60) -> Array[Vector3]:
+func bezier_vector3_chain(target_points: Array, steps_per_segment: int = 60) -> Array[Vector3]:
 	var result: Array[Vector3] = []
 	var control_points := generate_control_points_vec3(target_points)
 	
 	for i in range(target_points.size() - 1):
-		var p0 := target_points[i]
-		var p3 := target_points[i + 1]
-		var p1 := control_points[i * 2]
-		var p2 := control_points[i * 2 + 1]
+		var p0: Vector3 = target_points[i]
+		var p3: Vector3 = target_points[i + 1]
+		var p1: Vector3 = control_points[i * 2]
+		var p2: Vector3 = control_points[i * 2 + 1]
 		
 		result.append_array(bezier_vec3(p0, p1, p2, p3, steps_per_segment))
 	
 	return result
-func bezier_vector4_chain(target_points: Array[Vector4], steps_per_segment: int = 60) -> Array[Vector4]:
+func bezier_vector4_chain(target_points: Array, steps_per_segment: int = 60) -> Array[Vector4]:
 	var result: Array[Vector4] = []
 	var control_points := generate_control_points_vec4(target_points)
 	
 	for i in range(target_points.size() - 1):
-		var p0 := target_points[i]
-		var p3 := target_points[i + 1]
-		var p1 := control_points[i * 2]
-		var p2 := control_points[i * 2 + 1]
+		var p0: Vector4 = target_points[i]
+		var p3: Vector4 = target_points[i + 1]
+		var p1: Vector4 = control_points[i * 2]
+		var p2: Vector4 = control_points[i * 2 + 1]
 		
 		result.append_array(bezier_vec4(p0, p1, p2, p3, steps_per_segment))
 	
 	return result
-func bezier_float_chain(target_floats: Array[float], steps_per_segment: int = 60) -> Array[float]:
+func bezier_float_chain(target_floats: Array, steps_per_segment: int = 60) -> Array[float]:
 	var result: Array[float] = []
 	var control_points := generate_control_points_float(target_floats)
 	
 	for i in range(target_floats.size() - 1):
-		var v0 := target_floats[i]
-		var v3 := target_floats[i + 1]
-		var v1 := control_points[i * 2]
-		var v2 := control_points[i * 2 + 1]
+		var v0: float = target_floats[i]
+		var v3: float = target_floats[i + 1]
+		var v1: float = control_points[i * 2]
+		var v2: float = control_points[i * 2 + 1]
 		
 		result.append_array(bezier_float(v0, v1, v2, v3, steps_per_segment))
 	
 	return result
-func bezier_int_chain(target_ints: Array[int], steps_per_segment: int = 60) -> Array[int]:
+func bezier_int_chain(target_ints: Array, steps_per_segment: int = 60) -> Array[int]:
 	var result: Array[int] = []
 	var control_points := generate_control_points_int(target_ints)
 	
 	for i in range(target_ints.size() - 1):
-		var v0 := target_ints[i]
-		var v3 := target_ints[i + 1]
-		var v1 := control_points[i * 2]
-		var v2 := control_points[i * 2 + 1]
+		var v0: int = target_ints[i]
+		var v3: int = target_ints[i + 1]
+		var v1: int = control_points[i * 2]
+		var v2: int = control_points[i * 2 + 1]
 		
 		result.append_array(bezier_int(v0, v1, v2, v3, steps_per_segment))
 	
@@ -304,7 +304,7 @@ func cubic_bezier_float(v0: float, v1: float, v2: float, v3: float, t: float) ->
 	
 	return mt3 * v0 + 3.0 * mt2 * t * v1 + 3.0 * mt * t2 * v2 + t3 * v3
 
-func generate_control_points_vec2(path_points: Array[Vector2]) -> Array[Vector2]:
+func generate_control_points_vec2(path_points: Array) -> Array[Vector2]:
 	var n := path_points.size()
 	var control_points: Array[Vector2] = []
 	
@@ -312,8 +312,8 @@ func generate_control_points_vec2(path_points: Array[Vector2]) -> Array[Vector2]
 		return control_points
 	
 	if n == 2:
-		var p0 := path_points[0]
-		var p1 := path_points[1]
+		var p0: Vector2 = path_points[0]
+		var p1: Vector2 = path_points[1]
 		var dist := p0.distance_to(p1) / 3.0
 		var dir := (p1 - p0).normalized()
 		control_points.append(p0 + dir * dist)
@@ -321,8 +321,8 @@ func generate_control_points_vec2(path_points: Array[Vector2]) -> Array[Vector2]
 		return control_points
 	
 	for i in range(n - 1):
-		var current := path_points[i]
-		var next := path_points[i + 1]
+		var current: Vector2 = path_points[i]
+		var next: Vector2 = path_points[i + 1]
 		var distance := current.distance_to(next) / 3.0
 		var prev_tangent: Vector2
 		var next_tangent: Vector2
@@ -341,7 +341,7 @@ func generate_control_points_vec2(path_points: Array[Vector2]) -> Array[Vector2]
 		control_points.append(next - next_tangent * distance)
 	
 	return control_points
-func generate_control_points_vec3(path_points: Array[Vector3]) -> Array[Vector3]:
+func generate_control_points_vec3(path_points: Array) -> Array[Vector3]:
 	var n := path_points.size()
 	var control_points: Array[Vector3] = []
 	
@@ -349,8 +349,8 @@ func generate_control_points_vec3(path_points: Array[Vector3]) -> Array[Vector3]
 		return control_points
 	
 	if n == 2:
-		var p0 := path_points[0]
-		var p1 := path_points[1]
+		var p0: Vector3 = path_points[0]
+		var p1: Vector3 = path_points[1]
 		var dist := p0.distance_to(p1) / 3.0
 		var dir := (p1 - p0).normalized()
 		control_points.append(p0 + dir * dist)
@@ -358,8 +358,8 @@ func generate_control_points_vec3(path_points: Array[Vector3]) -> Array[Vector3]
 		return control_points
 	
 	for i in range(n - 1):
-		var current := path_points[i]
-		var next := path_points[i + 1]
+		var current: Vector3 = path_points[i]
+		var next: Vector3 = path_points[i + 1]
 		var distance := current.distance_to(next) / 3.0
 		var prev_tangent: Vector3
 		var next_tangent: Vector3
@@ -378,7 +378,7 @@ func generate_control_points_vec3(path_points: Array[Vector3]) -> Array[Vector3]
 		control_points.append(next - next_tangent * distance)
 	
 	return control_points
-func generate_control_points_vec4(path_points: Array[Vector4]) -> Array[Vector4]:
+func generate_control_points_vec4(path_points: Array) -> Array[Vector4]:
 	var n := path_points.size()
 	var control_points: Array[Vector4] = []
 	
@@ -386,8 +386,8 @@ func generate_control_points_vec4(path_points: Array[Vector4]) -> Array[Vector4]
 		return control_points
 	
 	if n == 2:
-		var p0 := path_points[0]
-		var p1 := path_points[1]
+		var p0: Vector4 = path_points[0]
+		var p1: Vector4 = path_points[1]
 		var dist := p0.distance_to(p1) / 3.0
 		var dir := (p1 - p0).normalized()
 		control_points.append(p0 + dir * dist)
@@ -395,8 +395,8 @@ func generate_control_points_vec4(path_points: Array[Vector4]) -> Array[Vector4]
 		return control_points
 	
 	for i in range(n - 1):
-		var current := path_points[i]
-		var next := path_points[i + 1]
+		var current: Vector4 = path_points[i]
+		var next: Vector4 = path_points[i + 1]
 		var distance := current.distance_to(next) / 3.0
 		var prev_tangent: Vector4
 		var next_tangent: Vector4
@@ -415,7 +415,7 @@ func generate_control_points_vec4(path_points: Array[Vector4]) -> Array[Vector4]
 		control_points.append(next - next_tangent * distance)
 	
 	return control_points
-func generate_control_points_float(values: Array[float]) -> Array[float]:
+func generate_control_points_float(values: Array) -> Array[float]:
 	var n := values.size()
 	var control_points: Array[float] = []
 	
@@ -423,8 +423,8 @@ func generate_control_points_float(values: Array[float]) -> Array[float]:
 		return control_points
 	
 	if n == 2:
-		var v0 := values[0]
-		var v1 := values[1]
+		var v0: float = values[0]
+		var v1: float = values[1]
 		var diff := v1 - v0
 		control_points.append(v0 + diff / 3.0)
 		control_points.append(v1 - diff / 3.0)
@@ -443,15 +443,15 @@ func generate_control_points_float(values: Array[float]) -> Array[float]:
 			tangents[i] = (values[i+1] - values[i-1]) / 2.0
 	
 	for i in range(n - 1):
-		var current := values[i]
-		var next := values[i + 1]
+		var current: float = values[i]
+		var next: float = values[i + 1]
 		var segment_length: float = abs(next - current)
 		var scale := segment_length / 3.0
 		control_points.append(current + tangents[i] * scale)
 		control_points.append(next - tangents[i+1] * scale)
 	
 	return control_points
-func generate_control_points_int(values: Array[int]) -> Array[int]:
+func generate_control_points_int(values: Array) -> Array[int]:
 	var n := values.size()
 	var control_points: Array[int] = []
 	
@@ -459,8 +459,8 @@ func generate_control_points_int(values: Array[int]) -> Array[int]:
 		return control_points
 	
 	if n == 2:
-		var v0 := values[0]
-		var v1 := values[1]
+		var v0: float = values[0]
+		var v1: float = values[1]
 		var diff := v1 - v0
 		control_points.append(v0 + diff / 3)
 		control_points.append(v1 - diff / 3)
@@ -479,8 +479,8 @@ func generate_control_points_int(values: Array[int]) -> Array[int]:
 			tangents[i] = float(values[i+1] - values[i-1]) / 2.0
 	
 	for i in range(n - 1):
-		var current := values[i]
-		var next := values[i + 1]
+		var current: float = values[i]
+		var next: float = values[i + 1]
 		var segment_length: float = abs(next - current)
 		var scale := segment_length / 3.0
 		control_points.append(int(round(current + tangents[i] * scale)))
@@ -655,7 +655,7 @@ func hermite_int_chain(target_ints: Array, tangents: Array[int], steps_per_segme
 		var m0 := tangents[i]
 		var m1 := tangents[i + 1]
 		
-		result.append_array(hermite_int(v0, v1, m0, m1, steps_per_segment))
+		result.append_array(hermite_int(int(v0), int(v1), m0, m1, steps_per_segment))
 	
 	return result
 

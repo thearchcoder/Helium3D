@@ -1,8 +1,7 @@
 // [ID]
 // Mandelbox
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 2
 // [VARS]
 // float scale[1.0, 3.0] = 2.5
 // float radius1[0.0, 3.0] = 1.0
@@ -37,9 +36,9 @@ void mandelbox_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit,
 	vec3 z = z4.xyz;
 	vec3 c = fmandelbox_is_julia ? fmandelbox_julia_c : original_z.xyz * 5.5;
 	if (i == 0) z *= 5.5;
-	
+
 	z = rotate3d_point(z, fmandelbox_rotation1);
-	
+
 	if (length(fmandelbox_box_folds.x) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.x));
 	if (length(fmandelbox_box_folds.y) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.y));
 	if (length(fmandelbox_box_folds.z) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.z));
@@ -47,9 +46,9 @@ void mandelbox_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit,
 	sphereFold(z, dz);
 	z *= fmandelbox_scale;
 	z += c;
-	
+
 	z = rotate3d_point(z, fmandelbox_rotation2);
-	
+
 	dz = dz * abs(fmandelbox_scale) + 18.5;
 	if (fmandelbox_is_julia) dz += 6.0;
 

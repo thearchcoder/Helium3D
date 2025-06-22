@@ -1,8 +1,7 @@
 // [ID]
 // Mixpinski4D
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 18
 // [VARS]
 // float scale[1.0, 3.0] = 2.0
 // float fold1_strength[-3.0, 3.0] = 0.0
@@ -20,7 +19,7 @@ void mixpinski4d_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbi
 	float scale = fmixpinski4d_scale;
 
 	p = rotate4d_point(p, fmixpinski4d_rotation1);
-	
+
 	p -= fmixpinski4d_pre_offset;
 
 	if (p.x + p.y < 0.0) p.xy = -p.yx;
@@ -38,7 +37,7 @@ void mixpinski4d_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbi
 	p.z = -abs(-p.z + fmixpinski4d_abs_minus);
 	p.z += 0.5 * offset.z * (scale - 1.0) / scale;
 	p.z = scale * p.z;
-	
+
 	p = rotate4d_point(p, fmixpinski4d_rotation2);
 	dz = dz * abs(scale) + 3.0;
 

@@ -1,8 +1,7 @@
 // [ID]
 // Kali box
+// [OFFICIAL]
 // [IFS]
-// [INDEX]
-// 21
 // [VARS]
 // float scale[1.0, 2.0] = 1.5
 // vec3 offset1[(-2, -2, -2), (2, 2, 2)] = (1, 1, 1)

@@ -1,8 +1,7 @@
 // [ID]
 // Amazing surf
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 3
 // [VARS]
 // advanced bool is_julia[false, true] = true
 // vec3 julia_c[(-2, -2, -2), (2, 2, 2)] = (-1, -2, 0)

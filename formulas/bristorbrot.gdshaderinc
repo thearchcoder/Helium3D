@@ -1,8 +1,7 @@
 // [ID]
 // Bristorbrot
+// [OFFICIAL]
 // [ESCAPE]
-// [INDEX]
-// 25
 // [VARS]
 // bool is_julia[false, true] = false
 // vec3 julia_c[(-2, -2, -2), (2, 2, 2)] = (-0.844, -0.031, -0.302)

@@ -1,8 +1,7 @@
 // [ID]
 // Sierpinski tetrahedron
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 6
 // [VARS]
 // vec3 offset[(-1, -1, -1), (1, 1, 1)] = (1, 1, 1)
 // vec3 rotation1[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0, 0, 0)

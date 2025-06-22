@@ -1,8 +1,7 @@
 // [ID]
 // Reciprocal Transform
+// [OFFICIAL]
 // [TRANSFORM]
-// [INDEX]
-// 30
 // [VARS]
 // selection axis[X, Y, Z, W] = X
 // float offset[-4, 4] = 0

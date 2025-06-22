@@ -1,8 +1,7 @@
 // [ID]
 // Kalaido Transform
+// [OFFICIAL]
 // [TRANSFORM]
-// [INDEX]
-// 31
 // [VARS]
 // selection axis[XY, XZ, YZ, XW, YW, ZW] = XY
 // selection mode[Kite 1, Kite 2, Effie] = Kite 1

@@ -1,8 +1,8 @@
 // [ID]
 // Platonic Koch
+// [OFFICIAL]
 // [IFS]
-// [INDEX]
-// 33
+// [LINEAR-DE]
 // [VARS]
 // float stretch[-3, 3] = 1
 // float postscale[-3, 3] = 1

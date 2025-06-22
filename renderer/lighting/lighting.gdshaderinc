@@ -36,23 +36,27 @@ vec3 get_normal_from_map(vec2 uv, vec3 world_pos, vec3 surface_normal) {
 	return normalize(tbn * normal_sample);
 }
 
-float soft_shadow(vec3 point, vec3 dir, float start, float end) {
+float soft_shadow(vec3 point, vec3 dir, float start, float end, float light_radius) {
 	float depth = start, dist, prevdist = 10000.0;
 	float shadow = 1.0;
 	for (int i = 0; i < shadow_steps; i++) {
 		dist = scene_sdf(point + depth * dir).y;
 		if (depth > end || shadow < epsilon) break;
-		shadow = min(shadow, 35.0 * dist / min(depth, 5.0));
+
+		float effective_sharpness = 1.0 / max(light_radius, 0.001);
+		shadow = min(shadow, effective_sharpness * dist / depth);
+
 		float delta = dist * dist / (2.0 * prevdist);
 		float dist2 = sqrt(dist * dist - delta * delta);
-		shadow = min(shadow, 35.0 * dist2 / max(0.0, min(depth - delta, 5.0)));
+		shadow = min(shadow, effective_sharpness * dist2 / max(0.0, depth - delta));
+
 		prevdist = dist;
 		depth += dist * shadow_raystep_multiplier;
 	}
 	return clamp(shadow, 0.0, 1.0);
 }
 
-vec3 compute_direct_point_light(vec3 p, vec3 rd, vec3 ro, vec3 normal, vec3 light_pos, vec3 light_color, float light_intensity) {
+vec3 compute_direct_point_light(vec3 p, vec3 rd, vec3 ro, vec3 normal, vec3 light_pos, vec3 light_color, float light_intensity, float light_radius) {
 	vec3 to_light = normalize(light_pos - p);
 	vec3 final_normal;
 
@@ -62,7 +66,7 @@ vec3 compute_direct_point_light(vec3 p, vec3 rd, vec3 ro, vec3 normal, vec3 ligh
 
 	vec3 diffuse = light_color * light_intensity * clamp(dot(to_light, final_normal), 0.0, 1.0);
 	vec3 light = diffuse;
-	float shadow = soft_shadow(p, to_light, shadow_epsilon, length(light_pos - p));
+	float shadow = soft_shadow(p, to_light, shadow_epsilon, length(light_pos - p), light_radius);
 	light *= shadow;
 
 	float specular = pow(max(dot(reflect(to_light, final_normal), rd), 0.0), specular_sharpness);
@@ -82,9 +86,9 @@ vec3 compute_direct_lighting(vec3 p, vec3 rd, vec3 ro, vec3 normal) {
 	}
 	else ambient *= ambient_light_color;
 
-	if (light1_enabled && !light2_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light1_position, light1_color, light1_intensity);
-	if (light2_enabled && !light1_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light2_position, light2_color, light2_intensity);
-	if (light2_enabled && light1_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light2_position, light2_color, light2_intensity) + compute_direct_point_light(p, rd, ro, normal, light1_position, light1_color, light1_intensity);
+	if (light1_enabled && !light2_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light1_position, light1_color, light1_intensity, light1_radius);
+	if (light2_enabled && !light1_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light2_position, light2_color, light2_intensity, light2_radius);
+	if (light2_enabled && light1_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light2_position, light2_color, light2_intensity, light2_radius) + compute_direct_point_light(p, rd, ro, normal, light1_position, light1_color, light1_intensity, light2_radius);
 	total_light += mix(ambient * ao, ambient, ambient_occlusion_light_affect);
 	total_light *= mix(1.0, ao, ambient_occlusion_light_affect);
 	return total_light;

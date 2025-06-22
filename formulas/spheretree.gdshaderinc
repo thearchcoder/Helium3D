@@ -1,8 +1,7 @@
 // [ID]
 // Spheretree
+// [OFFICIAL]
 // [DIFS]
-// [INDEX]
-// 12
 // [VARS]
 // float symmetry[1, 100] = 1
 // [CODE]

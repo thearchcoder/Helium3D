@@ -1,8 +1,6 @@
 extends MarginContainer
 
 const ANIMATION_TRACK_KEYFRAME_SCENE = preload('res://ui/animation/track keyframe/animation_track_keyframe.tscn')
-var fps: int = 60
-
 var is_mouse_hovering: bool = false
 var keyframes: Dictionary = {}
 var is_playing: bool = false
@@ -13,10 +11,17 @@ var currently_at_frame: float = 0:
 		currently_at_frame = value
 		%Time.position.x = (value / fps * 133.0) + 60
 
+var fps: int = 60
+var interpolation := Interpolation.InterpolationModes.CATMULLROM: 
+	set(value): interpolation = value; get_tree().current_scene.interpolation = interpolation
+var keyframe_length: float = 1.0: 
+	set(value): keyframe_length = value; get_tree().current_scene.keyframe_length = keyframe_length
 var taa_frame_counter: int = 0
 var waiting_for_taa: bool = false
 var rendering_tiles: bool = false
 var using_tiling: bool = false
+var render_start_time: float
+var time_estimate: float = 0.0
 
 func update_tiling_variables() -> void:
 	rendering_tiles = get_tree().current_scene.busy_rendering_tiles
@@ -35,9 +40,14 @@ func _on_playing_toggle_button_pressed() -> void:
 	else:
 		%PlayingToggleButton.icon = preload('res://resources/icons/play-solid.svg')
 		currently_at_frame = 0
+	
+	render_start_time = Time.get_unix_time_from_system()
 
 func update_animation_frames_data() -> void:
 	animation_frames_data.clear()
+	
+	if len(keyframes) <= 0:
+		return
 	
 	var sorted_keyframes: Array = keyframes.keys()
 	sorted_keyframes.sort()
@@ -113,8 +123,7 @@ func update_animation_frames_data() -> void:
 				if idx != -1 and field_name in keyframes[t]:
 					keyframe_values.append(keyframes[t][field_name])
 			
-			var interpolation_mode := Interpolation.InterpolationModes.CATMULLROM
-			var interpolated_values := Interpolation.interpolate(keyframe_values, interpolation_mode)
+			var interpolated_values := Interpolation.interpolate(keyframe_values, interpolation)
 			
 			if interpolated_values.size() == 0:
 				var closest_keyframe_time := times[0]
@@ -143,11 +152,13 @@ func insert_keyframe(at_second: float) -> void:
 	var keyframe_texture: ImageTexture = ImageTexture.create_from_image(viewport_image)
 	data['keyframe_texture'] = Marshalls.raw_to_base64(keyframe_texture.get_image().get_data())
 	
-	# These fields are not supposed to be animated. This is intentional.
 	data.erase('animation_fps')
 	data.erase('tiles_x')
 	data.erase('tiles_y')
 	data.erase('taa_samples')
+	data.erase('fps')
+	data.erase('interpolation')
+	data.erase('keyframe_length')
 	
 	keyframes[at_second] = data.duplicate(true)
 	reload_keyframes()
@@ -192,16 +203,21 @@ func reload_keyframes() -> void:
 		keyframe.data = keyframe_data
 		%Keyframes.add_child(keyframe)
 
-#func update_timeline() -> void:
-	#for child in %Timeline.get_children():
-		#%Timeline.remove_child(child)
-	#
-	#for i in 100 + 1:
-		#var label: Label = Label.new()
-		#label.add_theme_font_override('font', preload('res://resources/font/Rubik-SemiBold.ttf'))
-		#label.add_theme_font_size_override('font_size', 15)
-		#label.text = str(float(i))
-		#%Timeline.add_child(label)
+func calculate_time_estimate() -> float:
+	if not is_playing or len(animation_frames_data) == 0:
+		return 0.0
+	
+	var elapsed_time: float = Time.get_unix_time_from_system() - render_start_time
+	var frames_completed: int = int(currently_at_frame)
+	var total_frames: int = len(animation_frames_data)
+	
+	if frames_completed <= 0:
+		return 0.0
+	
+	var time_per_frame: float = elapsed_time / frames_completed
+	var remaining_frames: int = total_frames - frames_completed
+	
+	return remaining_frames * time_per_frame
 
 func process_frame() -> void:
 	%SubViewport.refresh_taa()
@@ -216,7 +232,7 @@ func process_frame() -> void:
 		image.save_png(path)
 	
 	if not is_rendering:
-		currently_at_frame += fps * get_process_delta_time()
+		currently_at_frame += (fps * get_process_delta_time()) / keyframe_length
 	else:
 		currently_at_frame += 1
 	
@@ -228,6 +244,17 @@ func process_frame() -> void:
 
 func _process(_delta: float) -> void:
 	update_tiling_variables()
+	
+	time_estimate = calculate_time_estimate()
+	
+	var text: String = 'Render animation and save to disk.'
+	if is_playing:
+		text += '\n\n'
+		text += 'Frame: ' + str(int(currently_at_frame)) + ' / ' + str(len(animation_frames_data))
+		text += '\n\n'
+		text += 'Time: ' + str(int((Time.get_unix_time_from_system() - render_start_time) * 100) / 100) + 's' + ' / ' + str(int(time_estimate * 100) / 100) + 's'
+	
+	%RenderButton.tooltip_text = text
 	
 	if not using_tiling:
 		if waiting_for_taa and is_playing:
@@ -244,7 +271,7 @@ func _process(_delta: float) -> void:
 		if not %Time.get_parent().dragging:
 			currently_at_frame = 0
 		
-		%PlayingToggleButton.icon = preload('res://resources/icons/pause-solid.svg')
+		%PlayingToggleButton.icon = preload('res://resources/icons/play-solid.svg')
 	
 	var wait := true
 	
@@ -291,3 +318,22 @@ func _on_render_button_pressed() -> void:
 	else:
 		is_rendering = true
 		_on_playing_toggle_button_pressed()
+
+func set_interpolation(index: int) -> void:
+	interpolation = index
+
+func update_fps(value: int) -> void:
+	fps = int(value * keyframe_length)
+	get_tree().current_scene.fps = value
+
+func set_fps(new_text: String) -> void:
+	if new_text.is_valid_float() or new_text.is_valid_int():
+		update_fps(int(float(new_text)))
+
+func set_keyframe_length(new_text: String) -> void:
+	if new_text.is_valid_float() or new_text.is_valid_int():
+		keyframe_length = float(new_text)
+		
+		if %FPSLineEdit.text.is_valid_float() or %FPSLineEdit.text.is_valid_int():
+			update_fps(int(float(%FPSLineEdit.text)))
+		# TODO: Handle else statement, is fps text is invalid.

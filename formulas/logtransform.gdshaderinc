@@ -1,8 +1,7 @@
 // [ID]
 // Log transform
+// [OFFICIAL]
 // [TRANSFORM]
-// [INDEX]
-// 27
 // [VARS]
 // selection axis[X, Y, Z, W] = X
 // float offset[-5, 5] = 1

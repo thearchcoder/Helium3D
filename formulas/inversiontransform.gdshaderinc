@@ -1,8 +1,7 @@
 // [ID]
 // Inversion transform
+// [OFFICIAL]
 // [TRANSFORM]
-// [INDEX]
-// 29
 // [VARS]
 // vec4 sphere[(-4, -4, -4, -4), (4, 4, 4, 4)] = (1, 1, 0, 1)
 // template transform_range

@@ -1,8 +1,7 @@
 // [ID]
 // Vicsek
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 19
 // [VARS]
 // bool preserve[false, true] = false
 // advanced bool hex_fold1[false, true] = false
@@ -23,9 +22,9 @@ const vec2 fvicsek_pl2 = vec2(-0.8657, 0.4);
 void vicsek_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i) {
 	vec3 z = z4.xyz;
 	float scale = fvicsek_scale;
-	
+
 	z = rotate3d_point(z, fvicsek_rotation1);
-	
+
 	if (fvicsek_abs1_x) z.x = abs(z.x);
 	if (fvicsek_abs1_z) z.z = abs(z.z);
 
@@ -67,7 +66,7 @@ void vicsek_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, in
 	dz = dz * abs(scale) + 3.0;
 
 	z = rotate3d_point(z, fvicsek_rotation2);
-	
+
 	//de = min(de, hollow_cube_sdf3d(z, vec3(1.0), fvicsek_thickness) * s);
 	z4.xyz = z;
 }

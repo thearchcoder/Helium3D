@@ -139,6 +139,7 @@ func _ready() -> void:
 			{'name': 'light'+l+'_enabled', 'type': 'bool', 'default_value': true if light_id == 1 else false},
 			{'name': 'light'+l+'_color', 'type': 'color', 'default_value': Color('white')},
 			{'name': 'light'+l+'_intensity', 'type': 'float', 'from': 0, 'to': 2, 'default_value': 0.725},
+			{'name': 'light'+l+'_radius', 'type': 'float', 'from': 0, 'to': 2, 'default_value': 0.1},
 		],
 		# Lighting / General
 		6: [
@@ -187,7 +188,8 @@ func _ready() -> void:
 			{'name': 'normal_map_projection', 'type': 'selection', 'values': ['Spherical', 'Planar', 'Triplanar'], 'default_value': 'Triplanar'},
 			{'name': 'normal_map_scale', 'type': 'float', 'from': 0, 'to': 4, 'default_value': 0.8},
 			{'name': 'normal_map_triplanar_sharpness', 'type': 'float', 'from': 0, 'to': 64, 'default_value': 12},
-			{'name': 'normal_map_height', 'type': 'float', 'from': -12, 'to': 12, 'default_value': 1}
+			{'name': 'normal_map_height', 'type': 'float', 'from': -12, 'to': 12, 'default_value': 1},
+			{'name': 'normal_epsilon', 'type': 'float', 'from': 0, 'to': 0.08, 'default_value': 0.003}
 		],
 		# Material / Ambient Occlusion
 		23: [

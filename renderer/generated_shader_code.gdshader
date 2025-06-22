@@ -1,11 +1,11 @@
 shader_type spatial;
-//render_mode unshaded;
+render_mode unshaded;
 
 // Disabled when possible to reduce shader compilation times.
 // Line numbers for these 3 lines must stay the same.
-////////////////////////#define USING_DOF
-////////////////////////#define USING_TILING
-////////////////////////#define USING_REFLECTIONS
+//#define USING_DOF
+//#define USING_TILING
+//#define USING_REFLECTIONS
 
 // Effects / DOF
 uniform bool dof_enabled;
@@ -23,6 +23,8 @@ uniform vec3 light1_position;
 uniform vec3 light2_position;
 uniform vec3 light1_color;
 uniform vec3 light2_color;
+uniform float light1_radius;
+uniform float light2_radius;
 // Material / Ambient
 uniform bool ambient_light_from_background;
 uniform float ambient_light;
@@ -40,6 +42,7 @@ uniform int normal_map_projection;
 uniform float normal_map_triplanar_sharpness;
 uniform float normal_map_scale;
 uniform float normal_map_height;
+uniform float normal_epsilon;
 
 uniform int shadow_steps = 32;
 uniform float shadow_raystep_multiplier = 1.0;
@@ -123,228 +126,267 @@ uniform float progression_strength = 100.0;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
-uniform float fmandelbulb_phase;
-uniform float fmandelbulb_power;
-uniform float fmandelbulb_z_mul;
-uniform bool fmandelbulb_conjugate;
-uniform bool fmandelbulb_abs_x;
-uniform bool fmandelbulb_abs_y;
-uniform bool fmandelbulb_abs_z;
-uniform bool fmandelbulb_is_julia;
-uniform vec4 fmandelbulb_julia_c;
-uniform float fmandelbulb_derivative_bias;
-uniform int fmandelbulb_number_system;
-uniform int fmandelbulb_quaternion_mode;
-uniform float fmandelbox_scale;
-uniform float fmandelbox_radius1;
-uniform float fmandelbox_fold1;
-uniform float fmandelbox_fold1_strength;
-uniform float fmandelbox_radius2;
-uniform vec3 fmandelbox_box_folds;
-uniform bool fmandelbox_is_julia;
-uniform vec3 fmandelbox_julia_c;
-uniform vec3 fmandelbox_rotation1;
-uniform vec3 fmandelbox_rotation2;
-uniform bool famazingsurf_is_julia;
-uniform vec3 famazingsurf_julia_c;
-uniform vec3 famazingsurf_rotation;
-uniform vec3 famazingsurf_fold;
-uniform bool famazingsurf_fold_z;
-uniform float famazingsurf_min_radius;
-uniform vec3 famazingsurf_offset;
-uniform float famazingsurf_scale;
-uniform vec2 famazingsurf_fold2;
-uniform float fbairddelta_angle;
-uniform vec3 fbairddelta_rotation1;
-uniform vec3 fbairddelta_rotation2;
-uniform float fbairddelta_scale;
-uniform vec3 fsierpinskiicosahedron_offset;
-uniform vec3 fsierpinskiicosahedron_rotation1;
-uniform vec3 fsierpinskiicosahedron_rotation2;
-uniform float fsierpinskiicosahedron_scale;
-uniform vec3 fsierpinskitetrahedron_offset;
-uniform vec3 fsierpinskitetrahedron_rotation1;
-uniform vec3 fsierpinskitetrahedron_rotation2;
-uniform float fsierpinskitetrahedron_scale;
-uniform vec3 fmengersponge_offset;
-uniform vec3 fmengersponge_rotation1;
-uniform vec3 fmengersponge_rotation2;
-uniform float fmengersponge_scale;
-uniform vec3 fsierpinskioctahedron_rotation1;
-uniform vec3 fsierpinskioctahedron_rotation2;
-uniform vec3 fsierpinskioctahedron_offset;
-uniform float fsierpinskioctahedron_scale;
-uniform vec3 fsierpinskidodecahedron_offset;
-uniform vec3 fsierpinskidodecahedron_rotation1;
-uniform vec3 fsierpinskidodecahedron_rotation2;
-uniform float fsierpinskidodecahedron_scale;
-uniform vec4 fpseudoklenian_min;
-uniform vec4 fpseudoklenian_max;
-uniform float fpseudoklenian_sign;
-uniform float fpseudoklenian_scale;
-uniform bool fklenian_show_balls;
-uniform float fklenian_x;
-uniform float fklenian_y;
-uniform float fklenian_box_size_x;
-uniform float fklenian_box_size_z;
-uniform float fspheretree_symmetry;
-uniform vec4 fkaliredux_folds;
-uniform vec3 fkaliredux_minus;
-uniform float fkaliredux_scale;
-uniform float fkochcube_scale;
-uniform int fkochcube_variant;
-uniform bool fkochcube_first_zrev;
-uniform bool fkochcube_pxyzminuss;
-uniform bool fkochcube_psortsymmetry1;
-uniform bool fkochcube_psortsymmetry2;
-uniform bool fkochcube_foldzbefore;
-uniform bool fkochcube_abs_x;
-uniform bool fkochcube_abs_y;
-uniform bool fkochcube_abs_z;
-uniform int fkochcube_fold1;
-uniform int fkochcube_fold2;
-uniform bool fkochcube_fold3;
-uniform bool fkochcube_fold4;
-uniform bool fkochcube_reflection;
-uniform vec3 fkochcube_rotation1;
-uniform vec3 fkochcube_rotation2;
-uniform int fnewton_plane;
-uniform bool fnewton_intersection_mode;
-uniform int fnewton_power;
-uniform vec2 fquadratickoch_octahedron_limit;
-uniform vec3 fquadratickoch_octahedron_offset;
-uniform vec3 fquadratickoch_octahedron_offset2;
-uniform vec3 fquadratickoch_octahedron_;
-uniform vec3 fquadratickoch_offset;
-uniform vec2 fquadratickoch_scale;
-uniform vec3 fquadratickoch_rotation1;
-uniform vec3 fquadratickoch_rotation2;
-uniform float fquadratickoch_abs_offset;
-uniform vec3 fkaliliving_c;
-uniform vec3 fkaliliving_rotation1;
-uniform vec3 fkaliliving_rotation2;
-uniform float fkaliliving_scale;
-uniform float fmixpinski4d_scale;
-uniform float fmixpinski4d_fold1_strength;
-uniform vec4 fmixpinski4d_offset;
-uniform vec4 fmixpinski4d_rotation1;
-uniform vec4 fmixpinski4d_rotation2;
-uniform float fmixpinski4d_abs_minus;
-uniform vec4 fmixpinski4d_fold1;
-uniform vec4 fmixpinski4d_pre_offset;
-uniform bool fvicsek_preserve;
-uniform bool fvicsek_hex_fold1;
-uniform int fvicsek_hex_fold2;
-uniform bool fvicsek_abs1_x;
-uniform bool fvicsek_abs1_z;
-uniform vec3 fvicsek_limit;
-uniform vec3 fvicsek_abs2_minus;
-uniform vec3 fvicsek_abs2_plus;
-uniform vec3 fvicsek_offset;
-uniform vec2 fvicsek_foldt;
-uniform float fvicsek_scale;
-uniform vec3 fvicsek_rotation1;
-uniform vec3 fvicsek_rotation2;
-uniform bool fkochwire_fold1;
-uniform bool fkochwire_fold2;
-uniform bool fkochwire_fold3;
-uniform bool fkochwire_abs_x;
-uniform bool fkochwire_abs_y;
-uniform bool fkochwire_abs_z;
-uniform bool fkochwire_abs2_zx;
-uniform vec3 fkochwire_abs_plus;
-uniform vec3 fkochwire_abs_minus;
-uniform float fkochwire_scale;
-uniform float fkochwire_symmetry;
-uniform vec3 fkochwire_offset;
-uniform vec3 fkochwire_rotation1;
-uniform vec3 fkochwire_rotation2;
-uniform float fkalibox_scale;
-uniform vec3 fkalibox_offset1;
-uniform vec3 fkalibox_offset2;
-uniform int fsphairahedron_cube_type;
-uniform float fsphairahedron_zc;
-uniform float fsphairahedron_zb;
-uniform float flionbulb_power;
-uniform float flionbulb_phase;
-uniform vec3 flionbulb_c;
-uniform bool flionbulb_coral;
-uniform vec2 fjerusalemcube_scale;
-uniform vec3 fjerusalemcube_offset;
-uniform vec3 fjerusalemcube_rotation1;
-uniform vec3 fjerusalemcube_rotation2;
-uniform vec3 fjerusalemcube_abs_add;
-uniform vec3 fjerusalemcube_abs_minus;
-uniform bool fbristorbrot_is_julia;
-uniform vec3 fbristorbrot_julia_c;
-uniform vec3 fbristorbrot_multiply;
-uniform int fsintransform_axis;
-uniform vec2 fsintransform_offset;
-uniform vec2 fsintransform_scale;
-uniform vec2 fsintransform_range;
-uniform int flogtransform_axis;
-uniform float flogtransform_offset;
-uniform float flogtransform_scale;
-uniform vec2 flogtransform_range;
-uniform vec4 fbasictransform_offset;
-uniform vec4 fbasictransform_scale;
-uniform vec2 fbasictransform_range;
-uniform vec4 finversiontransform_sphere;
-uniform vec2 finversiontransform_range;
-uniform int freciprocaltransform_axis;
-uniform float freciprocaltransform_offset;
-uniform vec2 freciprocaltransform_range;
-uniform int fkalaidotransform_axis;
-uniform int fkalaidotransform_mode;
-uniform float fkalaidotransform_symmetry;
-uniform vec2 fkalaidotransform_range;
-uniform float foctkoch_scale;
-uniform vec3 foctkoch_offset;
-uniform vec3 foctkoch_fold;
-uniform bool foctkoch_abs;
-uniform vec3 foctkoch_rotation1;
-uniform vec3 foctkoch_rotation2;
-uniform float fplatonickoch_stretch;
-uniform float fplatonickoch_postscale;
-uniform float fplatonickoch_zfix;
-uniform vec3 fplatonickoch_add;
-uniform bool fbenesiship_is_julia;
-uniform vec3 fbenesiship_julia_c;
+//uniform bool famazingsurf_is_julia; // -@1
+//uniform vec3 famazingsurf_julia_c; // -@1
+//uniform vec3 famazingsurf_rotation; // -@1
+//uniform vec3 famazingsurf_fold; // -@1
+//uniform bool famazingsurf_fold_z; // -@1
+//uniform float famazingsurf_min_radius; // -@1
+//uniform vec3 famazingsurf_offset; // -@1
+//uniform float famazingsurf_scale; // -@1
+//uniform vec2 famazingsurf_fold2; // -@1
+//uniform float fbairddelta_angle; // -@2
+//uniform vec3 fbairddelta_rotation1; // -@2
+//uniform vec3 fbairddelta_rotation2; // -@2
+//uniform float fbairddelta_scale; // -@2
+//uniform vec4 fbasictransform_offset; // -@3
+//uniform vec4 fbasictransform_scale; // -@3
+//uniform vec2 fbasictransform_range; // -@3
+//uniform bool fbenesiship_is_julia; // -@4
+//uniform vec3 fbenesiship_julia_c; // -@4
+//uniform bool fbristorbrot_is_julia; // -@5
+//uniform vec3 fbristorbrot_julia_c; // -@5
+//uniform vec3 fbristorbrot_multiply; // -@5
+uniform vec3 fcube_position; // -@6
+uniform vec3 fcube_size; // -@6
+uniform float fcube_roundness; // -@6
+uniform bool fcube_hollow; // -@6
+uniform float fcube_hollow_edge; // -@6
+//uniform vec3 fdodecahedron_position; // -@7
+//uniform float fdodecahedron_size; // -@7
+//uniform float fdodecahedron_roundness; // -@7
+//uniform bool fdodecahedron_hollow; // -@7
+//uniform float fdodecahedron_hollow_edge; // -@7
+//uniform vec3 ficosahedron_position; // -@8
+//uniform float ficosahedron_size; // -@8
+//uniform float ficosahedron_roundness; // -@8
+//uniform bool ficosahedron_hollow; // -@8
+//uniform float ficosahedron_hollow_edge; // -@8
+//uniform vec4 finversiontransform_sphere; // -@9
+//uniform vec2 finversiontransform_range; // -@9
+//uniform vec2 fjerusalemcube_scale; // -@10
+//uniform vec3 fjerusalemcube_offset; // -@10
+//uniform vec3 fjerusalemcube_rotation1; // -@10
+//uniform vec3 fjerusalemcube_rotation2; // -@10
+//uniform vec3 fjerusalemcube_abs_add; // -@10
+//uniform vec3 fjerusalemcube_abs_minus; // -@10
+//uniform int fkalaidotransform_axis; // -@11
+//uniform int fkalaidotransform_mode; // -@11
+//uniform float fkalaidotransform_symmetry; // -@11
+//uniform vec2 fkalaidotransform_range; // -@11
+//uniform float fkalibox_scale; // -@12
+//uniform vec3 fkalibox_offset1; // -@12
+//uniform vec3 fkalibox_offset2; // -@12
+//uniform vec3 fkaliliving_c; // -@13
+//uniform vec3 fkaliliving_rotation1; // -@13
+//uniform vec3 fkaliliving_rotation2; // -@13
+//uniform float fkaliliving_scale; // -@13
+//uniform vec4 fkaliredux_folds; // -@14
+//uniform vec3 fkaliredux_minus; // -@14
+//uniform float fkaliredux_scale; // -@14
+//uniform bool fklenian_show_balls; // -@15
+//uniform float fklenian_x; // -@15
+//uniform float fklenian_y; // -@15
+//uniform float fklenian_box_size_x; // -@15
+//uniform float fklenian_box_size_z; // -@15
+//uniform float fkochcube_scale; // -@16
+//uniform int fkochcube_variant; // -@16
+//uniform bool fkochcube_first_zrev; // -@16
+//uniform bool fkochcube_pxyzminuss; // -@16
+//uniform bool fkochcube_psortsymmetry1; // -@16
+//uniform bool fkochcube_psortsymmetry2; // -@16
+//uniform bool fkochcube_foldzbefore; // -@16
+//uniform bool fkochcube_abs_x; // -@16
+//uniform bool fkochcube_abs_y; // -@16
+//uniform bool fkochcube_abs_z; // -@16
+//uniform int fkochcube_fold1; // -@16
+//uniform int fkochcube_fold2; // -@16
+//uniform bool fkochcube_fold3; // -@16
+//uniform bool fkochcube_fold4; // -@16
+//uniform bool fkochcube_reflection; // -@16
+//uniform vec3 fkochcube_rotation1; // -@16
+//uniform vec3 fkochcube_rotation2; // -@16
+//uniform bool fkochwire_fold1; // -@17
+//uniform bool fkochwire_fold2; // -@17
+//uniform bool fkochwire_fold3; // -@17
+//uniform bool fkochwire_abs_x; // -@17
+//uniform bool fkochwire_abs_y; // -@17
+//uniform bool fkochwire_abs_z; // -@17
+//uniform bool fkochwire_abs2_zx; // -@17
+//uniform vec3 fkochwire_abs_plus; // -@17
+//uniform vec3 fkochwire_abs_minus; // -@17
+//uniform float fkochwire_scale; // -@17
+//uniform float fkochwire_symmetry; // -@17
+//uniform vec3 fkochwire_offset; // -@17
+//uniform vec3 fkochwire_rotation1; // -@17
+//uniform vec3 fkochwire_rotation2; // -@17
+//uniform float flionbulb_power; // -@18
+//uniform float flionbulb_phase; // -@18
+//uniform vec3 flionbulb_c; // -@18
+//uniform bool flionbulb_coral; // -@18
+//uniform int flogtransform_axis; // -@19
+//uniform float flogtransform_offset; // -@19
+//uniform float flogtransform_scale; // -@19
+//uniform vec2 flogtransform_range; // -@19
+//uniform float fmandelbox_scale; // -@20
+//uniform float fmandelbox_radius1; // -@20
+//uniform float fmandelbox_fold1; // -@20
+//uniform float fmandelbox_fold1_strength; // -@20
+//uniform float fmandelbox_radius2; // -@20
+//uniform vec3 fmandelbox_box_folds; // -@20
+//uniform bool fmandelbox_is_julia; // -@20
+//uniform vec3 fmandelbox_julia_c; // -@20
+//uniform vec3 fmandelbox_rotation1; // -@20
+//uniform vec3 fmandelbox_rotation2; // -@20
+//uniform float fmandelbulb_phase; // -@21
+//uniform float fmandelbulb_power; // -@21
+//uniform float fmandelbulb_z_mul; // -@21
+//uniform bool fmandelbulb_conjugate; // -@21
+//uniform bool fmandelbulb_abs_x; // -@21
+//uniform bool fmandelbulb_abs_y; // -@21
+//uniform bool fmandelbulb_abs_z; // -@21
+//uniform bool fmandelbulb_is_julia; // -@21
+//uniform vec4 fmandelbulb_julia_c; // -@21
+//uniform float fmandelbulb_derivative_bias; // -@21
+//uniform int fmandelbulb_number_system; // -@21
+//uniform int fmandelbulb_quaternion_mode; // -@21
+uniform vec3 fmengersponge_offset; // -@22
+uniform vec3 fmengersponge_rotation1; // -@22
+uniform vec3 fmengersponge_rotation2; // -@22
+uniform float fmengersponge_scale; // -@22
+//uniform float fmixpinski4d_scale; // -@23
+//uniform float fmixpinski4d_fold1_strength; // -@23
+//uniform vec4 fmixpinski4d_offset; // -@23
+//uniform vec4 fmixpinski4d_rotation1; // -@23
+//uniform vec4 fmixpinski4d_rotation2; // -@23
+//uniform float fmixpinski4d_abs_minus; // -@23
+//uniform vec4 fmixpinski4d_fold1; // -@23
+//uniform vec4 fmixpinski4d_pre_offset; // -@23
+//uniform int fnewton_plane; // -@24
+//uniform bool fnewton_intersection_mode; // -@24
+//uniform vec3 foctahedron_position; // -@25
+//uniform float foctahedron_size; // -@25
+//uniform float foctahedron_roundness; // -@25
+//uniform bool foctahedron_hollow; // -@25
+//uniform float foctahedron_hollow_edge; // -@25
+//uniform float foctkoch_scale; // -@26
+//uniform vec3 foctkoch_offset; // -@26
+//uniform vec3 foctkoch_fold; // -@26
+//uniform bool foctkoch_abs; // -@26
+//uniform vec3 foctkoch_rotation1; // -@26
+//uniform vec3 foctkoch_rotation2; // -@26
+//uniform float fplatonickoch_stretch; // -@27
+//uniform float fplatonickoch_postscale; // -@27
+//uniform float fplatonickoch_zfix; // -@27
+//uniform vec3 fplatonickoch_add; // -@27
+//uniform vec4 fpseudoklenian_min; // -@28
+//uniform vec4 fpseudoklenian_max; // -@28
+//uniform float fpseudoklenian_sign; // -@28
+//uniform float fpseudoklenian_scale; // -@28
+//uniform vec2 fquadratickoch_octahedron_limit; // -@29
+//uniform vec3 fquadratickoch_octahedron_offset; // -@29
+//uniform vec3 fquadratickoch_octahedron_offset2; // -@29
+//uniform vec3 fquadratickoch_octahedron_; // -@29
+//uniform vec3 fquadratickoch_offset; // -@29
+//uniform vec2 fquadratickoch_scale; // -@29
+//uniform vec3 fquadratickoch_rotation1; // -@29
+//uniform vec3 fquadratickoch_rotation2; // -@29
+//uniform float fquadratickoch_abs_offset; // -@29
+//uniform int freciprocaltransform_axis; // -@30
+//uniform float freciprocaltransform_offset; // -@30
+//uniform vec2 freciprocaltransform_range; // -@30
+//uniform vec3 fsierpinskidodecahedron_offset; // -@31
+//uniform vec3 fsierpinskidodecahedron_rotation1; // -@31
+//uniform vec3 fsierpinskidodecahedron_rotation2; // -@31
+//uniform float fsierpinskidodecahedron_scale; // -@31
+//uniform vec3 fsierpinskiicosahedron_offset; // -@32
+//uniform vec3 fsierpinskiicosahedron_rotation1; // -@32
+//uniform vec3 fsierpinskiicosahedron_rotation2; // -@32
+//uniform float fsierpinskiicosahedron_scale; // -@32
+//uniform vec3 fsierpinskioctahedron_rotation1; // -@33
+//uniform vec3 fsierpinskioctahedron_rotation2; // -@33
+//uniform vec3 fsierpinskioctahedron_offset; // -@33
+//uniform float fsierpinskioctahedron_scale; // -@33
+//uniform vec3 fsierpinskitetrahedron_offset; // -@34
+//uniform vec3 fsierpinskitetrahedron_rotation1; // -@34
+//uniform vec3 fsierpinskitetrahedron_rotation2; // -@34
+//uniform float fsierpinskitetrahedron_scale; // -@34
+//uniform int fsintransform_axis; // -@35
+//uniform vec2 fsintransform_offset; // -@35
+//uniform vec2 fsintransform_scale; // -@35
+//uniform vec2 fsintransform_range; // -@35
+//uniform int fsphairahedron_cube_type; // -@36
+//uniform float fsphairahedron_zc; // -@36
+//uniform float fsphairahedron_zb; // -@36
+//uniform vec3 fsphere_position; // -@37
+//uniform float fsphere_radius; // -@37
+//uniform bool fsphere_hollow; // -@37
+//uniform float fsphere_hollow_edge; // -@37
+//uniform float fspheretree_symmetry; // -@38
+//uniform vec3 ftetrahedron_position; // -@39
+//uniform float ftetrahedron_size; // -@39
+//uniform float ftetrahedron_roundness; // -@39
+//uniform bool ftetrahedron_hollow; // -@39
+//uniform float ftetrahedron_hollow_edge; // -@39
+//uniform bool fvicsek_preserve; // -@40
+//uniform bool fvicsek_hex_fold1; // -@40
+//uniform int fvicsek_hex_fold2; // -@40
+//uniform bool fvicsek_abs1_x; // -@40
+//uniform bool fvicsek_abs1_z; // -@40
+//uniform vec3 fvicsek_limit; // -@40
+//uniform vec3 fvicsek_abs2_minus; // -@40
+//uniform vec3 fvicsek_abs2_plus; // -@40
+//uniform vec3 fvicsek_offset; // -@40
+//uniform vec2 fvicsek_foldt; // -@40
+//uniform float fvicsek_scale; // -@40
+//uniform vec3 fvicsek_rotation1; // -@40
+//uniform vec3 fvicsek_rotation2; // -@40
+//uniform vec2 fwobbletransform_rotation; // -@41
+//uniform float fwobbletransform_strength; // -@41
+//uniform vec4 fwobbletransform_step; // -@41
+//uniform vec2 fwobbletransform_range; // -@41
 
-#include "res://formulas/mandelbulb.gdshaderinc"
-#include "res://formulas/mandelbox.gdshaderinc"
-#include "res://formulas/amazingsurf.gdshaderinc"
-#include "res://formulas/bairddelta.gdshaderinc"
-#include "res://formulas/sierpinskiicosahedron.gdshaderinc"
-#include "res://formulas/sierpinskitetrahedron.gdshaderinc"
-#include "res://formulas/mengersponge.gdshaderinc"
-#include "res://formulas/sierpinskioctahedron.gdshaderinc"
-#include "res://formulas/sierpinskidodecahedron.gdshaderinc"
-#include "res://formulas/pseudoklenian.gdshaderinc"
-#include "res://formulas/klenian.gdshaderinc"
-#include "res://formulas/spheretree.gdshaderinc"
-#include "res://formulas/kaliredux.gdshaderinc"
-#include "res://formulas/kochcube.gdshaderinc"
-#include "res://formulas/newton.gdshaderinc"
-#include "res://formulas/quadratickoch.gdshaderinc"
-#include "res://formulas/kaliliving.gdshaderinc"
-#include "res://formulas/mixpinski4d.gdshaderinc"
-#include "res://formulas/vicsek.gdshaderinc"
-#include "res://formulas/kochwire.gdshaderinc"
-#include "res://formulas/kalibox.gdshaderinc"
-#include "res://formulas/sphairahedron.gdshaderinc"
-#include "res://formulas/lionbulb.gdshaderinc"
-#include "res://formulas/jerusalemcube.gdshaderinc"
-#include "res://formulas/bristorbrot.gdshaderinc"
-#include "res://formulas/sintransform.gdshaderinc"
-#include "res://formulas/logtransform.gdshaderinc"
-#include "res://formulas/basictransform.gdshaderinc"
-#include "res://formulas/inversiontransform.gdshaderinc"
-#include "res://formulas/reciprocaltransform.gdshaderinc"
-#include "res://formulas/kalaidotransform.gdshaderinc"
-#include "res://formulas/octkoch.gdshaderinc"
-#include "res://formulas/platonickoch.gdshaderinc"
-#include "res://formulas/benesiship.gdshaderinc"
+//#include "res://formulas/amazingsurf.gdshaderinc" // -@1
+//#include "res://formulas/bairddelta.gdshaderinc" // -@2
+//#include "res://formulas/basictransform.gdshaderinc" // -@3
+//#include "res://formulas/benesiship.gdshaderinc" // -@4
+//#include "res://formulas/bristorbrot.gdshaderinc" // -@5
+#include "res://formulas/cube.gdshaderinc" // -@6
+//#include "res://formulas/dodecahedron.gdshaderinc" // -@7
+//#include "res://formulas/icosahedron.gdshaderinc" // -@8
+//#include "res://formulas/inversiontransform.gdshaderinc" // -@9
+//#include "res://formulas/jerusalemcube.gdshaderinc" // -@10
+//#include "res://formulas/kalaidotransform.gdshaderinc" // -@11
+//#include "res://formulas/kalibox.gdshaderinc" // -@12
+//#include "res://formulas/kaliliving.gdshaderinc" // -@13
+//#include "res://formulas/kaliredux.gdshaderinc" // -@14
+//#include "res://formulas/klenian.gdshaderinc" // -@15
+//#include "res://formulas/kochcube.gdshaderinc" // -@16
+//#include "res://formulas/kochwire.gdshaderinc" // -@17
+//#include "res://formulas/lionbulb.gdshaderinc" // -@18
+//#include "res://formulas/logtransform.gdshaderinc" // -@19
+//#include "res://formulas/mandelbox.gdshaderinc" // -@20
+//#include "res://formulas/mandelbulb.gdshaderinc" // -@21
+#include "res://formulas/mengersponge.gdshaderinc" // -@22
+//#include "res://formulas/mixpinski4d.gdshaderinc" // -@23
+//#include "res://formulas/newton.gdshaderinc" // -@24
+//#include "res://formulas/octahedron.gdshaderinc" // -@25
+//#include "res://formulas/octkoch.gdshaderinc" // -@26
+//#include "res://formulas/platonickoch.gdshaderinc" // -@27
+//#include "res://formulas/pseudoklenian.gdshaderinc" // -@28
+//#include "res://formulas/quadratickoch.gdshaderinc" // -@29
+//#include "res://formulas/reciprocaltransform.gdshaderinc" // -@30
+//#include "res://formulas/sierpinskidodecahedron.gdshaderinc" // -@31
+//#include "res://formulas/sierpinskiicosahedron.gdshaderinc" // -@32
+//#include "res://formulas/sierpinskioctahedron.gdshaderinc" // -@33
+//#include "res://formulas/sierpinskitetrahedron.gdshaderinc" // -@34
+//#include "res://formulas/sintransform.gdshaderinc" // -@35
+//#include "res://formulas/sphairahedron.gdshaderinc" // -@36
+//#include "res://formulas/sphere.gdshaderinc" // -@37
+//#include "res://formulas/spheretree.gdshaderinc" // -@38
+//#include "res://formulas/tetrahedron.gdshaderinc" // -@39
+//#include "res://formulas/vicsek.gdshaderinc" // -@40
+//#include "res://formulas/wobbletransform.gdshaderinc" // -@41
 
 vec2 scene_sdf(vec3 p) {
 	float d, d2;
@@ -371,59 +413,51 @@ vec2 scene_sdf(vec3 p) {
 	if (repeat && repeat_gap.y >= 0.000001) p.y = continuousMod(p.y + 0.5 * repeat_gap.y, repeat_gap.y) - 0.5 * repeat_gap.y;
 	if (repeat && repeat_gap.z >= 0.000001) p.z = continuousMod(p.z + 0.5 * repeat_gap.z, repeat_gap.z) - 0.5 * repeat_gap.z;
 
-	// Edited at runtime.
+	// A lot of the code below is edited at runtime.
 	vec4 z = vec4(p, 0.000001);
 	vec4 original_z = z;
 	float orbit = 100000.0;
 	float dz = 1.0;
 	float s = 1.2;
 
-	bool using_klenian = false;
-	bool using_sphairahedron = false;
-	bool using_spheretree = false;
-	bool using_newton = false;
 	bool single_formula = false;
-
 	vec3 previous_z = z.xyz;
 
 	// Edited at runtime
 	for (int i = 0; i < iterations * int(number_of_active_formulas); i++) {
 		bool escaped = false;
 		int current_formula = formulas[int(mod(float(i), number_of_active_formulas))];
-if (current_formula == 1) mandelbulb_iter(z, dz, original_z, orbit, i); //-@1
-//if (current_formula == 2) mandelbox_iter(z, dz, original_z, orbit, i); //-@2
-//if (current_formula == 3) amazingsurf_iter(z, dz, original_z, orbit, i); //-@3
-//if (current_formula == 4) bairddelta_iter(z, dz, original_z, orbit, i); //-@4
-//if (current_formula == 5) sierpinskiicosahedron_iter(z, dz, original_z, orbit, i); //-@5
-//if (current_formula == 6) sierpinskitetrahedron_iter(z, dz, original_z, orbit, i); //-@6
-//if (current_formula == 7) mengersponge_iter(z, dz, original_z, orbit, i); //-@7
-//if (current_formula == 8) sierpinskioctahedron_iter(z, dz, original_z, orbit, i); //-@8
-//if (current_formula == 9) sierpinskidodecahedron_iter(z, dz, original_z, orbit, i); //-@9
-//if (current_formula == 10) pseudoklenian_iter(z, dz, original_z, orbit, i); //-@10
-//if (current_formula == 11) using_klenian = true; //-@11
-//if (current_formula == 12) using_spheretree = true; //-@12
-//if (current_formula == 13) kaliredux_iter(z, dz, original_z, orbit, i); //-@13
-//if (current_formula == 14) kochcube_iter(z, dz, original_z, orbit, i, s); //-@14
-//if (current_formula == 15) using_newton = true; //-@15
-//if (current_formula == 16) quadratickoch_iter(z, dz, original_z, orbit, i); //-@16
-//if (current_formula == 17) kaliliving_iter(z, dz, original_z, orbit, i); //-@17
-//if (current_formula == 18) mixpinski4d_iter(z, dz, original_z, orbit, i); //-@18
-//if (current_formula == 19) vicsek_iter(z, dz, original_z, orbit, i); //-@19
-//if (current_formula == 20) kochwire_iter(z, dz, original_z, orbit, i); //-@20
-//if (current_formula == 21) kalibox_iter(z, dz, original_z, orbit, i); //-@21
-//if (current_formula == 22) using_sphairahedron = true; //-@22
-//if (current_formula == 23) lionbulb_iter(z, dz, original_z, orbit, i); //-@23
-//if (current_formula == 24) jerusalemcube_iter(z, dz, original_z, orbit, i); //-@24
-//if (current_formula == 25) bristorbrot_iter(z, dz, original_z, orbit, i); //-@25
-//if (current_formula == 26) sintransform_iter(z, dz, original_z, orbit, i); //-@26
-//if (current_formula == 27) logtransform_iter(z, dz, original_z, orbit, i); //-@27
-//if (current_formula == 28) basictransform_iter(z, dz, original_z, orbit, i); //-@28
-//if (current_formula == 29) inversiontransform_iter(z, dz, original_z, orbit, i); //-@29
+//if (current_formula == 1) amazingsurf_iter(z, dz, original_z, orbit, i); //-@1
+//if (current_formula == 2) bairddelta_iter(z, dz, original_z, orbit, i); //-@2
+//if (current_formula == 3) basictransform_iter(z, dz, original_z, orbit, i); //-@3
+//if (current_formula == 4) benesiship_iter(z, dz, original_z, orbit, i); //-@4
+//if (current_formula == 5) bristorbrot_iter(z, dz, original_z, orbit, i); //-@5
+//if (current_formula == 9) inversiontransform_iter(z, dz, original_z, orbit, i); //-@9
+//if (current_formula == 10) jerusalemcube_iter(z, dz, original_z, orbit, i); //-@10
+//if (current_formula == 11) kalaidotransform_iter(z, dz, original_z, orbit, i); //-@11
+//if (current_formula == 12) kalibox_iter(z, dz, original_z, orbit, i); //-@12
+//if (current_formula == 13) kaliliving_iter(z, dz, original_z, orbit, i); //-@13
+//if (current_formula == 14) kaliredux_iter(z, dz, original_z, orbit, i); //-@14
+//if (current_formula == 16) kochcube_iter(z, dz, original_z, orbit, i, s); //-@16
+//if (current_formula == 17) kochwire_iter(z, dz, original_z, orbit, i); //-@17
+//if (current_formula == 18) lionbulb_iter(z, dz, original_z, orbit, i); //-@18
+//if (current_formula == 19) logtransform_iter(z, dz, original_z, orbit, i); //-@19
+//if (current_formula == 20) mandelbox_iter(z, dz, original_z, orbit, i); //-@20
+//if (current_formula == 21) mandelbulb_iter(z, dz, original_z, orbit, i); //-@21
+if (current_formula == 22) mengersponge_iter(z, dz, original_z, orbit, i); //-@22
+//if (current_formula == 23) mixpinski4d_iter(z, dz, original_z, orbit, i); //-@23
+//if (current_formula == 26) octkoch_iter(z, dz, original_z, orbit, i); //-@26
+//if (current_formula == 27) platonickoch_iter(z, dz, original_z, orbit, i); //-@27
+//if (current_formula == 28) pseudoklenian_iter(z, dz, original_z, orbit, i); //-@28
+//if (current_formula == 29) quadratickoch_iter(z, dz, original_z, orbit, i); //-@29
 //if (current_formula == 30) reciprocaltransform_iter(z, dz, original_z, orbit, i); //-@30
-//if (current_formula == 31) kalaidotransform_iter(z, dz, original_z, orbit, i); //-@31
-//if (current_formula == 32) octkoch_iter(z, dz, original_z, orbit, i); //-@32
-//if (current_formula == 33) platonickoch_iter(z, dz, original_z, orbit, i); //-@33
-//if (current_formula == 34) benesiship_iter(z, dz, original_z, orbit, i); //-@34
+//if (current_formula == 31) sierpinskidodecahedron_iter(z, dz, original_z, orbit, i); //-@31
+//if (current_formula == 32) sierpinskiicosahedron_iter(z, dz, original_z, orbit, i); //-@32
+//if (current_formula == 33) sierpinskioctahedron_iter(z, dz, original_z, orbit, i); //-@33
+//if (current_formula == 34) sierpinskitetrahedron_iter(z, dz, original_z, orbit, i); //-@34
+//if (current_formula == 35) sintransform_iter(z, dz, original_z, orbit, i); //-@35
+//if (current_formula == 40) vicsek_iter(z, dz, original_z, orbit, i); //-@40
+//if (current_formula == 41) wobbletransform_iter(z, dz, original_z, orbit, i); //-@41
 		orbit = min(orbit, process_orbit_trap4d(z, original_z, i));
 
 		if (dot(z, z) > escape_radius * escape_radius || escaped) break;
@@ -437,20 +471,36 @@ if (current_formula == 1) mandelbulb_iter(z, dz, original_z, orbit, i); //-@1
 	if (de_mode == 0) de = r / dz;
 	else if (de_mode == 1) de = 0.5 * log(r) * r / dz;
 	else if (de_mode == 2) {
-		if (single_formula && formulas[0] == 14) de = r / dz;
-		else de = 0.5 * log(r) * r / dz;
+
+			if (single_formula && (formulas[0] == 16 || formulas[0] == 22 || formulas[0] == 26 || formulas[0] == 27 || formulas[0] == 29)) de = r / dz;
+			else de = 0.5 * log(r) * r / dz;
+		
 	}
 
 if (single_formula) {
-//if (using_sphairahedron) de = sphairahedron_sdf(original_z).x; //-@22
-//if (using_spheretree) de = spheretree_sdf(original_z).x; //-@12
-//if (using_klenian) de = klenian_sdf(original_z).x; //-@11
-//if (using_newton) de = newton_sdf(original_z).x; //-@15
+de = cube_sdf(original_z).x; // -@6
+//de = dodecahedron_sdf(original_z).x; // -@7
+//de = icosahedron_sdf(original_z).x; // -@8
+//de = klenian_sdf(original_z).x; // -@15
+//de = newton_sdf(original_z).x; // -@24
+//de = octahedron_sdf(original_z).x; // -@25
+//de = sphairahedron_sdf(original_z).x; // -@36
+//de = sphere_sdf(original_z).x; // -@37
+//de = spheretree_sdf(original_z).x; // -@38
+//de = tetrahedron_sdf(original_z).x; // -@39
+
 } else {
-//if (using_sphairahedron) de = max(de, sphairahedron_sdf(original_z).x); //-@22
-//if (using_spheretree) de = max(de, spheretree_sdf(original_z).x); //-@12
-//if (using_klenian) de = max(de, klenian_sdf(original_z).x); //-@11
-//if (using_newton) de = max(de, newton_sdf(original_z).x); //-@15
+de = min(de, cube_sdf(original_z).x); // -@6
+//de = min(de, dodecahedron_sdf(original_z).x); // -@7
+//de = min(de, icosahedron_sdf(original_z).x); // -@8
+//de = max(de, klenian_sdf(original_z).x); // -@15
+//de = max(de, newton_sdf(original_z).x); // -@24
+//de = min(de, octahedron_sdf(original_z).x); // -@25
+//de = max(de, sphairahedron_sdf(original_z).x); // -@36
+//de = min(de, sphere_sdf(original_z).x); // -@37
+//de = max(de, spheretree_sdf(original_z).x); // -@38
+//de = min(de, tetrahedron_sdf(original_z).x); // -@39
+
 }
 
 	if (interior_mode) de = abs(de);
@@ -513,7 +563,7 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	vec3 palette_color = 3.0 * pow(texture(palette, vec2(orbit_x, 0.0)).xyz, vec3(color_exponent));
 	vec3 final_color;
 	vec3 p = ray_origin + ray_dir * dfo;
-	vec3 normal = calculate_normal(p, relative_epsilon ? epsilon / 3.4 * dfo : epsilon);
+	vec3 normal = calculate_normal(p, normal_epsilon);
 
 	if (dfo >= max_distance) {
 		if (transparent_bg) discard_color = true;
@@ -530,9 +580,8 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 		if (bg_type == 0) final_color = pow(texture(bg_color, vec2(acos(sph_dir.y) / PI, 0.0)).xyz, vec3(2.0));
 		if (bg_type == 1) final_color = texture(bg_image, uv).xyz;
 	} else {
-		final_color = palette_color * compute_direct_lighting(p, ray_dir, ray_origin, normal);
-
 		if (display == 1) final_color = vec3(calcAO(p, normal));
+		else final_color = palette_color * compute_direct_lighting(p, ray_dir, ray_origin, normal);
 	}
 
 	// Outline
@@ -660,7 +709,7 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 }
 
 #define SET_ALBEDO bool discard_color = false; \
-	EMISSION = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX, discard_color); \
+	ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX, discard_color); \
 	if (discard_color) discard;
 
 void fragment() {

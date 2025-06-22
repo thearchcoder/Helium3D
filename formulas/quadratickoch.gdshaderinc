@@ -1,8 +1,8 @@
 // [ID]
 // Quadratic koch
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 16
+// [LINEAR-DE]
 // [VARS]
 // advanced vec2 octahedron_limit[(-2, -2), (2, 2)] = (0.5, 1.0)
 // vec3 octahedron_offset[(-2, -2, -2), (2, 2, 2)] = (0, 0, 0)

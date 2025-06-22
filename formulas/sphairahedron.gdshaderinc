@@ -1,8 +1,7 @@
 // [ID]
 // Sphairahedron
+// [OFFICIAL]
 // [DIFS]
-// [INDEX]
-// 22
 // [VARS]
 // selection cube_type[Cube A, Cube B, Cube C] = Cube A
 // float zc[0.0, 1.5] = 1.0;

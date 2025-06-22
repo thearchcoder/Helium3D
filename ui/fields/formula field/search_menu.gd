@@ -7,6 +7,9 @@ var type: String = 'any'
 func add_option(option_name: String) -> void:
 	options.append(option_name)
 
+func get_formula_data_from_name(formula_name: String) -> Dictionary:
+	return get_tree().current_scene.get_formula_data_from_name(formula_name)
+
 func reload_popup() -> void:
 	$OptionButton.clear()
 	$OptionButton.add_item('None')
@@ -82,12 +85,6 @@ func get_match_score(text: String, search_term: String) -> int:
 		return 50 - gap_penalty
 	
 	return 0
-
-func get_formula_data_from_name(formatted_id: String) -> Dictionary:
-	for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
-		if formula['formatted_id'] == formatted_id:
-			return formula
-	return {}
 
 func _process(delta: float) -> void:
 	if $"../../..".visible and (Input.is_action_just_pressed('enter') or Input.is_action_just_pressed('escape')):

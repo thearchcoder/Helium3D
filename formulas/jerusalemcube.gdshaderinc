@@ -1,8 +1,7 @@
 // [ID]
 // Jerusalem Cube
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 24
 // [VARS]
 // vec2 scale[(1, 1), (8, 8)] = (5, 2.5)
 // vec3 offset[(-1, -1, -1), (1, 1, 1)] = (1, 1, 1)

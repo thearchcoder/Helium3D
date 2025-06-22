@@ -1,9 +1,10 @@
-[gd_scene load_steps=60 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=62 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
 [ext_resource type="Texture2D" uid="uid://d1vwtwnup6fgb" path="res://icon.png" id="2_s17dp"]
 [ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="3_4yvvm"]
+[ext_resource type="Script" uid="uid://birkp17h8ks8f" path="res://scenes/main/window.gd" id="3_37hlw"]
 [ext_resource type="Script" uid="uid://l7fr1idjfuni" path="res://compositor/helium_compositor.gd" id="4_p8abn"]
 [ext_resource type="Script" uid="uid://bj6ithljpyig5" path="res://scenes/main/tool_bar.gd" id="5_og0rs"]
 [ext_resource type="PackedScene" uid="uid://c6ykqwdde41of" path="res://ui/fields/selection field/selection_field.tscn" id="6_50v3j"]
@@ -25,6 +26,8 @@
 [ext_resource type="Texture2D" uid="uid://em4me5v5s48x" path="res://resources/icons/circle.svg" id="22_an3xl"]
 [ext_resource type="Script" uid="uid://b0xu3c1kn7vkv" path="res://scenes/main/current_time.gd" id="22_s3o3g"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6llfj"]
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ul884"]
 render_priority = 0
 shader = ExtResource("3_4yvvm")
@@ -41,6 +44,8 @@ shader_parameter/light1_position = Vector3(0, 0, 0)
 shader_parameter/light2_position = Vector3(0, 0, 0)
 shader_parameter/light1_color = Vector3(0, 0, 0)
 shader_parameter/light2_color = Vector3(0, 0, 0)
+shader_parameter/light1_radius = 0.0
+shader_parameter/light2_radius = 0.0
 shader_parameter/ambient_light_from_background = false
 shader_parameter/ambient_light = 0.0
 shader_parameter/ambient_light_color = Vector3(0, 0, 0)
@@ -54,6 +59,7 @@ shader_parameter/normal_map_projection = 0
 shader_parameter/normal_map_triplanar_sharpness = 0.0
 shader_parameter/normal_map_scale = 0.0
 shader_parameter/normal_map_height = 0.0
+shader_parameter/normal_epsilon = 0.0
 shader_parameter/shadow_steps = 32
 shader_parameter/shadow_raystep_multiplier = 1.0
 shader_parameter/shadow_epsilon = 0.01
@@ -249,81 +255,6 @@ border_color = Color(0.187, 0.187, 0.187, 0.724)
 [node name="Main" type="Node3D"]
 script = ExtResource("1_yss2u")
 
-[node name="Window" type="Window" parent="."]
-title = "About Helium3D"
-initial_position = 1
-size = Vector2i(680, 380)
-visible = false
-theme_override_fonts/title_font = ExtResource("8_rhsly")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Window"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Window/HBoxContainer"]
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="Window/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-
-[node name="TextureRect" type="TextureRect" parent="Window/HBoxContainer/VBoxContainer/MarginContainer"]
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
-texture = ExtResource("2_s17dp")
-expand_mode = 1
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="Window/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="RichTextLabel" type="RichTextLabel" parent="Window/HBoxContainer/VBoxContainer2"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/line_separation = -8
-theme_override_fonts/normal_font = ExtResource("8_rhsly")
-theme_override_font_sizes/normal_font_size = 20
-text = "	
-	==== General
-
-		Version: {version}
-
-		License: GNU General Public License 3.0
-
-		Developer: Muhammad Ahmad
-		
-		Copyright © 2025
-	
-
-	==== Credits
-
-		Sphairahedron formula: Kento Nakamura
-
-		DE Information: Krzyzstof Marczak
-
-		Fractalforums: For helping me with this project
-"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Window/HBoxContainer/VBoxContainer2"]
-layout_mode = 2
-alignment = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="Window/HBoxContainer/VBoxContainer2/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
-
-[node name="CloseButton" type="Button" parent="Window/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer"]
-custom_minimum_size = Vector2(100, 1.45519e-11)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_font_sizes/font_size = 20
-text = "OK"
-
 [node name="FileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
 initial_position = 2
@@ -336,6 +267,81 @@ file_mode = 0
 access = 2
 option_count = 1
 option_0/name = "Load Lighting Only"
+
+[node name="AboutWindow" type="Window" parent="."]
+title = "About Helium3D"
+initial_position = 1
+size = Vector2i(680, 380)
+visible = false
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+script = ExtResource("3_37hlw")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="AboutWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AboutWindow/HBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="AboutWindow/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+
+[node name="TextureRect" type="TextureRect" parent="AboutWindow/HBoxContainer/VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture = ExtResource("2_s17dp")
+expand_mode = 1
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="AboutWindow/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RichTextLabel" type="RichTextLabel" parent="AboutWindow/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/line_separation = -8
+theme_override_fonts/normal_font = ExtResource("8_rhsly")
+theme_override_font_sizes/normal_font_size = 20
+text = "	
+	==== General
+
+		Version: {version}
+
+		License: GNU General Public License 3
+
+		Helium3D Copyright (C) 2025 Muhammad Ahmad
+	
+
+	==== Credits
+
+		Sphairahedron formula: Kento Nakamura
+
+		DE Information: Krzyzstof Marczak
+
+		Fractalforums: For helping me with this project
+"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="AboutWindow/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+alignment = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="AboutWindow/HBoxContainer/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="CloseButton" type="Button" parent="AboutWindow/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(100, 1.45519e-11)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_6llfj")
+text = "OK"
 
 [node name="SubViewport" type="SubViewport" parent="."]
 unique_name_in_owner = true
@@ -951,7 +957,6 @@ icon = ExtResource("19_6llfj")
 [node name="RenderButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-tooltip_text = "Render animation and save to disk."
 theme_override_constants/icon_max_width = 23
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
@@ -963,21 +968,80 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/separator = SubResource("StyleBoxEmpty_p8abn")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
+[node name="Fields" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="KeyframeLength" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/KeyframeLength"]
+layout_mode = 2
+text = "Keyframe Length: "
+label_settings = SubResource("LabelSettings_s17dp")
+
+[node name="LineEdit" type="LineEdit" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/KeyframeLength"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_37hlw")
+text = "1"
+placeholder_text = "1"
+alignment = 1
+
+[node name="FPS" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/FPS"]
 layout_mode = 2
 text = "FPS: "
 label_settings = SubResource("LabelSettings_s17dp")
 
-[node name="LineEdit" type="LineEdit" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/HBoxContainer"]
+[node name="FPSLineEdit" type="LineEdit" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/FPS"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_37hlw")
 text = "60"
 placeholder_text = "60"
 alignment = 1
+
+[node name="Interpolation" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/Interpolation"]
+layout_mode = 2
+text = "Interpolation: "
+label_settings = SubResource("LabelSettings_s17dp")
+
+[node name="OptionButton" type="OptionButton" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/Interpolation"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+selected = 2
+item_count = 3
+popup/item_0/text = "Linear"
+popup/item_0/id = 0
+popup/item_1/text = "Bezier"
+popup/item_1/id = 1
+popup/item_2/text = "Hermite"
+popup/item_2/id = 2
+
+[node name="Frame" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/Frame"]
+layout_mode = 2
+text = "Frame: 1 / 240"
+label_settings = SubResource("LabelSettings_s17dp")
+
+[node name="Time" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/Time"]
+layout_mode = 2
+text = "Time: 1s / 5m 32s"
+label_settings = SubResource("LabelSettings_s17dp")
 
 [node name="VSeparator2" type="VSeparator" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -1025,22 +1089,35 @@ script = ExtResource("19_fsmeo")
 [node name="ScrollContainer" type="ScrollContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer"]
+[node name="VBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Timeline" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer/VBoxContainer"]
+[node name="Keyframes" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+
+[node name="Fields" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 93
 
-[node name="Keyframes" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer/VBoxContainer"]
-unique_name_in_owner = true
+[node name="Library" type="HBoxContainer" parent="UI/BottomBar"]
+visible = false
+custom_minimum_size = Vector2(1.45519e-11, 200)
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 0
+size_flags_horizontal = 3
+metadata/_tab_index = 1
+
+[node name="GridContainer" type="GridContainer" parent="UI/BottomBar/Library"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 7
 
 [node name="DummyFocusButton" type="Button" parent="."]
 unique_name_in_owner = true
@@ -1049,9 +1126,9 @@ offset_top = 136.0
 offset_right = -59.0
 offset_bottom = 144.0
 
-[connection signal="close_requested" from="Window" to="." method="_on_window_close_requested"]
-[connection signal="pressed" from="Window/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/CloseButton" to="." method="_on_close_button_pressed"]
 [connection signal="file_selected" from="FileDialog" to="UI/HBoxContainer/MarginContainer/ToolBar" method="_on_file_dialog_confirmed"]
+[connection signal="close_requested" from="AboutWindow" to="." method="_on_window_close_requested"]
+[connection signal="pressed" from="AboutWindow/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/CloseButton" to="." method="_on_close_button_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/MarginContainer/ToolBar/Panel/AboutButton" to="." method="_on_about_button_pressed"]
 [connection signal="text_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize/ViewportWidth" to="." method="_on_viewport_width_text_changed"]
 [connection signal="text_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize/ViewportHeight" to="." method="_on_viewport_height_text_changed"]
@@ -1069,6 +1146,9 @@ offset_bottom = 144.0
 [connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/SetTimeEndButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_set_time_end_button_pressed"]
 [connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/AddKeyframeButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_add_keyframe_button_pressed"]
 [connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/RenderButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_render_button_pressed"]
+[connection signal="text_changed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/KeyframeLength/LineEdit" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="set_keyframe_length"]
+[connection signal="text_changed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/FPS/FPSLineEdit" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="set_fps"]
+[connection signal="item_selected" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/Interpolation/OptionButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="set_interpolation"]
 [connection signal="mouse_entered" from="UI/BottomBar/Animation/Animation/CurrentTime" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="UI/BottomBar/Animation/Animation/CurrentTime" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_entered"]

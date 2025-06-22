@@ -1,8 +1,7 @@
 // [ID]
 // Sin transform
+// [OFFICIAL]
 // [TRANSFORM]
-// [INDEX]
-// 26
 // [VARS]
 // selection axis[X, Y, Z, W] = X
 // vec2 offset[(-4, -4), (4, 4)] = (0, 0)

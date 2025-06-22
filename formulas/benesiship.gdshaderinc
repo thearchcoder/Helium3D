@@ -1,8 +1,7 @@
 // [ID]
 // Benesi Ship
+// [OFFICIAL]
 // [ESCAPE]
-// [INDEX]
-// 34
 // [VARS]
 // bool is_julia[false, true] = true
 // vec3 julia_c[(0, 0, 0), (3, 3, 3)] = (1, 1, 1)

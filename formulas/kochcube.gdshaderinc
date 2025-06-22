@@ -1,8 +1,8 @@
 // [ID]
 // Koch cube
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 14
+// [LINEAR-DE]
 // [VARS]
 // float scale[0, 3] = 1
 // int variant[0, 10] = 0
@@ -42,7 +42,7 @@ vec3 psort(vec3 p, bool sort) {
 void kochcube_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i, inout float s) {
 	vec3 p = z4.xyz;
 	s /= 2.0;
-	
+
 	p = rotate3d_point(p, fkochcube_rotation1);
 
 	if (fkochcube_reflection) p.xz = vec2(max(p.x, p.z), min(p.x, p.z));
@@ -113,6 +113,6 @@ void kochcube_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, 
 	dz *= abs(fkochcube_scale);
 
 	p = rotate3d_point(p, fkochcube_rotation2);
-	
+
 	z4.xyz = p;
 }

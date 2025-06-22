@@ -1,8 +1,7 @@
 // [ID]
 // Basic transform
+// [OFFICIAL]
 // [TRANSFORM]
-// [INDEX]
-// 28
 // [VARS]
 // vec4 offset[(-4, -4, -4, -4), (4, 4, 4, 4)] = (0.3, 0, 0, 0)
 // vec4 scale[(-4, -4, -4, -4), (4, 4, 4, 4)] = (1, 1, 1, 1)

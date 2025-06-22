@@ -1,8 +1,7 @@
 // [ID]
 // Koch wire
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 20
 // [VARS]
 // advanced bool fold1[false, true] = true
 // advanced bool fold2[false, true] = true
@@ -25,7 +24,7 @@ void kochwire_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, 
 
 	float scale = fkochwire_scale;
 	vec3 offset = fkochwire_offset;
-	
+
 	z = rotate3d_point(z, fkochwire_rotation1);
 
 	if (fkochwire_fold1 && z.x - z.z < 0.0) z.xz = z.zx;
@@ -55,9 +54,9 @@ void kochwire_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, 
 	if (fkochwire_fold3 && z.x - z.z < 0.0) z.xz = z.zx;
 
 	z = z * scale - offset * (scale - 1.0);
-	
+
 	z = rotate3d_point(z, fkochwire_rotation2);
-	
+
 	dz = dz * abs(scale) + 8.0;
 	z4.xyz = z;
 }

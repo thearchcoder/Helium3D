@@ -1,5 +1,5 @@
 shader_type spatial;
-//render_mode unshaded;
+render_mode unshaded;
 
 // Disabled when possible to reduce shader compilation times.
 // Line numbers for these 3 lines must stay the same.
@@ -23,6 +23,8 @@ uniform vec3 light1_position;
 uniform vec3 light2_position;
 uniform vec3 light1_color;
 uniform vec3 light2_color;
+uniform float light1_radius;
+uniform float light2_radius;
 // Material / Ambient
 uniform bool ambient_light_from_background;
 uniform float ambient_light;
@@ -40,6 +42,7 @@ uniform int normal_map_projection;
 uniform float normal_map_triplanar_sharpness;
 uniform float normal_map_scale;
 uniform float normal_map_height;
+uniform float normal_epsilon;
 
 uniform int shadow_steps = 32;
 uniform float shadow_raystep_multiplier = 1.0;
@@ -151,19 +154,14 @@ vec2 scene_sdf(vec3 p) {
 	if (repeat && repeat_gap.y >= 0.000001) p.y = continuousMod(p.y + 0.5 * repeat_gap.y, repeat_gap.y) - 0.5 * repeat_gap.y;
 	if (repeat && repeat_gap.z >= 0.000001) p.z = continuousMod(p.z + 0.5 * repeat_gap.z, repeat_gap.z) - 0.5 * repeat_gap.z;
 
-	// Edited at runtime.
+	// A lot of the code below is edited at runtime.
 	vec4 z = vec4(p, 0.000001);
 	vec4 original_z = z;
 	float orbit = 100000.0;
 	float dz = 1.0;
 	float s = 1.2;
 
-	bool using_klenian = false;
-	bool using_sphairahedron = false;
-	bool using_spheretree = false;
-	bool using_newton = false;
 	bool single_formula = false;
-
 	vec3 previous_z = z.xyz;
 
 	// Edited at runtime
@@ -184,20 +182,13 @@ vec2 scene_sdf(vec3 p) {
 	if (de_mode == 0) de = r / dz;
 	else if (de_mode == 1) de = 0.5 * log(r) * r / dz;
 	else if (de_mode == 2) {
-		if (single_formula && formulas[0] == 14) de = r / dz;
-		else de = 0.5 * log(r) * r / dz;
+// -@AutomaticDE
 	}
 
 if (single_formula) {
-//if (using_sphairahedron) de = sphairahedron_sdf(original_z).x; //-@22
-//if (using_spheretree) de = spheretree_sdf(original_z).x; //-@12
-//if (using_klenian) de = klenian_sdf(original_z).x; //-@11
-//if (using_newton) de = newton_sdf(original_z).x; //-@15
+// -@SingleDIFS
 } else {
-//if (using_sphairahedron) de = max(de, sphairahedron_sdf(original_z).x); //-@22
-//if (using_spheretree) de = max(de, spheretree_sdf(original_z).x); //-@12
-//if (using_klenian) de = max(de, klenian_sdf(original_z).x); //-@11
-//if (using_newton) de = max(de, newton_sdf(original_z).x); //-@15
+// -@MultiDIFS
 }
 
 	if (interior_mode) de = abs(de);
@@ -260,7 +251,7 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	vec3 palette_color = 3.0 * pow(texture(palette, vec2(orbit_x, 0.0)).xyz, vec3(color_exponent));
 	vec3 final_color;
 	vec3 p = ray_origin + ray_dir * dfo;
-	vec3 normal = calculate_normal(p, relative_epsilon ? epsilon / 3.4 * dfo : epsilon);
+	vec3 normal = calculate_normal(p, normal_epsilon);
 
 	if (dfo >= max_distance) {
 		if (transparent_bg) discard_color = true;
@@ -277,9 +268,8 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 		if (bg_type == 0) final_color = pow(texture(bg_color, vec2(acos(sph_dir.y) / PI, 0.0)).xyz, vec3(2.0));
 		if (bg_type == 1) final_color = texture(bg_image, uv).xyz;
 	} else {
-		final_color = palette_color * compute_direct_lighting(p, ray_dir, ray_origin, normal);
-
 		if (display == 1) final_color = vec3(calcAO(p, normal));
+		else final_color = palette_color * compute_direct_lighting(p, ray_dir, ray_origin, normal);
 	}
 
 	// Outline
@@ -407,7 +397,7 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 }
 
 #define SET_ALBEDO bool discard_color = false; \
-	EMISSION = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX, discard_color); \
+	ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX, discard_color); \
 	if (discard_color) discard;
 
 void fragment() {

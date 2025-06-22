@@ -1,8 +1,8 @@
 // [ID]
 // Mengersponge
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 7
+// [LINEAR-DE]
 // [VARS]
 // vec3 offset[(0, 0, 0), (2.5, 2.5, 2.5)] = (1, 1, 1)
 // template kifs_rotation

@@ -1,8 +1,7 @@
 // [ID]
 // Klenian
+// [OFFICIAL]
 // [DIFS]
-// [INDEX]
-// 11
 // [VARS]
 // bool show_balls[false, true] = true
 // float x[0.0, 3.0] = 1.8

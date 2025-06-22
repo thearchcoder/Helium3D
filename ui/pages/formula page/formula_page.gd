@@ -141,7 +141,7 @@ func _ready() -> void:
 	initialize_formulas()
 	if page_number == 1:
 		set_formula('mandelbulb')
-		$Fields/HBoxContainer/Values/Formulas.index = 1
+		$Fields/HBoxContainer/Values/Formulas.index = $Fields/HBoxContainer/Values/Formulas.options.find('mandelbulb')
 	
 	for node in Global.value_nodes:
 		if node.get_node('../../../../..').has_method('i_am_a_formula_page'):

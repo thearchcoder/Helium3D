@@ -7,11 +7,10 @@ var selected_image_name: String
 var value: Dictionary = {'special_field': true, 'type': 'image', 'path': '!null'}:
 	set(val):
 		value = val
-		
-		var result: Resource = load(value['path'])
 		selected_image_name = value['path'].get_file()
 		
 		if value['path'] != '!null' && value:
+			var result: Resource = load(value['path'])
 			$ImageButton.icon = result
 			$ImageButton.text = selected_image_name
 		else:

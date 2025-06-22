@@ -1,8 +1,7 @@
 // [ID]
 // Lionbulb
+// [OFFICIAL]
 // [ESCAPE]
-// [INDEX]
-// 23
 // [VARS]
 // float power[1.0, 16.0] = 4.0
 // float phase[0.0, 30.0] = 1.815142

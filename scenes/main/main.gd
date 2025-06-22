@@ -6,9 +6,9 @@ var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
 var PATCH := VERSION.split('.')[2].split('-')[0]
 
-# about menu
-# animation keyframe length
-# animation keyframe interpolation (Linear, Bezier, Hermite)
+# DONE | about menu
+# DONE | animation keyframe length
+# DONE | animation keyframe interpolation (Linear, Bezier, Hermite)
 # DONE | octkoch
 # DONE | remove wobble
 # DONE | uniform system
@@ -20,6 +20,12 @@ var PATCH := VERSION.split('.')[2].split('-')[0]
 # DONE | update antialiasing entry when enabling upscaling
 # DONE | pause icon
 # ------------------------------------------------
+# DONE | independent formula files
+# open native dialog in windows or mac, use godot dialog in linux
+# tile render blend previous frame
+# tile render stop button
+# tile render button, not checkboxes
+# tile render center priority
 # animation estimate time
 # animation current frame label
 # multiple same formulas
@@ -35,7 +41,7 @@ var PATCH := VERSION.split('.')[2].split('-')[0]
 # koch_oct
 # mengerkochv2
 
-const LAZY_IMPORTING := false
+const LAZY_IMPORTING := true
 const VAR_TEMPLATES := {
 	'kifs_rotation': [
 		'vec3 rotation1[(-3.14159, -3.14159, -3.14159), (3.14159, 3.14159, 3.14159)] = (0, 0, 0)',
@@ -59,6 +65,9 @@ var using_dof: bool = false
 var using_tiling: bool = false
 var using_reflections: bool = false
 var busy_rendering_tiles: bool = false
+var keyframe_length: float = 1.0
+var interpolation: int = 2
+var fps: int = 60
 var difficulty: String = 'simple':
 	set(value):
 		difficulty = value
@@ -68,14 +77,17 @@ var white_display: Image
 
 func _ready() -> void:
 	%Logs.print_console('Helium3D ' + VERSION)
-	$Window/HBoxContainer/VBoxContainer2/RichTextLabel.text = $Window/HBoxContainer/VBoxContainer2/RichTextLabel.text.replace('{version}', VERSION)
+	$AboutWindow/HBoxContainer/VBoxContainer2/RichTextLabel.text = $AboutWindow/HBoxContainer/VBoxContainer2/RichTextLabel.text.replace('{version}', VERSION)
 	
 	var dir := DirAccess.open("res://")
 	if not dir.dir_exists(HELIUM3D_PATH):
 		dir.make_dir(HELIUM3D_PATH)
+	
+	await RenderingServer.frame_post_draw
+	DisplayServer.window_set_title("Helium3D", get_window().get_window_id())
 
 func _process(delta: float) -> void:
-	if $Window.visible and Input.is_action_just_pressed('escape'):
+	if $AboutWindow.visible and Input.is_action_just_pressed('escape'):
 		_on_window_close_requested()
 
 func expand_templates(formula_content: String) -> String:
@@ -98,8 +110,8 @@ func get_formulas_forloop_code() -> Array:
 	var formulas_forloop_code: Array = []
 	for formula in formulas:
 		for i in range(formulas.size()):
-			if formula['type'] == 'difs':
-				formulas_forloop_code.append('//if (current_formula == ' + str(formula['index']) + ') using_' + formula['id'] + ' = true; //-@' + str(formula['index']))
+			if formula['type'] == 'difs' or formula['type'] == 'primitive':
+				continue
 			else:
 				var params: String = 'z, dz, original_z, orbit, i'
 				if formula['id'] == 'kochcube':
@@ -119,6 +131,18 @@ func get_formulas_import_code() -> Array:
 	
 	return formulas_import_code
 
+func get_formula_data_from_name(id: String, formatted_id: bool = true) -> Dictionary:
+	for formula in formulas:
+		if (formula['formatted_id'] if formatted_id else formula['id']) == id:
+			return formula
+	return {}
+
+func get_formula_data_from_index(index: int) -> Dictionary:
+	for formula in formulas:
+		if formula['index'] == index:
+			return formula
+	return {}
+
 func get_app_state(optimize_for_clipboard: bool = false) -> Dictionary:
 	var data: Dictionary = fields.duplicate(true)
 	var other_data: Dictionary = {}
@@ -129,6 +153,10 @@ func get_app_state(optimize_for_clipboard: bool = false) -> Dictionary:
 	other_data["head_rotation"] = %Player.get_node("Head").global_rotation_degrees
 	other_data["camera_rotation"] = %Player.get_node("Head/Camera").global_rotation_degrees
 	other_data["keyframes"] = %AnimationTrack.keyframes
+	other_data["fps"] = fps
+	other_data["interpolation"] = interpolation
+	other_data["keyframe_length"] = keyframe_length
+	other_data["library"] = {}
 	
 	if optimize_for_clipboard:
 		for value_node in Global.value_nodes:
@@ -144,31 +172,34 @@ func initialize_formulas(path_to_formulas: String) -> void:
 	if formulas != []:
 		return
 	
-	for formula_file_path in DirAccess.get_files_at(path_to_formulas):
+	var paths: PackedStringArray = DirAccess.get_files_at(path_to_formulas)
+	var skipped_formulas: int = 0
+	
+	for formula_file_path in paths:
 		if formula_file_path.get_file().get_extension().ends_with('uid'):
 			continue
 		
 		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
 		var formula_file_contents: String = formula_file.get_as_text()
 		formula_file_contents = expand_templates(formula_file_contents)
-		var data: Dictionary = parse_data(formula_file_contents)
-		if    '// [DIFS]'      in formula_file_contents: data['type'] = 'difs'
-		elif  '// [IFS]'       in formula_file_contents: data['type'] = 'ifs'
-		elif  '// [ESCAPE]'    in formula_file_contents: data['type'] = 'escape'
-		elif  '// [KIFS]'      in formula_file_contents: data['type'] = 'kifs'
-		elif  '// [TRANSFORM]' in formula_file_contents: data['type'] = 'transform'
-		else: data['type'] = 'unknown'
+		var data: Dictionary = parse_data(formula_file_contents, (paths.find(formula_file_path) / 2) + 1 - skipped_formulas)
+		if data['disabled']:
+			skipped_formulas += 1
+			continue
 		formulas.append(data)
 	
 	formulas.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["index"] < b["index"])
 
-func parse_data(data: String) -> Dictionary:
+func parse_data(data: String, index_override: int = -1) -> Dictionary:
 	var result := {}
 	var index_regex := RegEx.new()
+	result['full_code'] = data
 	index_regex.compile(r"\/\/\s+\[INDEX\]\n\/\/\s+(\d+)")
 	var index_match := index_regex.search(data)
 	if index_match:
 		result["index"] = int(index_match.get_string(1))
+	elif index_override != -1:
+		result["index"] = index_override
 	
 	var id_regex := RegEx.new()
 	id_regex.compile("// \\[ID\\]\\s*(.+)")
@@ -258,6 +289,19 @@ func parse_data(data: String) -> Dictionary:
 			}
 	
 	result["variables"] = variables
+	
+	if    '// [DIFS]'      in data: result['type'] = 'difs'
+	elif  '// [IFS]'       in data: result['type'] = 'ifs'
+	elif  '// [ESCAPE]'    in data: result['type'] = 'escape'
+	elif  '// [KIFS]'      in data: result['type'] = 'kifs'
+	elif  '// [TRANSFORM]' in data: result['type'] = 'transform'
+	elif  '// [PRIMITIVE]' in data: result['type'] = 'primitive'
+	else: result['type'] = 'unknown'
+	
+	result['requires_linear_de'] = '// [LINEAR-DE]' in data
+	result['official'] = '// [OFFICIAL]' in data
+	result['disabled'] = '// [DISABLED]' in data
+	
 	return result
 
 func update_fields(new_fields: Dictionary) -> void:
@@ -289,12 +333,12 @@ func update_fields(new_fields: Dictionary) -> void:
 	
 	%TabContainer.update_field_values(new_fields)
 
-func update_app_state(data: Dictionary, update_keyframes: bool = true) -> void:
+func update_app_state(data: Dictionary, full_update: bool = true) -> void:
 	var old_data: Dictionary = data.duplicate(true)
 	data = data.duplicate(true)
 	
 	if 'other' not in data:
-		data['other'] = {"keyframes": data.get("keyframes", {}), 'total_visible_formula_pages': data['total_visible_formula_pages'], 'player_position': data['player_position'], 'head_rotation': data['head_rotation'], 'camera_rotation': data['camera_rotation']}
+		data['other'] = {"keyframes": data.get("keyframes", {}), 'total_visible_formula_pages': data['total_visible_formula_pages'], 'player_position': data['player_position'], 'head_rotation': data['head_rotation'], 'camera_rotation': data['camera_rotation'], 'fps': data.get('fps', 60), 'interpolation': data.get('interpolation', 2), 'keyframe_length': data.get('keyframe_length', 1)}
 		for other_field_name in (data['other'].keys() as Array[String]):
 			data.erase(other_field_name)
 	
@@ -325,9 +369,33 @@ func update_app_state(data: Dictionary, update_keyframes: bool = true) -> void:
 	
 	%SubViewport.refresh_taa()
 	
-	if update_keyframes:
+	if full_update:
+		%AnimationTrack.update_fps(other_data.get('fps', 60))
+		%AnimationTrack.interpolation = other_data.get('interpolation', 3)
+		%AnimationTrack.keyframe_length = other_data.get('keyframe_length', 1)
 		%AnimationTrack.keyframes = other_data.get('keyframes', {})
 		%AnimationTrack.reload_keyframes()
+		
+		#if len(other_data['custom_formulas'].keys()) >= 1:
+			#var all_are_installed: bool = true
+			#var formula_ids: Array = formulas.map(func(formula: Dictionary) -> String: return formula.get("id", ""))
+			#
+			#for custom_formula_id in (other_data['custom_formulas'].keys() as Array[String]):
+				#if custom_formula_id not in formula_ids:
+					#all_are_installed = false
+					#break
+	#
+			#if not all_are_installed:
+				#var install_custom_formulas: bool = await Global.show_yes_no_popup('Install Formulas', 'This project that you\'re trying to open is using a few custom formulas. Would you like to install these custom formulas? Expect unexpected behaviour if you click no. No internet needed, will be instant. App restart will be needed.')
+				#if install_custom_formulas:
+					#for custom_formula_name in (other_data['custom_formulas'].keys() as Array[String]):
+						#var custom_formula: String = other_data['custom_formulas'][custom_formula_name]
+						#import_formula(custom_formula_name, custom_formula)
+				#
+					#var restart_app: bool = await Global.show_yes_no_popup('Formulas Installed', 'Custom formulas installed, App restart is needed.')
+					#if restart_app: 
+						#OS.create_process(OS.get_executable_path(), [])
+						#get_tree().quit()
 
 func count_non_zero(numbers: Array) -> int:
 	var count := 0
@@ -361,6 +429,36 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 	
 	if '// -@Imports' in shader_code:
 		shader_code = shader_code.replace('// -@Imports', '\n'.join(formulas_import_code))
+		
+	if '// -@AutomaticDE' in shader_code:
+		var linear_de_check := ''
+		for formula in formulas:
+			if formula['requires_linear_de']:
+				linear_de_check += ' || ' + "formulas[0] == " + str(formula['index'])
+		
+		linear_de_check = linear_de_check.trim_prefix(' || ')
+		
+		var automatic_de_code := '''
+			if (single_formula && (!linear_de_check)) de = r / dz;
+			else de = 0.5 * log(r) * r / dz;
+		'''.replace('!linear_de_check', linear_de_check)
+		
+		shader_code = shader_code.replace('// -@AutomaticDE', automatic_de_code)
+	
+	if '// -@SingleDIFS':
+		var single_difs_code := ''
+		for formula in formulas:
+			if formula['type'] == 'difs' or formula['type'] == 'primitive':
+				single_difs_code += '//de = ' + formula['id'] + '_sdf(original_z).x; // -@' + str(formula['index']) + '\n'
+		shader_code = shader_code.replace('// -@SingleDIFS', single_difs_code)
+	
+	if '// -@MultiDIFS':
+		var single_difs_code := ''
+		for formula in formulas:
+			if formula['type'] == 'difs' or formula['type'] == 'primitive':
+				var function: String = 'max' if formula['type'] == 'difs' else 'min'
+				single_difs_code += '//de = ' + function + '(de, ' + formula['id'] + '_sdf(original_z).x); // -@' + str(formula['index']) + '\n'
+		shader_code = shader_code.replace('// -@MultiDIFS', single_difs_code)
 	
 	if '// -@Uniforms' in shader_code:
 		var uniforms_code: String = ""
@@ -409,17 +507,17 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 	if using_dof:
 		modified_lines[5] = (modified_lines[5] as String).lstrip('/')
 	else:
-		modified_lines[5] = '//' + (modified_lines[5] as String)
+		if not modified_lines[5].begins_with('//'): modified_lines[5] = '//' + (modified_lines[5] as String)
 	
 	if using_tiling:
 		modified_lines[6] = (modified_lines[6] as String).lstrip('/')
 	else:
-		modified_lines[6] = '//' + (modified_lines[6] as String)
+		if not modified_lines[6].begins_with('//'): modified_lines[6] = '//' + (modified_lines[6] as String)
 	
 	if using_reflections:
 		modified_lines[7] = (modified_lines[7] as String).lstrip('/')
 	else:
-		modified_lines[7] = '//' + (modified_lines[7] as String)
+		if not modified_lines[7].begins_with('//'): modified_lines[7] = '//' + (modified_lines[7] as String)
 	
 	shader.code = "\n".join(modified_lines)
 	
@@ -461,6 +559,6 @@ func _on_difficulty_pressed() -> void:
 	
 	%Difficulty.text = difficulty.to_pascal_case()
 
-func _on_close_button_pressed() -> void: $Window.visible = false
-func _on_window_close_requested() -> void: $Window.visible = false
-func _on_about_button_pressed() -> void: $Window.visible = true
+func _on_close_button_pressed() -> void: $AboutWindow.visible = false
+func _on_window_close_requested() -> void: $AboutWindow.visible = false
+func _on_about_button_pressed() -> void: $AboutWindow.visible = true

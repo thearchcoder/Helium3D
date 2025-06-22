@@ -1,8 +1,7 @@
 // [ID]
 // Baird delta
+// [OFFICIAL]
 // [KIFS]
-// [INDEX]
-// 4
 // [VARS]
 // float angle[60.01, 90.0] = 84.0
 // vec3 rotation1[(-2, -2, -2), (2, 2, 2)] = (0, 0, 0)

@@ -1,18 +1,18 @@
-[gd_scene load_steps=62 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=65 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
-[ext_resource type="Texture2D" uid="uid://d1vwtwnup6fgb" path="res://icon.png" id="2_s17dp"]
 [ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="3_4yvvm"]
-[ext_resource type="Script" uid="uid://birkp17h8ks8f" path="res://scenes/main/window.gd" id="3_37hlw"]
 [ext_resource type="Script" uid="uid://l7fr1idjfuni" path="res://compositor/helium_compositor.gd" id="4_p8abn"]
+[ext_resource type="Script" uid="uid://csen5k2ba045b" path="res://scenes/main/randomization.gd" id="4_s17dp"]
 [ext_resource type="Script" uid="uid://bj6ithljpyig5" path="res://scenes/main/tool_bar.gd" id="5_og0rs"]
-[ext_resource type="PackedScene" uid="uid://c6ykqwdde41of" path="res://ui/fields/selection field/selection_field.tscn" id="6_50v3j"]
+[ext_resource type="PackedScene" uid="uid://cmc2vesxs1g7q" path="res://ui/randomization/scene/randomization_scene.tscn" id="5_s17dp"]
 [ext_resource type="Script" uid="uid://bss7wdopwtlls" path="res://scenes/main/texture_rect.gd" id="6_dbdf5"]
 [ext_resource type="Script" uid="uid://beio8vrwsvf2t" path="res://scenes/main/texture_rect_holder.gd" id="7_20ti0"]
 [ext_resource type="Material" uid="uid://dggmsfkvwvli5" path="res://scenes/main/texture_rect_material.tres" id="8_6lqo5"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="8_rhsly"]
 [ext_resource type="Script" uid="uid://bll313qxnpxar" path="res://scenes/main/menus_tab_container.gd" id="9_7154d"]
+[ext_resource type="PackedScene" uid="uid://btv7ewx22x217" path="res://ui/fields/float field/float_field.tscn" id="11_37hlw"]
 [ext_resource type="PackedScene" uid="uid://db57n1ak0l5yd" path="res://ui/logs/logs.tscn" id="14_pnl7n"]
 [ext_resource type="Script" uid="uid://77ccf8ixmtdl" path="res://scenes/main/formula_tab_container.gd" id="16_dmyle"]
 [ext_resource type="PackedScene" uid="uid://4bx65d7nnvmf" path="res://ui/pages/formula page/formula_page.tscn" id="16_hfvnl"]
@@ -22,15 +22,44 @@
 [ext_resource type="Texture2D" uid="uid://bk11gdi7cx6r3" path="res://resources/icons/plus.svg" id="19_6llfj"]
 [ext_resource type="Script" uid="uid://d0v2vfon7rn3c" path="res://scenes/main/animation_track.gd" id="19_fsmeo"]
 [ext_resource type="PackedScene" uid="uid://owbf3siulolw" path="res://ui/field container/field_container.tscn" id="19_l42h1"]
-[ext_resource type="Texture2D" uid="uid://dq18uidy1xtbt" path="res://resources/icons/hard drive.svg" id="20_0bhws"]
-[ext_resource type="Texture2D" uid="uid://em4me5v5s48x" path="res://resources/icons/circle.svg" id="22_an3xl"]
+[ext_resource type="Texture2D" uid="uid://nlqvli442epy" path="res://resources/icons/hard drive.svg" id="20_0bhws"]
+[ext_resource type="Texture2D" uid="uid://dmkbei7asjjvr" path="res://resources/icons/circle.svg" id="22_an3xl"]
 [ext_resource type="Script" uid="uid://b0xu3c1kn7vkv" path="res://scenes/main/current_time.gd" id="22_s3o3g"]
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_s17dp"]
+load_path = "res://.godot/imported/icon.png-0c10cc1a538d23fad71adfeea25837c6.ctex"
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6llfj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2g4vb"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0bhws"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_62atk"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_s17dp"]
+content_margin_left = 4.0
+content_margin_top = 0.0
+content_margin_right = 4.0
+content_margin_bottom = 0.0
+color = Color(0.25565878, 0.2556588, 0.25565875, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7nlll"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0, 0, 0, 0.094000004)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ul884"]
 render_priority = 0
 shader = ExtResource("3_4yvvm")
+shader_parameter/camera_type = 0
 shader_parameter/dof_enabled = false
 shader_parameter/dof_samples = 0
 shader_parameter/dof_focal_distance = 0.0
@@ -77,6 +106,7 @@ shader_parameter/relative_epsilon = false
 shader_parameter/interior_mode = false
 shader_parameter/escape_radius = 0.0
 shader_parameter/de_mode = 1
+shader_parameter/camera_kalaidoscope = 1.0
 shader_parameter/formulas = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/ambient_occlusion_steps = 6
 shader_parameter/ambient_occlusion_distance = 0.0
@@ -99,6 +129,7 @@ shader_parameter/outline_intensity = 0.0
 shader_parameter/outline_threshold = 0.0
 shader_parameter/outline_falloff = 0.0
 shader_parameter/outline = false
+shader_parameter/dither = false
 shader_parameter/repeat_gap = Vector3(0, 0, 0)
 shader_parameter/repeat = false
 shader_parameter/cut = false
@@ -152,64 +183,55 @@ metadata/_custom_type_script = "uid://l7fr1idjfuni"
 [sub_resource type="Compositor" id="Compositor_s17dp"]
 compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_p8abn")])
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w2tj6"]
-bg_color = Color(0, 0, 0, 0.207843)
-
-[sub_resource type="Theme" id="Theme_m4h2d"]
-MenuButton/fonts/font = ExtResource("8_rhsly")
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s17dp"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_37hlw"]
-bg_color = Color(0.10748, 0.10748, 0.10748, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0bhws"]
-bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gkmcc"]
+bg_color = Color(0.09019608, 0.09019608, 0.09019608, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i7in8"]
 bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dw2n5"]
-bg_color = Color(0, 0, 0, 0.207843)
-border_width_left = 5
-border_width_top = 6
-border_width_right = 5
-border_width_bottom = 6
-border_color = Color(0, 0, 0, 0.207843)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0bhws"]
+bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fti0q"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_37hlw"]
+bg_color = Color(0.10748, 0.10748, 0.10748, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q0yfy"]
-bg_color = Color(0, 0, 0, 0.207843)
-border_width_bottom = 3
-anti_aliasing = false
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s17dp"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_qn1xg"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i7in8"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_s17dp"]
+viewport_path = NodePath("UI/HBoxContainer/MarginContainer/VBoxContainer/PostViewport")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_p8abn"]
 viewport_path = NodePath("SubViewport")
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0eucc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p8abn"]
 bg_color = Color(0.105882, 0.105882, 0.105882, 1)
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dmava"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0eucc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s17dp"]
 bg_color = Color(0.101961, 0.101961, 0.101961, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dmava"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gox76"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5by50"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2g4vb"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i63gn"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_21pjj"]
+bg_color = Color(0, 0, 0, 0.160784)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8bo68"]
 bg_color = Color(0, 0, 0, 0.231373)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_21pjj"]
-bg_color = Color(0, 0, 0, 0.160784)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vljsl"]
+content_margin_left = 8.0
+content_margin_top = 0.0
+content_margin_right = 8.0
+content_margin_bottom = 2.0
+bg_color = Color(0.12, 0.12, 0.12, 0)
+border_color = Color(1, 1, 1, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rt3fx"]
 content_margin_left = 8.0
@@ -220,15 +242,7 @@ bg_color = Color(0.12, 0.12, 0.12, 0)
 border_width_top = 2
 border_color = Color(1, 1, 1, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vljsl"]
-content_margin_left = 8.0
-content_margin_top = 0.0
-content_margin_right = 8.0
-content_margin_bottom = 2.0
-bg_color = Color(0.12, 0.12, 0.12, 0)
-border_color = Color(1, 1, 1, 1)
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gubch"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i63gn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_62atk"]
 content_margin_left = 4.0
@@ -238,6 +252,8 @@ corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gubch"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_p8abn"]
 
@@ -269,12 +285,12 @@ option_count = 1
 option_0/name = "Load Lighting Only"
 
 [node name="AboutWindow" type="Window" parent="."]
+oversampling_override = 1.0
 title = "About Helium3D"
 initial_position = 1
 size = Vector2i(680, 380)
 visible = false
 theme_override_fonts/title_font = ExtResource("8_rhsly")
-script = ExtResource("3_37hlw")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AboutWindow"]
 anchors_preset = 15
@@ -294,7 +310,7 @@ theme_override_constants/margin_top = 10
 [node name="TextureRect" type="TextureRect" parent="AboutWindow/HBoxContainer/VBoxContainer/MarginContainer"]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
-texture = ExtResource("2_s17dp")
+texture = SubResource("CompressedTexture2D_s17dp")
 expand_mode = 1
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="AboutWindow/HBoxContainer"]
@@ -342,6 +358,276 @@ theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_font_sizes/font_size = 20
 theme_override_styles/focus = SubResource("StyleBoxEmpty_6llfj")
 text = "OK"
+
+[node name="SettingsWindow" type="Window" parent="."]
+oversampling_override = 1.0
+title = "Settings"
+initial_position = 1
+size = Vector2i(680, 380)
+visible = false
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="Settings" type="MarginContainer" parent="SettingsWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 7
+
+[node name="TabContainer" type="TabContainer" parent="SettingsWindow/Settings"]
+layout_mode = 2
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
+current_tab = 0
+
+[node name="General" parent="SettingsWindow/Settings/TabContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+fields_list_id = 18
+metadata/_tab_index = 0
+
+[node name="CrashSaveWindow" type="Window" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Recover crash save?"
+initial_position = 1
+size = Vector2i(500, 180)
+visible = false
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="HBoxContainer" type="VBoxContainer" parent="CrashSaveWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="CrashSaveWindow/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CrashSaveWindow/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="CrashSaveWindow/HBoxContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Uh oh! Looks like the app crashed.
+Would you like to recover the last save?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="CrashSaveWindow/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer2" type="HBoxContainer" parent="CrashSaveWindow/HBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="RecoverButton" type="Button" parent="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Recover :) "
+
+[node name="CrashSaveCancelButton" type="Button" parent="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " No thanks. "
+
+[node name="AuthorWindow" type="Window" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Author"
+initial_position = 1
+size = Vector2i(500, 120)
+visible = false
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="HBoxContainer" type="VBoxContainer" parent="AuthorWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="MarginContainer2" type="MarginContainer" parent="AuthorWindow/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 0
+
+[node name="VBoxContainer" type="HBoxContainer" parent="AuthorWindow/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="AuthorWindow/HBoxContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Author: "
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AuthorLineEdit" type="LineEdit" parent="AuthorWindow/HBoxContainer/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("8_rhsly")
+
+[node name="MarginContainer" type="MarginContainer" parent="AuthorWindow/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer2" type="HBoxContainer" parent="AuthorWindow/HBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="DoneAuthor" type="Button" parent="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_0bhws")
+text = " Done "
+
+[node name="CancelAuthor" type="Button" parent="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_62atk")
+text = " Cancel "
+
+[node name="RandomizeWindow" type="Window" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Randomize"
+initial_position = 1
+size = Vector2i(1300, 630)
+visible = false
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="Randomization" type="HBoxContainer" parent="RandomizeWindow"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_s17dp")
+
+[node name="Scenes" type="MarginContainer" parent="RandomizeWindow/Randomization"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RandomizeWindow/Randomization/Scenes"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Main" type="HBoxContainer" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="RandomizationScene" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/Main" instance=ExtResource("5_s17dp")]
+layout_mode = 2
+text = "Main"
+
+[node name="HSeparator" type="HSeparator" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_s17dp")
+
+[node name="RandomizedRow1" type="HBoxContainer" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="RandomizationScene1" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow1" instance=ExtResource("5_s17dp")]
+layout_mode = 2
+text = "Scene 1"
+type = 1
+
+[node name="RandomizationScene2" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow1" instance=ExtResource("5_s17dp")]
+layout_mode = 2
+text = "Scene 2"
+type = 1
+
+[node name="RandomizationScene3" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow1" instance=ExtResource("5_s17dp")]
+layout_mode = 2
+text = "Scene 3"
+type = 1
+
+[node name="RandomizedRow2" type="HBoxContainer" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RandomizationScene4" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow2" instance=ExtResource("5_s17dp")]
+layout_mode = 2
+text = "Scene 4"
+type = 1
+
+[node name="RandomizationScene5" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow2" instance=ExtResource("5_s17dp")]
+layout_mode = 2
+text = "Scene 5"
+type = 1
+
+[node name="RandomizationScene6" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow2" instance=ExtResource("5_s17dp")]
+layout_mode = 2
+text = "Scene 6"
+type = 1
+
+[node name="Fields" type="MarginContainer" parent="RandomizeWindow/Randomization"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.8
+
+[node name="Panel" type="Panel" parent="RandomizeWindow/Randomization/Fields"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7nlll")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RandomizeWindow/Randomization/Fields"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="RandomizeWindow/Randomization/Fields/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/line_spacing = -10
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "
+Randomization
+"
+horizontal_alignment = 1
+
+[node name="FieldContainer" parent="RandomizeWindow/Randomization/Fields/VBoxContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 0
+fields_list_id = 25
 
 [node name="SubViewport" type="SubViewport" parent="."]
 unique_name_in_owner = true
@@ -399,32 +685,33 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.55
 theme_override_constants/separation = 0
 
-[node name="ToolBar" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer"]
-custom_minimum_size = Vector2(1.45519e-11, 31)
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer"]
 layout_mode = 2
-size_flags_vertical = 0
+theme_override_constants/separation = 0
+
+[node name="ToolBar" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1.4551915e-11, 30)
+layout_mode = 2
 theme_override_constants/separation = 0
 script = ExtResource("5_og0rs")
 
-[node name="Panel" type="Panel" parent="UI/HBoxContainer/MarginContainer/ToolBar"]
+[node name="Control" type="Control" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_w2tj6")
 
-[node name="MenuBar" type="MenuBar" parent="UI/HBoxContainer/MarginContainer/ToolBar/Panel"]
-layout_mode = 2
-offset_right = 344.0
-offset_bottom = 31.0
-size_flags_horizontal = 3
-theme = SubResource("Theme_m4h2d")
-
-[node name="Save" type="MenuButton" parent="UI/HBoxContainer/MarginContainer/ToolBar/Panel/MenuBar"]
-unique_name_in_owner = true
+[node name="Panel" type="Panel" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar/Control"]
+z_index = -1
 layout_mode = 0
-offset_right = 50.0
-offset_bottom = 31.0
+offset_right = 1052.0
+offset_bottom = 60.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_gkmcc")
+
+[node name="Save" type="MenuButton" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
 tooltip_text = "Saving to clip board won't store animations. This is done to reduce the size of the clip board text."
-text = "Save"
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Save "
 item_count = 4
 popup/item_0/text = "Save All"
 popup/item_0/id = 0
@@ -435,110 +722,136 @@ popup/item_2/id = 2
 popup/item_3/text = "Save to Clipboard"
 popup/item_3/id = 3
 
-[node name="Load" type="MenuButton" parent="UI/HBoxContainer/MarginContainer/ToolBar/Panel/MenuBar"]
+[node name="Load" type="MenuButton" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 50.0
-offset_right = 100.0
-offset_bottom = 31.0
+layout_mode = 2
 tooltip_text = "Loading from clip board won't load animations. "
-text = "Load"
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Load "
 item_count = 2
 popup/item_0/text = "Load File"
 popup/item_0/id = 1
 popup/item_1/text = "Load Clipboard"
 popup/item_1/id = 0
 
-[node name="AboutButton" type="Button" parent="UI/HBoxContainer/MarginContainer/ToolBar/Panel"]
+[node name="Help" type="MenuButton" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Help "
+item_count = 4
+popup/item_0/text = "Fractalforums"
+popup/item_0/id = 0
+popup/item_1/text = "Documentation"
+popup/item_1/id = 2
+popup/item_2/text = "Examples"
+popup/item_2/id = 3
+popup/item_3/text = "Website"
+popup/item_3/id = 1
+
+[node name="History" type="MenuButton" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " History "
+item_count = 2
+popup/item_0/text = "Undo"
+popup/item_0/id = 0
+popup/item_1/text = "Redo"
+popup/item_1/id = 2
+
+[node name="UndoButton" type="Button" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar/History"]
 layout_mode = 0
-offset_left = 100.0
-offset_right = 157.0
-offset_bottom = 31.0
+offset_left = 73.0
+offset_right = 129.0
+offset_bottom = 30.0
 theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
-theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
 theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
-text = "About"
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Undo  "
 
-[node name="SettingsBar" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer"]
-unique_name_in_owner = true
+[node name="RedoButton" type="Button" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar/History"]
+layout_mode = 0
+offset_left = 129.0
+offset_right = 183.0
+offset_bottom = 30.0
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Redo  "
+
+[node name="AboutButton" type="Button" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
 layout_mode = 2
-size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  About  "
+
+[node name="SettingsButton" type="Button" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Settings  "
+
+[node name="AuthorButton" type="Button" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Author  "
+
+[node name="Randomize" type="Button" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Randomize  "
+
+[node name="Voxelize" type="Button" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Voxelize  "
+
+[node name="Difficulty" type="Button" parent="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Advanced  "
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer"]
+layout_mode = 2
 theme_override_constants/separation = 0
-script = ExtResource("5_og0rs")
 
-[node name="ViewportSize" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer/SettingsBar"]
+[node name="VSeparator" type="VSeparator" parent="UI/HBoxContainer/MarginContainer/HBoxContainer2"]
 layout_mode = 2
-theme_override_constants/separation = 0
+theme_override_constants/separation = 7
+theme_override_styles/separator = SubResource("StyleBoxEmpty_i7in8")
 
-[node name="ViewportSize" type="Label" parent="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize"]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/normal = SubResource("StyleBoxFlat_dw2n5")
-text = " Size: "
-
-[node name="ViewportWidth" type="LineEdit" parent="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize"]
+[node name="Label" type="Label" parent="UI/HBoxContainer/MarginContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(1.4551915e-11, 30)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_fti0q")
-theme_override_styles/normal = SubResource("StyleBoxFlat_q0yfy")
-text = "450"
-placeholder_text = " Width"
-alignment = 1
-expand_to_text_length = true
-
-[node name="ViewportX" type="Label" parent="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize"]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/normal = SubResource("StyleBoxFlat_dw2n5")
-text = " X "
-
-[node name="ViewportHeight" type="LineEdit" parent="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize"]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_fti0q")
-theme_override_styles/normal = SubResource("StyleBoxFlat_q0yfy")
-text = "450"
-placeholder_text = " Height"
-alignment = 1
-expand_to_text_length = true
-
-[node name="AntiAliasing" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer/SettingsBar"]
-layout_mode = 2
-theme_override_constants/separation = 0
-
-[node name="Antialiasing" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer/SettingsBar/AntiAliasing"]
-layout_mode = 2
-theme_override_constants/separation = 0
-
-[node name="Label" type="Label" parent="UI/HBoxContainer/MarginContainer/SettingsBar/AntiAliasing/Antialiasing"]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/normal = SubResource("StyleBoxFlat_dw2n5")
-text = " Antialiasing: "
-
-[node name="Panel" type="Panel" parent="UI/HBoxContainer/MarginContainer/SettingsBar/AntiAliasing"]
-custom_minimum_size = Vector2(220, 1.45519e-11)
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_w2tj6")
-
-[node name="Antialiasing" parent="UI/HBoxContainer/MarginContainer/SettingsBar/AntiAliasing/Panel" instance=ExtResource("6_50v3j")]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = 0.0
-offset_bottom = 1.0
-options = Array[String](["TAA", "FXAA", "None"])
-index = 2
-
-[node name="Panel" type="Panel" parent="UI/HBoxContainer/MarginContainer/SettingsBar"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_w2tj6")
+text = "Rendering, Approximate time: 4m 37s"
+vertical_alignment = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/HBoxContainer/MarginContainer"]
 layout_mode = 2
@@ -546,15 +859,59 @@ size_flags_vertical = 3
 alignment = 1
 script = ExtResource("7_20ti0")
 
+[node name="Control" type="Control" parent="UI/HBoxContainer/MarginContainer/VBoxContainer"]
+top_level = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/HBoxContainer/MarginContainer/VBoxContainer/Control"]
+top_level = true
+layout_mode = 0
+offset_top = 60.0
+offset_right = 251.0
+offset_bottom = 97.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+
+[node name="VBoxContainer" type="HBoxContainer" parent="UI/HBoxContainer/MarginContainer/VBoxContainer/Control/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/HBoxContainer/MarginContainer/VBoxContainer/Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Zoom: "
+
+[node name="Zoom" parent="UI/HBoxContainer/MarginContainer/VBoxContainer/Control/MarginContainer/VBoxContainer" instance=ExtResource("11_37hlw")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+force_precision = true
+precision = 1
+range = Vector2(0.25, 3)
+value = 1.3000000000029104
+
 [node name="TextureRect" type="TextureRect" parent="UI/HBoxContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-material = ExtResource("8_6lqo5")
+custom_minimum_size = Vector2(-0.009, 1.4551915e-11)
 layout_mode = 2
 size_flags_horizontal = 6
-texture = SubResource("ViewportTexture_qn1xg")
+texture = SubResource("ViewportTexture_s17dp")
 expand_mode = 1
 stretch_mode = 5
 script = ExtResource("6_dbdf5")
+
+[node name="PostViewport" type="SubViewport" parent="UI/HBoxContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+size = Vector2i(450, 450)
+render_target_update_mode = 4
+
+[node name="PostDisplay" type="TextureRect" parent="UI/HBoxContainer/MarginContainer/VBoxContainer/PostViewport"]
+unique_name_in_owner = true
+material = ExtResource("8_6lqo5")
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("ViewportTexture_p8abn")
 
 [node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer"]
 unique_name_in_owner = true
@@ -563,8 +920,8 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.1
 theme_override_constants/side_margin = 0
 theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_0eucc")
 theme_override_styles/panel = SubResource("StyleBoxFlat_p8abn")
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_0eucc")
 current_tab = 0
 drag_to_rearrange_enabled = true
 tabs_rearrange_group = 1
@@ -581,8 +938,8 @@ metadata/_tab_index = 0
 
 [node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Formula"]
 layout_mode = 2
-theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_dmava")
 theme_override_styles/panel = SubResource("StyleBoxFlat_s17dp")
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_dmava")
 current_tab = 0
 drag_to_rearrange_enabled = true
 tabs_rearrange_group = 2
@@ -659,7 +1016,7 @@ layout_mode = 2
 fields_list_id = 2
 metadata/_tab_index = 1
 
-[node name="Effects" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
+[node name="Lighting" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 10
@@ -667,6 +1024,81 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 metadata/_tab_index = 2
+
+[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Lighting"]
+layout_mode = 2
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
+current_tab = 0
+
+[node name="Light 1" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+fields_list_id = 7
+metadata/_tab_index = 0
+
+[node name="Light 2" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 7
+light_id = 2
+metadata/_tab_index = 1
+
+[node name="Background" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 19
+metadata/_tab_index = 2
+
+[node name="General" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 6
+metadata/_tab_index = 3
+
+[node name="Material" type="MarginContainer" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 4
+
+[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer/Material"]
+layout_mode = 2
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
+current_tab = 0
+
+[node name="Diffuse" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+fields_list_id = 15
+metadata/_tab_index = 0
+
+[node name="Ambient Occlusion" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 23
+metadata/_tab_index = 1
+
+[node name="Ambient" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 24
+metadata/_tab_index = 2
+
+[node name="Normals" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 22
+metadata/_tab_index = 3
+
+[node name="Effects" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 3
 
 [node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Effects"]
 layout_mode = 2
@@ -720,7 +1152,7 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
-metadata/_tab_index = 3
+metadata/_tab_index = 4
 
 [node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Modifiers"]
 layout_mode = 2
@@ -751,7 +1183,7 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
-metadata/_tab_index = 4
+metadata/_tab_index = 5
 
 [node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Tools"]
 layout_mode = 2
@@ -769,111 +1201,17 @@ layout_mode = 2
 fields_list_id = 14
 metadata/_tab_index = 1
 
-[node name="Lighting" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
-visible = false
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-metadata/_tab_index = 5
-
-[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Lighting"]
-layout_mode = 2
-theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
-current_tab = 0
-
-[node name="Light 1" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
-layout_mode = 2
-fields_list_id = 7
-metadata/_tab_index = 0
-
-[node name="Light 2" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
-layout_mode = 2
-fields_list_id = 7
-light_id = 2
-metadata/_tab_index = 1
-
-[node name="Background" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
-layout_mode = 2
-fields_list_id = 19
-metadata/_tab_index = 2
-
-[node name="General" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
-layout_mode = 2
-fields_list_id = 6
-metadata/_tab_index = 3
-
-[node name="Material" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
-visible = false
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-metadata/_tab_index = 6
-
-[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Material"]
-layout_mode = 2
-theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
-current_tab = 0
-
-[node name="Diffuse" parent="UI/HBoxContainer/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
-layout_mode = 2
-fields_list_id = 15
-metadata/_tab_index = 0
-
-[node name="Ambient Occlusion" parent="UI/HBoxContainer/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
-layout_mode = 2
-fields_list_id = 23
-metadata/_tab_index = 1
-
-[node name="Ambient" parent="UI/HBoxContainer/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
-layout_mode = 2
-fields_list_id = 24
-metadata/_tab_index = 2
-
-[node name="Normals" parent="UI/HBoxContainer/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
-layout_mode = 2
-fields_list_id = 22
-metadata/_tab_index = 3
-
-[node name="Settings" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
-visible = false
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-metadata/_tab_index = 7
-
-[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Settings"]
-layout_mode = 2
-theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
-current_tab = 0
-
-[node name="General" parent="UI/HBoxContainer/TabContainer/Settings/TabContainer" instance=ExtResource("19_l42h1")]
-layout_mode = 2
-fields_list_id = 18
-metadata/_tab_index = 0
-
-[node name="Debug" parent="UI/HBoxContainer/TabContainer/Settings/TabContainer" instance=ExtResource("19_l42h1")]
+[node name="Debug" parent="UI/HBoxContainer/TabContainer/Tools/TabContainer" instance=ExtResource("19_l42h1")]
 visible = false
 layout_mode = 2
 fields_list_id = 20
-metadata/_tab_index = 1
+metadata/_tab_index = 2
 
 [node name="Logs" parent="UI/HBoxContainer/TabContainer" instance=ExtResource("14_pnl7n")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-metadata/_tab_index = 8
+metadata/_tab_index = 6
 
 [node name="BottomBar" type="TabContainer" parent="UI"]
 layout_mode = 2
@@ -881,12 +1219,12 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 0.0
 theme_override_constants/side_margin = 0
 theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_i63gn")
-theme_override_styles/tabbar_background = SubResource("StyleBoxFlat_8bo68")
 theme_override_styles/panel = SubResource("StyleBoxFlat_21pjj")
-theme_override_styles/tab_selected = SubResource("StyleBoxFlat_rt3fx")
-theme_override_styles/tab_hovered = SubResource("StyleBoxFlat_vljsl")
+theme_override_styles/tabbar_background = SubResource("StyleBoxFlat_8bo68")
 theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_vljsl")
+theme_override_styles/tab_hovered = SubResource("StyleBoxFlat_vljsl")
+theme_override_styles/tab_selected = SubResource("StyleBoxFlat_rt3fx")
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_i63gn")
 current_tab = 0
 tabs_position = 1
 deselect_enabled = true
@@ -920,8 +1258,8 @@ custom_minimum_size = Vector2(1.45519e-11, 28)
 layout_mode = 2
 theme_override_constants/icon_max_width = 23
 theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("16_p8abn")
 
 [node name="PlayingToggleButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
@@ -930,8 +1268,8 @@ custom_minimum_size = Vector2(1.45519e-11, 28)
 layout_mode = 2
 theme_override_constants/icon_max_width = 23
 theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("17_s17dp")
 
 [node name="SetTimeEndButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
@@ -940,8 +1278,8 @@ custom_minimum_size = Vector2(1.45519e-11, 28)
 layout_mode = 2
 theme_override_constants/icon_max_width = 23
 theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("18_37hlw")
 
 [node name="AddKeyframeButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
@@ -950,8 +1288,8 @@ layout_mode = 2
 tooltip_text = "Add the current frame as a keyframe to animation."
 theme_override_constants/icon_max_width = 23
 theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("19_6llfj")
 
 [node name="RenderButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
@@ -959,8 +1297,8 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/icon_max_width = 23
 theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("20_0bhws")
 
 [node name="VSeparator" type="VSeparator" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
@@ -1126,15 +1464,25 @@ offset_top = 136.0
 offset_right = -59.0
 offset_bottom = 144.0
 
-[connection signal="file_selected" from="FileDialog" to="UI/HBoxContainer/MarginContainer/ToolBar" method="_on_file_dialog_confirmed"]
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
+[connection signal="file_selected" from="FileDialog" to="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar" method="_on_file_dialog_confirmed"]
 [connection signal="close_requested" from="AboutWindow" to="." method="_on_window_close_requested"]
 [connection signal="pressed" from="AboutWindow/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/CloseButton" to="." method="_on_close_button_pressed"]
-[connection signal="pressed" from="UI/HBoxContainer/MarginContainer/ToolBar/Panel/AboutButton" to="." method="_on_about_button_pressed"]
-[connection signal="text_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize/ViewportWidth" to="." method="_on_viewport_width_text_changed"]
-[connection signal="text_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/ViewportSize/ViewportHeight" to="." method="_on_viewport_height_text_changed"]
-[connection signal="value_changed" from="UI/HBoxContainer/MarginContainer/SettingsBar/AntiAliasing/Panel/Antialiasing" to="UI/HBoxContainer/MarginContainer/SettingsBar" method="_on_antialiasing_value_changed"]
+[connection signal="close_requested" from="SettingsWindow" to="." method="_on_settings_window_close_requested"]
+[connection signal="close_requested" from="CrashSaveWindow" to="." method="_on_crash_save_close_requested"]
+[connection signal="pressed" from="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2/RecoverButton" to="." method="_on_recover_button_pressed"]
+[connection signal="pressed" from="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2/CrashSaveCancelButton" to="." method="_on_crash_save_cancel_button_pressed"]
+[connection signal="close_requested" from="AuthorWindow" to="." method="_on_author_window_close_requested"]
+[connection signal="pressed" from="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2/DoneAuthor" to="." method="_on_done_author_pressed"]
+[connection signal="pressed" from="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2/CancelAuthor" to="." method="_on_cancel_author_pressed"]
+[connection signal="close_requested" from="RandomizeWindow" to="." method="_on_randomize_window_close_requested"]
+[connection signal="pressed" from="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar/AboutButton" to="." method="_on_about_button_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar/AuthorButton" to="." method="_on_author_button_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/MarginContainer/HBoxContainer/ToolBar/Randomize" to="." method="_on_randomize_pressed"]
 [connection signal="mouse_entered" from="UI/HBoxContainer/MarginContainer/VBoxContainer" to="UI/HBoxContainer/MarginContainer/VBoxContainer" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="UI/HBoxContainer/MarginContainer/VBoxContainer" to="UI/HBoxContainer/MarginContainer/VBoxContainer" method="_on_mouse_exited"]
+[connection signal="value_changed" from="UI/HBoxContainer/MarginContainer/VBoxContainer/Control/MarginContainer/VBoxContainer/Zoom" to="UI/HBoxContainer/MarginContainer/VBoxContainer/TextureRect" method="_on_zoom_value_changed"]
 [connection signal="mouse_entered" from="UI/HBoxContainer/MarginContainer/VBoxContainer/TextureRect" to="UI/HBoxContainer/MarginContainer/VBoxContainer/TextureRect" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="UI/HBoxContainer/MarginContainer/VBoxContainer/TextureRect" to="UI/HBoxContainer/MarginContainer/VBoxContainer/TextureRect" method="_on_mouse_exited"]
 [connection signal="pressed" from="UI/HBoxContainer/TabContainer/Formula/Buttons/AddFormula" to="UI/HBoxContainer/TabContainer" method="_on_add_formula_pressed"]

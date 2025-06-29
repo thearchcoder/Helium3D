@@ -1,7 +1,10 @@
 extends TextureRect
 
 var speed := 100.0
-var target_size := Vector2(960, 540) * 0.87
+var zoom := 1.0:
+	set(value):
+		zoom = value
+		%Zoom.value = value
 const FRICTION := 0.0
 const JUMP_POWER := 6.0
 const SENSITIVITY := 0.004
@@ -26,7 +29,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		%SubViewport.refresh_no_taa()
 
 func _physics_process(delta: float) -> void:
-	custom_minimum_size = target_size
+	if get_tree().current_scene.fields.has('resolution'):
+		var min_size: Vector2 = (get_tree().current_scene.fields['resolution'] * zoom) / 1.28
+		custom_minimum_size = min_size.min(%TextureRect.get_parent().size)
+		%PostViewport.size = get_tree().current_scene.fields['resolution']
 	
 	if Input.is_action_just_pressed('mouse right click') and is_hovering:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -85,3 +91,6 @@ func _physics_process(delta: float) -> void:
 
 func _on_mouse_entered() -> void: is_hovering = true
 func _on_mouse_exited() -> void: is_hovering = false
+
+func _on_zoom_value_changed(to:  float) -> void:
+	zoom = to

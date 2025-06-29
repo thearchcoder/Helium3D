@@ -46,7 +46,7 @@ func _on_playing_toggle_button_pressed() -> void:
 func update_animation_frames_data() -> void:
 	animation_frames_data.clear()
 	
-	if len(keyframes) <= 0:
+	if len(keyframes.keys()) <= 0:
 		return
 	
 	var sorted_keyframes: Array = keyframes.keys()
@@ -113,17 +113,13 @@ func update_animation_frames_data() -> void:
 			if start_idx >= times.size() - 1:
 				continue
 			
-			var segment_start_time: float = times[start_idx]
-			var segment_end_time: float = times[start_idx + 1]
-			var segment_length: float = segment_end_time - segment_start_time
-			
 			var keyframe_values: Array[Variant] = []
 			for t in (times as Array[float]):
 				var idx := sorted_keyframes.find(t)
 				if idx != -1 and field_name in keyframes[t]:
 					keyframe_values.append(keyframes[t][field_name])
 			
-			var interpolated_values := Interpolation.interpolate(keyframe_values, interpolation)
+			var interpolated_values := Interpolation.interpolate(keyframe_values, interpolation, fps)
 			
 			if interpolated_values.size() == 0:
 				var closest_keyframe_time := times[0]
@@ -159,6 +155,9 @@ func insert_keyframe(at_second: float) -> void:
 	data.erase('fps')
 	data.erase('interpolation')
 	data.erase('keyframe_length')
+	data.erase('camera_type')
+	data.erase('resolution')
+	data.erase('anti_aliasing')
 	
 	keyframes[at_second] = data.duplicate(true)
 	reload_keyframes()
@@ -255,6 +254,9 @@ func _process(_delta: float) -> void:
 		text += 'Time: ' + str(int((Time.get_unix_time_from_system() - render_start_time) * 100) / 100) + 's' + ' / ' + str(int(time_estimate * 100) / 100) + 's'
 	
 	%RenderButton.tooltip_text = text
+	
+	#for frame_data in animation_frames_data:
+		#print(frame_data['player_position'])
 	
 	if not using_tiling:
 		if waiting_for_taa and is_playing:

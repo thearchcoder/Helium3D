@@ -31,10 +31,11 @@ func _ready() -> void:
 	await get_tree().process_frame
 	set_formula('mandelbulb', 1)
 
-func field_changed_non_shader(field_name: String, value: Variant) -> void:
+func field_changed_non_shader(field_name: String, value: Variant, update_viewport: bool = true) -> void:
 	# A field changed but isn't mean't to be set in the shader
 	get_tree().current_scene.fields[field_name] = value
-	%SubViewport.refresh_taa()
+	if update_viewport:
+		%SubViewport.refresh_taa()
 
 func field_changed(field_name: String, value: Variant) -> void:
 	get_tree().current_scene.fields[field_name] = value

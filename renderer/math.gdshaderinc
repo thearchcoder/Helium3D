@@ -1,49 +1,7 @@
 const float golden_ratio = (1.0 + sqrt(5.0)) * 0.5;
 
-/////////////
-// General //
-/////////////
-bool check_range(int i, vec2 range) {
-	return float(i) > range.x && float(i) < range.y;
-}
-vec3 decreaseLength(vec3 v, float amount) {
-	return normalize(v) * (length(v) - amount);
-}
-
-float continuousMod(float x, float y) {
-	float modValue = mod(x, y * 2.0);
-	return modValue <= y ? modValue : y * 2.0 - modValue;
-}
-
-void SphereInvert(inout vec3 pos, inout float dr, vec4 s) {
-	vec3 diff = pos - s.xyz;
-	float lenSq = dot(diff, diff);
-	float k = (s.w * s.w) / lenSq;
-	dr *= k;
-	pos = (diff * k) + s.xyz;
-}
-
-/////////////
-// Kalaido //
-/////////////
-// Effie's kalaidoscope method
-#define TAO 6.283
-vec2 effie_kalaido(vec2 v, float power) {
-	float angle = floor(0.5 + atan(v.x, -v.y) * power / TAO) * TAO / power;
-	return v * mat2(vec2(cos(angle), sin(angle)), vec2(-sin(angle), cos(angle)));
-}
-
-vec2 kalaido(vec2 p, float symmetry, int mode) {
-	if (mode == 2) return effie_kalaido(p, symmetry);
-
-	float angle = 3.14159265 / symmetry;
-	float theta = atan(p.y, p.x);
-	if (mode == 0) theta = continuousMod(theta + angle, 2.0 * angle) - angle;
-	if (mode == 1) theta = mod(theta + angle, 2.0 * angle) - angle;
-	p = vec2(cos(theta), sin(theta)) * length(p);
-
-	return p;
-}
+#include "utility.gdshaderinc"
+#include "kalaidoscope.gdshaderinc"
 
 ////////////////
 // Orbit trap //
@@ -247,15 +205,14 @@ float hollow_cube_sdf3d(vec3 p, vec3 b, float e) {
 #define smin(a,b) (a+b-sabs(a-b))*.5
 #define smax(a,b) (a+b+sabs(a-b))*.5
 
-float icosahedron_sdf3d(vec3 p, float r){
-	float G = sqrt(5.0) * 0.5 + 0.5;
-	vec3 n = normalize(vec3(G, 1.0 / G, 0.0));
-	float d = 0.0;
-	p = sabs(p);
-	d = smax(d, dot(p, n));
-	d = smax(d, dot(p, n.yzx));
-	d = smax(d, dot(p, n.zxy));
-	d = smax(d, dot(p, normalize(vec3(1.0, 1.0, 1.0))));
+float icosahedron_sdf3d(vec3 p, float r) {
+	float h = (1.0 + sqrt(5.0)) / 2.0;
+	vec3 n = normalize(vec3(h, 1.0 / h, 0));
+	p = abs(p);
+	float d = dot(p,n);
+	d = max(d, dot(p, n.yzx));
+	d = max(d, dot(p, n.zxy));
+	d = max(d, dot(p, normalize(vec3(1))));
 	return d - r;
 }
 

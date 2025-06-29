@@ -2,6 +2,8 @@ extends HBoxContainer
 
 signal value_changed(to: float)
 
+@export var step := 0.0000001
+@export var force_precision := false
 @export var precision := 3
 @export var range: Vector2 = Vector2(-20, 20):
 	set(value):
@@ -13,6 +15,11 @@ signal value_changed(to: float)
 	set(v):
 		if v > -0.00001 and v < 0.00001:
 			v = 0.0
+		
+		if force_precision:
+			var factor: float = float('1' + '0'.repeat(precision))
+			v = round(v * factor) / factor
+		
 		value = v
 		$HSlider.set_value_no_signal(value)
 		var old_text_column: int = $LineEdit.caret_column
@@ -25,7 +32,7 @@ func format_float(float_value: float) -> String:
 func _ready() -> void:
 	Global.value_nodes.append(self)
 	$LineEdit.text = format_float(value)
-	$HSlider.step = 0.0000001
+	$HSlider.step = step
 	$HSlider.min_value = range.x
 	$HSlider.max_value = range.y
 	$HSlider.set_value_no_signal(value)
@@ -33,6 +40,9 @@ func _ready() -> void:
 	value_changed.emit(value)
 
 func _on_h_slider_value_changed(v: float) -> void:
+	if force_precision:
+		var factor: float = float('1' + '0'.repeat(precision))
+		v = round(v * factor) / factor
 	$LineEdit.text = format_float(v)
 	value_changed.emit(v)
 	value = v

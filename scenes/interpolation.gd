@@ -3,9 +3,9 @@ extends Node
 # Catmull-rom is recommended.
 enum InterpolationModes { LINEAR, BEZIER, CATMULLROM }
 
-func interpolate(values: Array[Variant], interpolation_mode: InterpolationModes) -> Array[Variant]:
+func interpolate(values: Array[Variant], interpolation_mode: InterpolationModes, fps: int) -> Array[Variant]:
 	var result: Array[Variant] = []
-	var steps: int = 60
+	var steps: int = fps
 	var first_value: Variant = values[0]
 	var catmull_rom_tension: float = 1.0
 
@@ -459,11 +459,11 @@ func generate_control_points_int(values: Array) -> Array[int]:
 		return control_points
 	
 	if n == 2:
-		var v0: float = values[0]
-		var v1: float = values[1]
+		var v0: float = float(values[0])
+		var v1: float = float(values[1])
 		var diff := v1 - v0
-		control_points.append(v0 + diff / 3)
-		control_points.append(v1 - diff / 3)
+		control_points.append(int(round(v0 + diff / 3.0)))
+		control_points.append(int(round(v1 - diff / 3.0)))
 		return control_points
 	
 	var tangents: Array[float] = []
@@ -479,8 +479,8 @@ func generate_control_points_int(values: Array) -> Array[int]:
 			tangents[i] = float(values[i+1] - values[i-1]) / 2.0
 	
 	for i in range(n - 1):
-		var current: float = values[i]
-		var next: float = values[i + 1]
+		var current: float = float(values[i])
+		var next: float = float(values[i + 1])
 		var segment_length: float = abs(next - current)
 		var scale := segment_length / 3.0
 		control_points.append(int(round(current + tangents[i] * scale)))

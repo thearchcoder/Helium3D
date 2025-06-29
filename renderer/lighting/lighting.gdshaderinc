@@ -51,7 +51,7 @@ float soft_shadow(vec3 point, vec3 dir, float start, float end, float light_radi
 		shadow = min(shadow, effective_sharpness * dist2 / max(0.0, depth - delta));
 
 		prevdist = dist;
-		depth += dist * shadow_raystep_multiplier;
+		depth += dist * shadow_raystep_multiplier * raystep_multiplier;
 	}
 	return clamp(shadow, 0.0, 1.0);
 }

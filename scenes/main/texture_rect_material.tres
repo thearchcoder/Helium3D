@@ -5,7 +5,5 @@
 [resource]
 shader = ExtResource("1_0oopc")
 shader_parameter/sharpness = 1.0
+shader_parameter/camera_kalaidoscope = 4.000000000014552
 shader_parameter/display_tiled_render = false
-shader_parameter/chroma_key_color = Vector3(1, 1, 1000)
-shader_parameter/chroma_key_similarity = 0.2653
-shader_parameter/chroma_key_smoothness = 0.1

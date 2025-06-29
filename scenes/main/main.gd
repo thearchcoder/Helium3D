@@ -20,15 +20,40 @@ var PATCH := VERSION.split('.')[2].split('-')[0]
 # DONE | update antialiasing entry when enabling upscaling
 # DONE | pause icon
 # ------------------------------------------------
+# DONE | store anti aliasing in save files
+# shader baking
+# indexed to named
+# fix mixing two primitives only causes log de sphere
+# ... improve shadows?
+# DONE | shadow ray step multiplier 0.1 - 3.0 range not 1.0 - 3.0
+# display option for shadow map
+# DONE | sharpness parameter has no effect in exported images
+# render button set low scaling to 1.0
+# undo redo
+# binary search ray marching
+# proper shadow epsilon options
+# DONE | add plane primitive
+# proper normal epsilon options
+# advanced mode for ALL fields
+# in tiled animation rendering, first tile is black
+# DONE | smaa anti aliasing
+# DONE | fix keyframe length / fps interpolation
+# DONE | primitives
+# formulas menu reset button
+# DONE | gyroid primitive
 # DONE | independent formula files
+# library
+# KALAIDO CAMERA
+# DONE | panorama camera
 # open native dialog in windows or mac, use godot dialog in linux
 # tile render blend previous frame
 # tile render stop button
 # tile render button, not checkboxes
 # tile render center priority
-# animation estimate time
-# animation current frame label
+# SORTA DONE | animation estimate time
+# SORTA DONE | animation current frame label
 # multiple same formulas
+# super sample based motion blue
 # edit keyframe
 # edit multiple keyframes
 # DONE | better formula search
@@ -63,6 +88,7 @@ var other_fields: Array = ['total_visible_formula_pages', 'player_position', 'he
 var formulas: Array[Dictionary] = []
 var using_dof: bool = false
 var using_tiling: bool = false
+var author: String = ''
 var using_reflections: bool = false
 var busy_rendering_tiles: bool = false
 var keyframe_length: float = 1.0
@@ -73,6 +99,8 @@ var difficulty: String = 'simple':
 		difficulty = value
 		%TabContainer.get_node('Formula/TabContainer').set_difficulty(difficulty)
 
+var history: Array = []
+var history_at: int = 0
 var white_display: Image
 
 func _ready() -> void:
@@ -83,10 +111,16 @@ func _ready() -> void:
 	if not dir.dir_exists(HELIUM3D_PATH):
 		dir.make_dir(HELIUM3D_PATH)
 	
+	if FileAccess.file_exists(HELIUM3D_PATH + '/heartbeat.hlm') and FileAccess.file_exists(HELIUM3D_PATH + '/autosave.hlm'):
+		crash_detected()
+	else:
+		var file: FileAccess = FileAccess.open(HELIUM3D_PATH + '/heartbeat.hlm', FileAccess.WRITE)
+		file.close()
+	
 	await RenderingServer.frame_post_draw
 	DisplayServer.window_set_title("Helium3D", get_window().get_window_id())
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if $AboutWindow.visible and Input.is_action_just_pressed('escape'):
 		_on_window_close_requested()
 
@@ -156,6 +190,7 @@ func get_app_state(optimize_for_clipboard: bool = false) -> Dictionary:
 	other_data["fps"] = fps
 	other_data["interpolation"] = interpolation
 	other_data["keyframe_length"] = keyframe_length
+	other_data["author"] = author
 	other_data["library"] = {}
 	
 	if optimize_for_clipboard:
@@ -367,6 +402,9 @@ func update_app_state(data: Dictionary, full_update: bool = true) -> void:
 	if %TabContainer.total_visible_formulas != new_total_visible_formulas:
 		%TabContainer.total_visible_formulas = new_total_visible_formulas
 	
+	author = other_data.get("author", "")
+	%AuthorLineEdit.text = author
+	
 	%SubViewport.refresh_taa()
 	
 	if full_update:
@@ -405,18 +443,6 @@ func count_non_zero(numbers: Array) -> int:
 			count += 1
 	
 	return count
-
-func _on_viewport_width_text_changed(new_text: String) -> void:
-	if new_text.is_valid_float() or new_text.is_valid_int():
-		var value: float = float(new_text)
-		%SubViewport.size.x = value
-		%SubViewport.refresh_taa()
-
-func _on_viewport_height_text_changed(new_text: String) -> void:
-	if new_text.is_valid_float() or new_text.is_valid_int():
-		var value: float = float(new_text)
-		%SubViewport.size.y = value
-		%SubViewport.refresh_taa()
 
 func update_fractal_code(current_formulas: Array[int]) -> void:
 	var shader := %Fractal.material_override.shader as Shader
@@ -459,6 +485,14 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 				var function: String = 'max' if formula['type'] == 'difs' else 'min'
 				single_difs_code += '//de = ' + function + '(de, ' + formula['id'] + '_sdf(original_z).x); // -@' + str(formula['index']) + '\n'
 		shader_code = shader_code.replace('// -@MultiDIFS', single_difs_code)
+	
+	#if '// -@CheckOnlyDIFS':
+		#var single_difs_code := ''
+		#for formula in formulas:
+			#if formula['type'] == 'difs' or formula['type'] == 'primitive':
+				#var function: String = 'max' if formula['type'] == 'difs' else 'min'
+				#single_difs_code += '//de = ' + function + '(de, ' + formula['id'] + '_sdf(original_z).x); // -@' + str(formula['index']) + '\n'
+		#shader_code = shader_code.replace('// -@CheckOnlyDIFS', single_difs_code)
 	
 	if '// -@Uniforms' in shader_code:
 		var uniforms_code: String = ""
@@ -559,6 +593,32 @@ func _on_difficulty_pressed() -> void:
 	
 	%Difficulty.text = difficulty.to_pascal_case()
 
+func _on_tree_exiting() -> void:
+	DirAccess.open(HELIUM3D_PATH).remove('heartbeat.hlm')
+
 func _on_close_button_pressed() -> void: $AboutWindow.visible = false
 func _on_window_close_requested() -> void: $AboutWindow.visible = false
 func _on_about_button_pressed() -> void: $AboutWindow.visible = true
+
+func _on_settings_button_pressed() -> void: $SettingsWindow.visible = true
+func _on_settings_window_close_requested() -> void: $SettingsWindow.visible = false
+
+func crash_detected() -> void: $CrashSaveWindow.visible = true
+func _on_crash_save_close_requested() -> void: $CrashSaveWindow.visible = false
+func _on_crash_save_cancel_button_pressed() -> void: $CrashSaveWindow.visible = false
+func _on_recover_button_pressed() -> void: 
+	%ToolBar.recover()
+	$CrashSaveWindow.visible = false
+
+func _on_author_button_pressed() -> void: $AuthorWindow.visible = true
+func _on_author_window_close_requested() -> void: $AuthorWindow.visible = false
+func _on_cancel_author_pressed() -> void: 
+	$AuthorWindow.visible = false
+	%AuthorLineEdit.text = author
+
+func _on_done_author_pressed() -> void: 
+	$AuthorWindow.visible = false
+	author = %AuthorLineEdit.text
+
+func _on_randomize_window_close_requested() -> void: $RandomizeWindow.visible = false
+func _on_randomize_pressed() -> void: $RandomizeWindow.visible = true

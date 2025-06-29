@@ -86,12 +86,12 @@ func get_match_score(text: String, search_term: String) -> int:
 	
 	return 0
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if $"../../..".visible and (Input.is_action_just_pressed('enter') or Input.is_action_just_pressed('escape')):
 		$"../SearchCloseButton".emit_signal('pressed')
 		_on_option_button_item_selected($OptionButton.selected)
 
-func update_selected_item(value: String) -> void:
+func update_selected_item(_value: String) -> void:
 	$OptionButton.selected = $"../../../..".index
 
 func _ready() -> void:

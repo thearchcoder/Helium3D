@@ -7,6 +7,8 @@ render_mode unshaded;
 //#define USING_TILING
 //#define USING_REFLECTIONS
 
+// Camera
+uniform int camera_type = 0;
 // Effects / DOF
 uniform bool dof_enabled;
 uniform int dof_samples;
@@ -64,6 +66,7 @@ uniform bool relative_epsilon = false;
 uniform bool interior_mode = false;
 uniform float escape_radius;
 uniform int de_mode = 1;
+uniform float camera_kalaidoscope = 1.0;
 // Formula
 uniform int formulas[10];
 // Lighting / Ambient Occlusion
@@ -93,6 +96,7 @@ uniform float outline_intensity;
 uniform float outline_threshold;
 uniform float outline_falloff;
 uniform bool outline = false;
+uniform bool dither = false;
 // Effects / Modifiers
 uniform vec3 repeat_gap;
 uniform bool repeat;
@@ -161,7 +165,6 @@ vec2 scene_sdf(vec3 p) {
 	float dz = 1.0;
 	float s = 1.2;
 
-	bool single_formula = false;
 	vec3 previous_z = z.xyz;
 
 	// Edited at runtime
@@ -176,8 +179,12 @@ vec2 scene_sdf(vec3 p) {
 
 	float r = length(z);
 	float de = 0.0;
-
+	
+	bool single_formula = false;
 	if (formulas[1] <= 0) single_formula = true;
+
+	//bool only_difs_formulas = false;
+	// -@CheckOnlyDIFS
 
 	if (de_mode == 0) de = r / dz;
 	else if (de_mode == 1) de = 0.5 * log(r) * r / dz;
@@ -229,11 +236,33 @@ vec3 calculate_normal(vec3 p, float h) {
 	));
 }
 
-
-#include "lighting/lighting.gdshaderinc"
+vec3 equirectangular_ray_direction(vec2 uv) {
+	float theta = (uv.x - 0.5) * 2.0 * PI;
+	float phi = (uv.y - 0.5) * PI;
+	
+	return normalize(vec3(
+		cos(phi) * sin(theta),
+		sin(phi),
+		cos(phi) * cos(theta)
+	));
+}
 
 varying vec3 vertex_ls;
 void vertex() { vertex_ls = VERTEX; }
+
+vec3 get_ray_direction(vec2 screen_uv, mat4 view_matrix, vec3 ro) {
+	if (camera_type == 1) {
+		vec3 base_dir = equirectangular_ray_direction(screen_uv);
+		vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));
+		vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
+		vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
+		mat3 camera_matrix = mat3(camera_right, camera_up, -camera_forward);
+		return normalize(camera_matrix * base_dir);
+	}
+	else return normalize(vertex_ls - ro);
+}
+
+#include "lighting/lighting.gdshaderinc"
 
 vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color) {
 	vec3 data = ray_marcher(ray_origin, ray_dir);
@@ -307,7 +336,7 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	return vec4(final_color, dfo < max_distance ? 1.0 : 0.0);
 }
 
-vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color) {
+vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color, vec2 resolution) {
 	vec3 current_origin = ray_origin;
 	vec3 current_dir = ray_dir;
 
@@ -345,30 +374,31 @@ vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_m
 	}
 #endif
 
-	// Vignette
-	if (is_exponential) {
-		vec2 vignette_uv = screen_uv * (1.0 - screen_uv.yx);
-		float vignette = pow(vignette_uv.x * vignette_uv.y * (vignette_radius * 17.0), vignette_strength * 0.5 * 0.75);
-		final_color *= vignette;
-	} else {
-		float vignette = smoothstep(vignette_radius, vignette_radius - vignette_strength, length(screen_uv - vec2(0.5)));
-		final_color *= vignette;
+	// Vignette (disabled for equirectangular)
+	if (camera_type != 1) {
+		if (is_exponential) {
+			vec2 vignette_uv = screen_uv * (1.0 - screen_uv.yx);
+			float vignette = pow(vignette_uv.x * vignette_uv.y * (vignette_radius * 17.0), vignette_strength * 0.5 * 0.75);
+			final_color *= vignette;
+		} else {
+			float vignette = smoothstep(vignette_radius, vignette_radius - vignette_strength, length(screen_uv - vec2(0.5)));
+			final_color *= vignette;
+		}
 	}
 
 	return final_color;
 }
 
-// Update calculate_albedo to use render_ray instead of render_single_ray
 vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCoord, vec2 resolution, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color) {
 	float time = float(TIME);
 	float baseSeed = hash(screen_uv + time * 0.01);
 
-	if (!dof_enabled || display != 0) return render_ray(ray_origin, ray_dir, screen_uv, projection_matrix, view_matrix, discard_color);
+	if (!dof_enabled || display != 0) return render_ray(ray_origin, ray_dir, screen_uv, projection_matrix, view_matrix, discard_color, resolution);
 
 #ifdef USING_DOF
-	vec3 cameraDir = ray_dir;
-	vec3 cameraX = normalize(cross(vec3(0.0, 1.0, 0.0), cameraDir));
-	vec3 cameraY = normalize(cross(cameraDir, cameraX));
+	vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));
+	vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
+	vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
 
 	vec3 colorTotal = vec3(0.0);
 
@@ -378,12 +408,13 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 		pixelOffset *= float(dof_samples) / resolution;
 
 		vec2 jitteredUV = screen_uv + pixelOffset;
-		vec3 baseRd = ray_dir;
-		float ft = dof_focal_distance / dot(baseRd, cameraDir);
+		
+		vec3 baseRd = get_ray_direction(jitteredUV, view_matrix, ray_origin);
+		float ft = dof_focal_distance;
 		vec3 focusPoint = ray_origin + baseRd * ft;
 
 		vec2 lensOffset = fibonacci_circle(float(i) + sampleSeed * 7.1, float(dof_samples)) * dof_aperture;
-		vec3 lensPos = ray_origin + cameraX * lensOffset.x + cameraY * lensOffset.y;
+		vec3 lensPos = ray_origin + camera_right * lensOffset.x + camera_up * lensOffset.y;
 		vec3 rd = normalize(focusPoint - lensPos);
 
 		colorTotal += render_ray(lensPos, rd, jitteredUV, projection_matrix, view_matrix, discard_color);
@@ -397,6 +428,8 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 }
 
 #define SET_ALBEDO bool discard_color = false; \
+	vec3 ro = (inverse(MODEL_MATRIX) * vec4(CAMERA_POSITION_WORLD, 1.0)).xyz; \
+	vec3 rd = get_ray_direction(SCREEN_UV, VIEW_MATRIX, ro); \
 	ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX, discard_color); \
 	if (discard_color) discard;
 
@@ -404,32 +437,25 @@ void fragment() {
 	if (hash(FRAGCOORD.xy + TIME) > progression_strength / 100.0) discard;
 
 	float error_margin = 2.0;
-	vec3 ro = (inverse(MODEL_MATRIX) * vec4(CAMERA_POSITION_WORLD, 1.0)).xyz;
-	vec3 rd = normalize(vertex_ls - ro);
 
 	#ifdef USING_TILING
 	if (tiled) {
-		// Use integer operations for more precise tile calculations
 		int tile_idx = int(current_tile);
 		int t_x = int(tiles_x);
 		int t_y = int(tiles_y);
 
-		// Calculate tile position using integer math
 		int tile_x_pos = tile_idx % t_x;
 		int tile_y_pos = tile_idx / t_x;
 
-		// Convert to float for UV calculations
 		vec2 tile_size = 1.0 / vec2(float(t_x), float(t_y));
 		vec2 padding = error_margin / VIEWPORT_SIZE;
 
 		vec2 tile_start = vec2(float(tile_x_pos), float(tile_y_pos)) * tile_size;
 		vec2 tile_end = tile_start + tile_size;
 
-		// Add padding to prevent edge artifacts
 		vec2 tile_min = max(tile_start - padding, vec2(0.0));
 		vec2 tile_max = min(tile_end + padding, vec2(1.0));
 
-		// Check if current fragment is within this tile's bounds
 		if (SCREEN_UV.x >= tile_min.x && SCREEN_UV.x < tile_max.x &&
 		    SCREEN_UV.y >= tile_min.y && SCREEN_UV.y < tile_max.y) {
 			SET_ALBEDO

@@ -22,7 +22,7 @@ const PALETTE_FIELD_SCENE = preload('res://ui/fields/palette field/palette_field
 var force_stop_tiled_render: bool = false
 
 func field_changed(field_name: String, to: Variant) -> void: %TabContainer.field_changed(field_name, to)
-func field_changed_non_shader(field_name: String, to: Variant) -> void: %TabContainer.field_changed_non_shader(field_name, to)
+func field_changed_non_shader(field_name: String, to: Variant, update_viewport: bool = true) -> void: %TabContainer.field_changed_non_shader(field_name, to, update_viewport)
 func i_am_a_field_container() -> void: pass
 
 func set_bloom_enabled(to: bool) -> void: 
@@ -48,12 +48,12 @@ func stop_tiled_render() -> void:
 
 func compute_tiled_render() -> void:
 	get_tree().current_scene.busy_rendering_tiles = true
-	%TextureRect.material.set_shader_parameter('display_tiled_render', false)
+	%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
 	
 	var current_tile_node: Node
 	var tiles_x_node: Node
 	var tiles_y_node: Node
-	for value_node in Global.value_nodes:
+	for value_node in (Global.value_nodes as Array[Node]):
 		if value_node.name == 'CurrentTile': current_tile_node = value_node
 		if value_node.name == 'TilesX': tiles_x_node = value_node
 		if value_node.name == 'TilesY': tiles_y_node = value_node
@@ -126,8 +126,8 @@ func compute_tiled_render() -> void:
 	
 	final_image.save_png(get_tree().current_scene.HELIUM3D_PATH + "/tilerender/combined.png")
 	
-	%TextureRect.material.set_shader_parameter('display_tiled_render', true)
-	%TextureRect.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
+	%PostDisplay.material.set_shader_parameter('display_tiled_render', true)
+	%PostDisplay.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
 	get_tree().current_scene.busy_rendering_tiles = false
 
 func _ready() -> void:
@@ -146,7 +146,7 @@ func _ready() -> void:
 			# Shadow
 			{'name': 'shadow_steps', 'type': 'int', 'from': 0, 'to': 128, 'default_value': 128},
 			{'name': 'shadow_epsilon', 'type': 'float', 'from': 0, 'to': 0.4, 'default_value': 0.001},
-			{'name': 'shadow_raystep_multiplier', 'type': 'float', 'from': 1.0, 'to': 3.0, 'default_value': 3.0},
+			{'name': 'shadow_raystep_multiplier', 'type': 'float', 'from': 0.2, 'to': 3.0, 'default_value': 3.0},
 			
 			# Specular highlights
 			{'name': 'specular_intensity', 'type': 'float', 'from': 0.0, 'to': 100.0, 'default_value': 15},
@@ -203,6 +203,17 @@ func _ready() -> void:
 			{'name': 'ambient_light', 'type': 'float', 'from': 0.0, 'to': 0.2, 'default_value': 0.005},
 			{'name': 'ambient_light_from_background', 'type': 'bool', 'default_value': false},
 			{'name': 'ambient_light_color', 'type': 'color', 'default_value': Color('white')},
+		],
+		# Randomization
+		25: [
+			{'name': 'chance', 'type': 'float', 'from': 0, 'to': 100, 'default_value': 20, 'onchange_override': func(val: float) -> void:
+			%Randomization.chance = val
+			field_changed_non_shader('chance', val, false)
+			},
+			{'name': 'strength', 'type': 'float', 'from': 0.0, 'to': 10.0, 'default_value': 0.2, 'onchange_override': func(val: float) -> void:
+			%Randomization.strength = val
+			field_changed_non_shader('strength', val, false)
+			},
 		],
 		# Effects / Vignette
 		8: [
@@ -280,7 +291,7 @@ func _ready() -> void:
 			{'name': 'outline_color', 'type': 'color', 'default_value': Color(1.0, 1.0, 1.0)},
 			{'name': 'outline_intensity', 'type': 'float', 'from': 0.0, 'to': 4.0, 'default_value': 0.74},
 			{'name': 'outline_threshold', 'type': 'float', 'from': 0.0, 'to': 80.0, 'default_value': 19.34},
-			{'name': 'outline_falloff', 'type': 'float', 'from': 0.0, 'to': 4.0, 'default_value': 3.2},
+			{'name': 'outline_falloff', 'type': 'float', 'from': 0.0, 'to': 4.0, 'default_value': 3.2}
 		],
 		# Effects / Tone Mapping
 		4: [
@@ -311,6 +322,10 @@ func _ready() -> void:
 			{'name': 'iterations', 'type': 'int', 'from': 0, 'to': 50, 'default_value': 15},
 			{'name': 'max_steps', 'type': 'int', 'from': 0, 'to': 600, 'default_value': 360},
 			{'name': 'escape_radius', 'type': 'float', 'from': 0, 'to': 500, 'default_value': 16},
+			{'name': 'camera_kalaidoscope', 'type': 'float', 'from': 1, 'to': 20, 'default_value': 1, 'onchange_override': func(val: Variant) -> void:
+			%PostDisplay.material.set_shader_parameter('camera_kalaidoscope', val)
+			field_changed_non_shader('camera_kalaidoscope', val)
+			},
 			{'name': 'fov', 'type': 'float', 'from': 10, 'to': 300, 'default_value': 75, 'onchange_override': func(val: Variant) -> void: 
 			%Camera.fov = val
 			field_changed_non_shader('fov', val)
@@ -320,10 +335,20 @@ func _ready() -> void:
 			{'name': 'epsilon', 'type': 'float', 'from': 0.0000001, 'to': 0.001, 'default_value': 0.0004},
 			{'name': 'relative_epsilon', 'type': 'bool', 'default_value': true},
 			{'name': 'de_mode', 'type': 'selection', 'values': ['LinearDE', 'LogDE', 'Automatic'], 'default_value': 'Automatic'},
+			{'name': 'camera_type', 'type': 'selection', 'values': ['Free', 'Panorama (Equirectangular)'], 'default_value': 'Free'},
+			{'name': 'anti_aliasing', 'type': 'selection', 'values': ['None', 'FXAA', 'TAA', 'SMAA'], 'default_value': 'None', 'onchange_override': func(val: Variant) -> void: 
+			%ToolBar._on_antialiasing_value_changed(val)
+			field_changed_non_shader('anti_aliasing', val)
+			},
+			{'name': 'resolution', 'type': 'vec2', 'from': Vector2(100, 100), 'to': Vector2(2560, 1440), 'default_value': Vector2(450, 450), 'onchange_override': func(val: Variant) -> void: 
+			%SubViewport.size = val
+			%SubViewport.refresh_taa()
+			field_changed_non_shader('resolution', val)
+			},
 		],
 		# Tools / Upscaling
 		12: [
-			{'name': 'sharpness', 'type': 'float', 'from': 0.0, 'to': 3.0, 'default_value': 0.0, 'onchange_override': func(val: float) -> void: %TextureRect.material.set_shader_parameter('sharpness', val)},
+			{'name': 'sharpness', 'type': 'float', 'from': 0.0, 'to': 3.0, 'default_value': 0.0, 'onchange_override': func(val: float) -> void: %PostDisplay.material.set_shader_parameter('sharpness', val)},
 			{'name': 'upscaling_factor', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 1.0, 'onchange_override': func(val: float) -> void: %SubViewport.set_upscaling_factor(val)},
 		],
 		# Tools / Tiling
@@ -334,7 +359,7 @@ func _ready() -> void:
 			get_tree().current_scene.update_fractal_code(%TabContainer.current_formulas)
 			%Fractal.material_override.set_shader_parameter('tiled', val)
 			if not val:
-				%TextureRect.material.set_shader_parameter('display_tiled_render', false)
+				%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
 			},
 			{'name': 'tiles_x', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},
 			{'name': 'tiles_y', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},

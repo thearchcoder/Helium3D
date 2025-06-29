@@ -1,8 +1,8 @@
 extends SubViewport
 
-enum AntiAliasing { TAA, FXAA, NONE }
+enum AntiAliasing { TAA, FXAA, SMAA, NONE }
 
-var antialiasing := AntiAliasing.TAA
+var antialiasing := AntiAliasing.NONE
 var low_scaling: float
 var high_scaling: float = 1.0
 var since_last_dynamic_update := 0.0
@@ -40,8 +40,11 @@ func set_antialiasing(target_aa: AntiAliasing) -> void:
 	elif target_aa == AntiAliasing.FXAA:
 		scaling_3d_mode = SCALING_3D_MODE_BILINEAR
 		screen_space_aa = SCREEN_SPACE_AA_FXAA
-	elif target_aa == AntiAliasing.NONE:
+	elif target_aa == AntiAliasing.SMAA:
 		scaling_3d_mode = SCALING_3D_MODE_BILINEAR
+		screen_space_aa = SCREEN_SPACE_AA_SMAA
+	elif target_aa == AntiAliasing.NONE:
+		scaling_3d_mode = SCALING_3D_MODE_FSR
 		screen_space_aa = SCREEN_SPACE_AA_DISABLED
 
 func _process(delta: float) -> void:

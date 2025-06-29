@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://nlqvli442epy"
-path="res://.godot/imported/hard drive.svg-a38f2cc032d759d1e8ebb20af54505c2.ctex"
+uid="uid://bj4xog2u6wovt"
+path="res://.godot/imported/jawbreaker.png-b00db14caaaf21e1205a485aa324b22d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/icons/hard drive.svg"
-dest_files=["res://.godot/imported/hard drive.svg-a38f2cc032d759d1e8ebb20af54505c2.ctex"]
+source_file="res://jawbreaker.png"
+dest_files=["res://.godot/imported/jawbreaker.png-b00db14caaaf21e1205a485aa324b22d.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

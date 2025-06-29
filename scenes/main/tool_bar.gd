@@ -1,5 +1,52 @@
 extends HBoxContainer
 
+var autosave_interval: float = 5.0 : set = set_autosave_interval
+var autosave_timer: Timer
+
+func recover() -> void:
+	%ToolBar.load_project_data(get_tree().current_scene.HELIUM3D_PATH + '/autosave.hlm')
+	%SubViewport.refresh_taa()
+
+func _ready() -> void:
+	autosave_timer = Timer.new()
+	autosave_timer.wait_time = autosave_interval
+	autosave_timer.timeout.connect(_on_autosave_timer_timeout)
+	autosave_timer.autostart = true
+	add_child(autosave_timer)
+	
+	%Save.get_popup().connect('id_pressed', func(id: int) -> void:
+		if id == 0:
+			_on_save_all_pressed()
+			%FileDialog.show()
+		if id == 1:
+			_on_save_pressed()
+			%FileDialog.show()
+		if id == 2:
+			_on_save_picture_pressed()
+			%FileDialog.show()
+		if id == 3:
+			_on_save_to_clipboard_pressed()
+		)
+	%Load.get_popup().connect('id_pressed', func(id: int) -> void:
+		if id == 1:
+			_on_load_pressed()
+			%FileDialog.show()
+		if id == 0:
+			_on_load_from_clipboard_pressed()
+	)
+
+func set_autosave_interval(value: float) -> void:
+	autosave_interval = value
+	if autosave_timer:
+		autosave_timer.wait_time = autosave_interval
+		autosave_timer.stop()
+		autosave_timer.start()
+
+func _on_autosave_timer_timeout() -> void:
+	var autosave_path: String = get_tree().current_scene.HELIUM3D_PATH + '/autosave.hlm'
+	if not %CrashSaveWindow.visible:
+		save_project_data(autosave_path)
+
 func save_project_data(path: String, exclude: Array[String] = [], optimize_for_clipboard: bool = false) -> void:
 	if not path.ends_with('.hlm'):
 		path += '.hlm'
@@ -95,10 +142,11 @@ func _on_antialiasing_value_changed(option: String) -> void:
 		%SubViewport.set_antialiasing(%SubViewport.AntiAliasing.TAA)
 	elif option == "FXAA":
 		%SubViewport.set_antialiasing(%SubViewport.AntiAliasing.FXAA)
+	elif option == "SMAA":
+		%SubViewport.set_antialiasing(%SubViewport.AntiAliasing.SMAA)
 	%SubViewport.refresh_taa()
 	%DummyFocusButton.grab_focus()
 
-# Clip board saving and loading
 func _on_load_from_clipboard_pressed() -> void:
 	var data: String = DisplayServer.clipboard_get()
 	data = data.lstrip(' ')
@@ -135,28 +183,6 @@ func _on_save_to_clipboard_pressed() -> void:
 	var compressed_data: PackedByteArray = file.compress(FileAccess.COMPRESSION_GZIP)
 	var encoded_data: String = Marshalls.raw_to_base64(compressed_data)
 	DisplayServer.clipboard_set('Helium3D[' + encoded_data + ']')
-
-func _ready() -> void:
-	%Save.get_popup().connect('id_pressed', func(id: int) -> void:
-		if id == 0:
-			_on_save_all_pressed()
-			%FileDialog.show()
-		if id == 1:
-			_on_save_pressed()
-			%FileDialog.show()
-		if id == 2:
-			_on_save_picture_pressed()
-			%FileDialog.show()
-		if id == 3:
-			_on_save_to_clipboard_pressed()
-		)
-	%Load.get_popup().connect('id_pressed', func(id: int) -> void:
-		if id == 1:
-			_on_load_pressed()
-			%FileDialog.show()
-		if id == 0:
-			_on_load_from_clipboard_pressed()
-	)
 
 func _on_quality_value_changed(option: String) -> void:
 	%SubViewport.set_quality(option.to_lower())

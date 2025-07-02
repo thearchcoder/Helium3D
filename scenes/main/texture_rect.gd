@@ -17,6 +17,54 @@ var velocity := Vector3.ZERO
 var is_holding := false
 var is_hovering := false
 
+func write_ply_mesh(filename: String, mesh: Mesh) -> void:
+	var vertices: PackedVector3Array = mesh.surface_get_array(0, Mesh.ARRAY_VERTEX)
+	var indices: PackedInt32Array = mesh.surface_get_array(0, Mesh.ARRAY_INDEX)
+	var colors: PackedColorArray = mesh.surface_get_array(0, Mesh.ARRAY_COLOR)
+	
+	var has_colors: bool = colors != null and colors.size() > 0
+	
+	var faces: Array[PackedInt32Array] = []
+	for i in range(0, indices.size(), 3):
+		var face: PackedInt32Array = PackedInt32Array([indices[i], indices[i+1], indices[i+2]])
+		faces.append(face)
+	
+	var file: FileAccess = FileAccess.open(filename, FileAccess.WRITE)
+	if file == null:
+		print("Failed to open file: ", filename)
+		return
+	
+	file.store_line("ply")
+	file.store_line("format ascii 1.0")
+	file.store_line("element vertex " + str(vertices.size()))
+	file.store_line("property float x")
+	file.store_line("property float y")
+	file.store_line("property float z")
+	if has_colors:
+		file.store_line("property uchar red")
+		file.store_line("property uchar green")
+		file.store_line("property uchar blue")
+		file.store_line("property uchar alpha")
+	file.store_line("element face " + str(faces.size()))
+	file.store_line("property list uchar int vertex_indices")
+	file.store_line("end_header")
+	
+	for i: int in range(vertices.size()):
+		var v: Vector3 = vertices[i]
+		var line: String = str(v.x) + " " + str(v.y) + " " + str(v.z)
+		if has_colors:
+			var c: Color = colors[i]
+			line += " " + str(int(c.r * 255)) + " " + str(int(c.g * 255)) + " " + str(int(c.b * 255)) + " " + str(int(c.a * 255))
+		file.store_line(line)
+	
+	for face: PackedInt32Array in faces:
+		var face_str: String = str(face.size())
+		for i: int in face:
+			face_str += " " + str(i)
+		file.store_line(face_str)
+	
+	file.close()
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and is_holding:
 		var input: Vector2 = Vector2(event.relative.x, event.relative.y)
@@ -35,12 +83,15 @@ func _physics_process(delta: float) -> void:
 		%PostViewport.size = get_tree().current_scene.fields['resolution']
 	
 	if Input.is_action_just_pressed('mouse right click') and is_hovering:
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		is_holding = true
 		%DummyFocusButton.grab_focus()
 	elif Input.is_action_just_released('mouse right click'):
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		is_holding = false
+	
+	if is_holding:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	else:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	
 	if is_holding and Input.is_action_pressed('rotate left'):
 		camera.rotation_degrees.z += 20 * delta

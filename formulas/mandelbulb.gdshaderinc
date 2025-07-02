@@ -3,7 +3,7 @@
 // [OFFICIAL]
 // [ESCAPE]
 // [VARS]
-// float phase[0.0, 30.0] = 13.901
+// float phase[0.0, 34.5575] = 13.901
 // float power[2.0, 16.0] = 8.0
 // advanced float z_mul[-1, 1] = 1
 // advanced bool conjugate[false, true] = false

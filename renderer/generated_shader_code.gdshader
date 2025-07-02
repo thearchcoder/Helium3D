@@ -126,7 +126,12 @@ uniform sampler2D bg_image;
 uniform sampler2D bg_color;
 // Other
 uniform float number_of_active_formulas;
-uniform float progression_strength = 100.0;
+uniform float progression_strength;
+// Voxelization
+uniform bool voxelization;
+uniform vec3 bounds_position;
+uniform vec3 bounds_size;
+uniform bool building_mesh = false;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
@@ -179,10 +184,10 @@ uniform float progression_strength = 100.0;
 //uniform vec3 fjerusalemcube_rotation2; // -@11
 //uniform vec3 fjerusalemcube_abs_add; // -@11
 //uniform vec3 fjerusalemcube_abs_minus; // -@11
-//uniform int fkalaidotransform_axis; // -@12
-//uniform int fkalaidotransform_mode; // -@12
-//uniform float fkalaidotransform_symmetry; // -@12
-//uniform vec2 fkalaidotransform_range; // -@12
+uniform int fkalaidotransform_axis; // -@12
+uniform int fkalaidotransform_mode; // -@12
+uniform float fkalaidotransform_symmetry; // -@12
+uniform vec2 fkalaidotransform_range; // -@12
 //uniform float fkalibox_scale; // -@13
 //uniform vec3 fkalibox_offset1; // -@13
 //uniform vec3 fkalibox_offset2; // -@13
@@ -229,10 +234,10 @@ uniform float progression_strength = 100.0;
 //uniform vec3 fkochwire_offset; // -@18
 //uniform vec3 fkochwire_rotation1; // -@18
 //uniform vec3 fkochwire_rotation2; // -@18
-//uniform float flionbulb_power; // -@19
-//uniform float flionbulb_phase; // -@19
-//uniform vec3 flionbulb_c; // -@19
-//uniform bool flionbulb_coral; // -@19
+uniform float flionbulb_power; // -@19
+uniform float flionbulb_phase; // -@19
+uniform vec3 flionbulb_c; // -@19
+uniform bool flionbulb_coral; // -@19
 //uniform int flogtransform_axis; // -@20
 //uniform float flogtransform_offset; // -@20
 //uniform float flogtransform_scale; // -@20
@@ -248,18 +253,18 @@ uniform float progression_strength = 100.0;
 //uniform vec3 fmandelbox_julia_c; // -@21
 //uniform vec3 fmandelbox_rotation1; // -@21
 //uniform vec3 fmandelbox_rotation2; // -@21
-uniform float fmandelbulb_phase; // -@22
-uniform float fmandelbulb_power; // -@22
-uniform float fmandelbulb_z_mul; // -@22
-uniform bool fmandelbulb_conjugate; // -@22
-uniform bool fmandelbulb_abs_x; // -@22
-uniform bool fmandelbulb_abs_y; // -@22
-uniform bool fmandelbulb_abs_z; // -@22
-uniform bool fmandelbulb_is_julia; // -@22
-uniform vec4 fmandelbulb_julia_c; // -@22
-uniform float fmandelbulb_derivative_bias; // -@22
-uniform int fmandelbulb_number_system; // -@22
-uniform int fmandelbulb_quaternion_mode; // -@22
+//uniform float fmandelbulb_phase; // -@22
+//uniform float fmandelbulb_power; // -@22
+//uniform float fmandelbulb_z_mul; // -@22
+//uniform bool fmandelbulb_conjugate; // -@22
+//uniform bool fmandelbulb_abs_x; // -@22
+//uniform bool fmandelbulb_abs_y; // -@22
+//uniform bool fmandelbulb_abs_z; // -@22
+//uniform bool fmandelbulb_is_julia; // -@22
+//uniform vec4 fmandelbulb_julia_c; // -@22
+//uniform float fmandelbulb_derivative_bias; // -@22
+//uniform int fmandelbulb_number_system; // -@22
+//uniform int fmandelbulb_quaternion_mode; // -@22
 //uniform vec3 fmengersponge_offset; // -@23
 //uniform vec3 fmengersponge_rotation1; // -@23
 //uniform vec3 fmengersponge_rotation2; // -@23
@@ -367,17 +372,17 @@ uniform int fmandelbulb_quaternion_mode; // -@22
 //#include "res://formulas/icosahedron.gdshaderinc" // -@9
 //#include "res://formulas/inversiontransform.gdshaderinc" // -@10
 //#include "res://formulas/jerusalemcube.gdshaderinc" // -@11
-//#include "res://formulas/kalaidotransform.gdshaderinc" // -@12
+#include "res://formulas/kalaidotransform.gdshaderinc" // -@12
 //#include "res://formulas/kalibox.gdshaderinc" // -@13
 //#include "res://formulas/kaliliving.gdshaderinc" // -@14
 //#include "res://formulas/kaliredux.gdshaderinc" // -@15
 //#include "res://formulas/klenian.gdshaderinc" // -@16
 //#include "res://formulas/kochcube.gdshaderinc" // -@17
 //#include "res://formulas/kochwire.gdshaderinc" // -@18
-//#include "res://formulas/lionbulb.gdshaderinc" // -@19
+#include "res://formulas/lionbulb.gdshaderinc" // -@19
 //#include "res://formulas/logtransform.gdshaderinc" // -@20
 //#include "res://formulas/mandelbox.gdshaderinc" // -@21
-#include "res://formulas/mandelbulb.gdshaderinc" // -@22
+//#include "res://formulas/mandelbulb.gdshaderinc" // -@22
 //#include "res://formulas/mengersponge.gdshaderinc" // -@23
 //#include "res://formulas/mixpinski4d.gdshaderinc" // -@24
 //#include "res://formulas/newton.gdshaderinc" // -@25
@@ -445,16 +450,16 @@ vec2 scene_sdf(vec3 p) {
 //if (current_formula == 5) bristorbrot_iter(z, dz, original_z, orbit, i); //-@5
 //if (current_formula == 10) inversiontransform_iter(z, dz, original_z, orbit, i); //-@10
 //if (current_formula == 11) jerusalemcube_iter(z, dz, original_z, orbit, i); //-@11
-//if (current_formula == 12) kalaidotransform_iter(z, dz, original_z, orbit, i); //-@12
+if (current_formula == 12) kalaidotransform_iter(z, dz, original_z, orbit, i); //-@12
 //if (current_formula == 13) kalibox_iter(z, dz, original_z, orbit, i); //-@13
 //if (current_formula == 14) kaliliving_iter(z, dz, original_z, orbit, i); //-@14
 //if (current_formula == 15) kaliredux_iter(z, dz, original_z, orbit, i); //-@15
 //if (current_formula == 17) kochcube_iter(z, dz, original_z, orbit, i, s); //-@17
 //if (current_formula == 18) kochwire_iter(z, dz, original_z, orbit, i); //-@18
-//if (current_formula == 19) lionbulb_iter(z, dz, original_z, orbit, i); //-@19
+if (current_formula == 19) lionbulb_iter(z, dz, original_z, orbit, i); //-@19
 //if (current_formula == 20) logtransform_iter(z, dz, original_z, orbit, i); //-@20
 //if (current_formula == 21) mandelbox_iter(z, dz, original_z, orbit, i); //-@21
-if (current_formula == 22) mandelbulb_iter(z, dz, original_z, orbit, i); //-@22
+//if (current_formula == 22) mandelbulb_iter(z, dz, original_z, orbit, i); //-@22
 //if (current_formula == 23) mengersponge_iter(z, dz, original_z, orbit, i); //-@23
 //if (current_formula == 24) mixpinski4d_iter(z, dz, original_z, orbit, i); //-@24
 //if (current_formula == 27) octkoch_iter(z, dz, original_z, orbit, i); //-@27
@@ -526,27 +531,50 @@ if (single_formula) {
 	if (cut) de = max(de, dot(original_p + cut_position, normalize(cut_normal)));
 	if (sphere_inversion) de = de * d2 / (inversion_sphere.w + d * de);
 
+	if (voxelization) {
+		float rect_bound = bounds_rectangle_sdf(original_p, bounds_position, bounds_size);
+		de = max(de, rect_bound);
+	}
+
 	return vec2(de, orbit).yx;
 }
 
 #include "lighting/ambient_occlusion.gdshaderinc"
 
-vec3 ray_marcher(vec3 ro, vec3 rd) {
+vec3 ray_marcher(vec3 ro, vec3 rd, inout vec3 palette_color_override, inout bool override_palette_color) {
 	float dfo = 0.0;
 	float orbit_trap_distance;
 	float total_marches = 0.0;
+	float final_bounds_dist = 1000000.0;
+	vec3 final_bounds_color = vec3(0.0);
 
 	for (int i = 0; i < max_steps; i++) {
-		vec2 data = scene_sdf(ro + rd * dfo);
+		vec3 current_pos = ro + rd * dfo;
+		vec2 data = scene_sdf(current_pos);
+		
+		float bounds_dist = 1000000.0;
+		vec3 bounds_color = vec3(0.0);
+		if (voxelization && !building_mesh) {
+			bounds_dist = bounds_sdf(current_pos, bounds_position, bounds_size, bounds_color);
+		}
+		
+		float point_distance = min(data.y, bounds_dist);
+		
 		float calc_epsilon = relative_epsilon ? epsilon / 3.4 * dfo : epsilon;
-		float point_distance = data.y;
 		dfo += max(point_distance * raystep_multiplier, calc_epsilon);
 		total_marches += 1.0;
 
 		if (point_distance < calc_epsilon || dfo > max_distance) {
 			orbit_trap_distance = data.x;
+			final_bounds_dist = bounds_dist;
+			final_bounds_color = bounds_color;
 			break;
 		};
+	}
+	
+	if (voxelization && final_bounds_dist < epsilon) {
+		palette_color_override = final_bounds_color;
+		override_palette_color = true;
 	}
 
 	return vec3(dfo > max_distance ? 0.0 : orbit_trap_distance, dfo, total_marches);
@@ -589,7 +617,34 @@ vec3 get_ray_direction(vec2 screen_uv, mat4 view_matrix, vec3 ro) {
 #include "lighting/lighting.gdshaderinc"
 
 vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color) {
-	vec3 data = ray_marcher(ray_origin, ray_dir);
+	vec3 final_color;
+	
+	if (building_mesh) {
+		vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));
+		vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
+		vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
+		
+		float sample_scale = 4.0;
+		vec3 sample_offset = camera_right * (screen_uv.x - 0.5) * sample_scale + 
+		                    camera_up * (screen_uv.y - 0.5) * sample_scale;
+		vec3 sample_pos = ray_origin + sample_offset;
+		
+		vec2 sdf_data = scene_sdf(sample_pos);
+		float distance_to_surface = sdf_data.y;
+		
+		if (distance_to_surface < 0.0) {
+			final_color = vec3(1.0);
+		} else {
+			final_color = vec3(0.0);
+		}
+		
+		return vec4(final_color, 1.0);
+	}
+
+	vec3 color;
+	bool override_color = false;
+	vec3 data = ray_marcher(ray_origin, ray_dir, color, override_color);
+	
 	float orbit_trap = data.x;
 	float dfo = data.y;
 	float total_marches = data.z;
@@ -602,10 +657,10 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	else if (color_wrapping == 6) orbit_x = tan(orbit_x);
 
 	vec3 palette_color = 3.0 * pow(texture(palette, vec2(orbit_x, 0.0)).xyz, vec3(color_exponent));
-	vec3 final_color;
+	if (override_color) palette_color = color;
+	
 	vec3 p = ray_origin + ray_dir * dfo;
 	vec3 normal = calculate_normal(p, normal_epsilon);
-
 	if (dfo >= max_distance) {
 		if (transparent_bg) discard_color = true;
 
@@ -657,7 +712,7 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	if (display == 2) return vec4(normal, 1.0);
 	else if (display == 3) return vec4(vec3(dfo * depth_scale), 1.0);
 
-	return vec4(final_color, dfo < max_distance ? 1.0 : 0.0);
+	return vec4(final_color, 1.0);
 }
 
 vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color, vec2 resolution) {
@@ -699,7 +754,7 @@ vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_m
 #endif
 
 	// Vignette (disabled for equirectangular)
-	if (camera_type != 1) {
+	if (camera_type != 1 && !building_mesh) {
 		if (is_exponential) {
 			vec2 vignette_uv = screen_uv * (1.0 - screen_uv.yx);
 			float vignette = pow(vignette_uv.x * vignette_uv.y * (vignette_radius * 17.0), vignette_strength * 0.5 * 0.75);
@@ -717,7 +772,7 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 	float time = float(TIME);
 	float baseSeed = hash(screen_uv + time * 0.01);
 
-	if (!dof_enabled || display != 0) return render_ray(ray_origin, ray_dir, screen_uv, projection_matrix, view_matrix, discard_color, resolution);
+	if (!dof_enabled || display != 0 || building_mesh) return render_ray(ray_origin, ray_dir, screen_uv, projection_matrix, view_matrix, discard_color, resolution);
 
 #ifdef USING_DOF
 	vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));

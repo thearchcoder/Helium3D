@@ -126,7 +126,12 @@ uniform sampler2D bg_image;
 uniform sampler2D bg_color;
 // Other
 uniform float number_of_active_formulas;
-uniform float progression_strength = 100.0;
+uniform float progression_strength;
+// Voxelization
+uniform bool voxelization;
+uniform vec3 bounds_position;
+uniform vec3 bounds_size;
+uniform bool building_mesh = false;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
@@ -202,27 +207,50 @@ if (single_formula) {
 	if (cut) de = max(de, dot(original_p + cut_position, normalize(cut_normal)));
 	if (sphere_inversion) de = de * d2 / (inversion_sphere.w + d * de);
 
+	if (voxelization) {
+		float rect_bound = bounds_rectangle_sdf(original_p, bounds_position, bounds_size);
+		de = max(de, rect_bound);
+	}
+
 	return vec2(de, orbit).yx;
 }
 
 #include "lighting/ambient_occlusion.gdshaderinc"
 
-vec3 ray_marcher(vec3 ro, vec3 rd) {
+vec3 ray_marcher(vec3 ro, vec3 rd, inout vec3 palette_color_override, inout bool override_palette_color) {
 	float dfo = 0.0;
 	float orbit_trap_distance;
 	float total_marches = 0.0;
+	float final_bounds_dist = 1000000.0;
+	vec3 final_bounds_color = vec3(0.0);
 
 	for (int i = 0; i < max_steps; i++) {
-		vec2 data = scene_sdf(ro + rd * dfo);
+		vec3 current_pos = ro + rd * dfo;
+		vec2 data = scene_sdf(current_pos);
+		
+		float bounds_dist = 1000000.0;
+		vec3 bounds_color = vec3(0.0);
+		if (voxelization && !building_mesh) {
+			bounds_dist = bounds_sdf(current_pos, bounds_position, bounds_size, bounds_color);
+		}
+		
+		float point_distance = min(data.y, bounds_dist);
+		
 		float calc_epsilon = relative_epsilon ? epsilon / 3.4 * dfo : epsilon;
-		float point_distance = data.y;
 		dfo += max(point_distance * raystep_multiplier, calc_epsilon);
 		total_marches += 1.0;
 
 		if (point_distance < calc_epsilon || dfo > max_distance) {
 			orbit_trap_distance = data.x;
+			final_bounds_dist = bounds_dist;
+			final_bounds_color = bounds_color;
 			break;
 		};
+	}
+	
+	if (voxelization && final_bounds_dist < epsilon) {
+		palette_color_override = final_bounds_color;
+		override_palette_color = true;
 	}
 
 	return vec3(dfo > max_distance ? 0.0 : orbit_trap_distance, dfo, total_marches);
@@ -265,7 +293,34 @@ vec3 get_ray_direction(vec2 screen_uv, mat4 view_matrix, vec3 ro) {
 #include "lighting/lighting.gdshaderinc"
 
 vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color) {
-	vec3 data = ray_marcher(ray_origin, ray_dir);
+	vec3 final_color;
+	
+	if (building_mesh) {
+		vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));
+		vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
+		vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
+		
+		float sample_scale = 4.0;
+		vec3 sample_offset = camera_right * (screen_uv.x - 0.5) * sample_scale + 
+		                    camera_up * (screen_uv.y - 0.5) * sample_scale;
+		vec3 sample_pos = ray_origin + sample_offset;
+		
+		vec2 sdf_data = scene_sdf(sample_pos);
+		float distance_to_surface = sdf_data.y;
+		
+		if (distance_to_surface < 0.0) {
+			final_color = vec3(1.0);
+		} else {
+			final_color = vec3(0.0);
+		}
+		
+		return vec4(final_color, 1.0);
+	}
+
+	vec3 color;
+	bool override_color = false;
+	vec3 data = ray_marcher(ray_origin, ray_dir, color, override_color);
+	
 	float orbit_trap = data.x;
 	float dfo = data.y;
 	float total_marches = data.z;
@@ -278,10 +333,10 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	else if (color_wrapping == 6) orbit_x = tan(orbit_x);
 
 	vec3 palette_color = 3.0 * pow(texture(palette, vec2(orbit_x, 0.0)).xyz, vec3(color_exponent));
-	vec3 final_color;
+	if (override_color) palette_color = color;
+	
 	vec3 p = ray_origin + ray_dir * dfo;
 	vec3 normal = calculate_normal(p, normal_epsilon);
-
 	if (dfo >= max_distance) {
 		if (transparent_bg) discard_color = true;
 
@@ -333,7 +388,7 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	if (display == 2) return vec4(normal, 1.0);
 	else if (display == 3) return vec4(vec3(dfo * depth_scale), 1.0);
 
-	return vec4(final_color, dfo < max_distance ? 1.0 : 0.0);
+	return vec4(final_color, 1.0);
 }
 
 vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color, vec2 resolution) {
@@ -375,7 +430,7 @@ vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_m
 #endif
 
 	// Vignette (disabled for equirectangular)
-	if (camera_type != 1) {
+	if (camera_type != 1 && !building_mesh) {
 		if (is_exponential) {
 			vec2 vignette_uv = screen_uv * (1.0 - screen_uv.yx);
 			float vignette = pow(vignette_uv.x * vignette_uv.y * (vignette_radius * 17.0), vignette_strength * 0.5 * 0.75);
@@ -393,7 +448,7 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 	float time = float(TIME);
 	float baseSeed = hash(screen_uv + time * 0.01);
 
-	if (!dof_enabled || display != 0) return render_ray(ray_origin, ray_dir, screen_uv, projection_matrix, view_matrix, discard_color, resolution);
+	if (!dof_enabled || display != 0 || building_mesh) return render_ray(ray_origin, ray_dir, screen_uv, projection_matrix, view_matrix, discard_color, resolution);
 
 #ifdef USING_DOF
 	vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));

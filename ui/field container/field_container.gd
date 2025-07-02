@@ -215,6 +215,11 @@ func _ready() -> void:
 			field_changed_non_shader('strength', val, false)
 			},
 		],
+		# Voxelization
+		26: [
+			{'name': 'bounds_size', 'type': 'vec3', 'from': Vector3(0, 0, 0), 'to': Vector3(5, 5, 5), 'default_value': Vector3(2.5, 2.5, 2.5)},
+			{'name': 'bounds_position', 'type': 'vec3', 'from': Vector3(-5, -5, -5), 'to': Vector3(5, 5, 5), 'default_value': Vector3(0, 0, 0)},
+		],
 		# Effects / Vignette
 		8: [
 			{'name': 'vignette_radius', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 0.9},

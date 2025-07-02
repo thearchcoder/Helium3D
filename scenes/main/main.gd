@@ -123,6 +123,8 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if $AboutWindow.visible and Input.is_action_just_pressed('escape'):
 		_on_window_close_requested()
+	
+	%Fractal.material_override.set_shader_parameter('voxelization', $VoxelizeWindow.visible)
 
 func expand_templates(formula_content: String) -> String:
 	var lines := formula_content.split('\n')
@@ -622,3 +624,23 @@ func _on_done_author_pressed() -> void:
 
 func _on_randomize_window_close_requested() -> void: $RandomizeWindow.visible = false
 func _on_randomize_pressed() -> void: $RandomizeWindow.visible = true
+
+func _on_voxelize_window_close_requested() -> void: 
+	$VoxelizeWindow.visible = false
+	%SubViewport.refresh_taa()
+func _on_voxelize_pressed() -> void: 
+	$VoxelizeWindow.visible = true
+	%SubViewport.refresh_taa()
+
+func _on_voxelize_button_pressed() -> void:
+	var layers: Array = []
+	%Fractal.material_override.set_shader_parameter('building_mesh', true)
+	
+	for i in 450:
+		%SubViewport.refresh_taa()
+		await get_tree().process_frame
+		%Camera.position.z -= 1.0 / 450.0
+		var layer: Image = (%PostViewport.get_texture() as ViewportTexture).get_image()
+		layer.save_png('res://layers/layer' + str(i) + '.png')
+	
+	%Fractal.material_override.set_shader_parameter('building_mesh', false)

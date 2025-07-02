@@ -6,7 +6,6 @@ const float golden_ratio = (1.0 + sqrt(5.0)) * 0.5;
 ////////////////
 // Orbit trap //
 ////////////////
-
 float process_orbit_trap4d(vec4 z, vec4 o, int current_iteration) {
 	if (current_iteration < color_min_iterations) return 10000000.0; // large number so it gets discarded inside min()
 	if (current_iteration > color_max_iterations) return 10000000.0;
@@ -148,7 +147,6 @@ vec3 to_spherical(vec3 c) {
 ////////////////
 // Primitives //
 ////////////////
-
 float sphere_sdf2d(vec2 p, vec2 sphere_position, float radius) { return length(p - sphere_position) - radius; }
 float sphere_sdf3d(vec3 p, vec3 sphere_position, float radius) { return length(p - sphere_position) - radius; }
 float sphere_sdf4d(vec4 p, vec4 sphere_position, float radius) { return length(p - sphere_position) - radius; }
@@ -214,6 +212,60 @@ float icosahedron_sdf3d(vec3 p, float r) {
 	d = max(d, dot(p, n.zxy));
 	d = max(d, dot(p, normalize(vec3(1))));
 	return d - r;
+}
+
+float line_sdf(vec3 p, vec3 a, vec3 b, float r) {
+	vec3 pa = p - a, ba = b - a;
+	float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+	return length(pa - ba * h) - r;
+}
+
+float bounds_rectangle_sdf(vec3 p, vec3 position, vec3 size) {
+	vec3 half_size = size * 0.5;
+	vec3 q = abs(p - position) - half_size;
+	return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
+}
+
+float bounds_sdf(vec3 p, vec3 position, vec3 size, inout vec3 color) {
+	vec3 half_size = size * 0.5;
+	vec3 min_bounds = position - half_size;
+	vec3 max_bounds = position + half_size;
+	float r = 0.01;
+
+	// x-axis edges (red)
+	float d1 = line_sdf(p, vec3(min_bounds.x, min_bounds.y, min_bounds.z), vec3(max_bounds.x, min_bounds.y, min_bounds.z), r);
+	float d2 = line_sdf(p, vec3(min_bounds.x, max_bounds.y, min_bounds.z), vec3(max_bounds.x, max_bounds.y, min_bounds.z), r);
+	float d3 = line_sdf(p, vec3(min_bounds.x, min_bounds.y, max_bounds.z), vec3(max_bounds.x, min_bounds.y, max_bounds.z), r);
+	float d4 = line_sdf(p, vec3(min_bounds.x, max_bounds.y, max_bounds.z), vec3(max_bounds.x, max_bounds.y, max_bounds.z), r);
+
+	// y-axis edges (green)
+	float d5 = line_sdf(p, vec3(min_bounds.x, min_bounds.y, min_bounds.z), vec3(min_bounds.x, max_bounds.y, min_bounds.z), r);
+	float d6 = line_sdf(p, vec3(max_bounds.x, min_bounds.y, min_bounds.z), vec3(max_bounds.x, max_bounds.y, min_bounds.z), r);
+	float d7 = line_sdf(p, vec3(min_bounds.x, min_bounds.y, max_bounds.z), vec3(min_bounds.x, max_bounds.y, max_bounds.z), r);
+	float d8 = line_sdf(p, vec3(max_bounds.x, min_bounds.y, max_bounds.z), vec3(max_bounds.x, max_bounds.y, max_bounds.z), r);
+
+	// z-axis edges (blue)
+	float d9 = line_sdf(p, vec3(min_bounds.x, min_bounds.y, min_bounds.z), vec3(min_bounds.x, min_bounds.y, max_bounds.z), r);
+	float d10 = line_sdf(p, vec3(max_bounds.x, min_bounds.y, min_bounds.z), vec3(max_bounds.x, min_bounds.y, max_bounds.z), r);
+	float d11 = line_sdf(p, vec3(min_bounds.x, max_bounds.y, min_bounds.z), vec3(min_bounds.x, max_bounds.y, max_bounds.z), r);
+	float d12 = line_sdf(p, vec3(max_bounds.x, max_bounds.y, min_bounds.z), vec3(max_bounds.x, max_bounds.y, max_bounds.z), r);
+
+	float min_x = min(min(d1, d2), min(d3, d4));
+	float min_y = min(min(d5, d6), min(d7, d8));
+	float min_z = min(min(d9, d10), min(d11, d12));
+
+	float closest_dist = min(min_x, min(min_y, min_z));
+
+	float eps = r + 0.0001;
+	if (distance(closest_dist, min_x) < eps) {
+		color = vec3(1.0, 0.0, 0.0);
+	} else if (distance(closest_dist, min_y) < eps) {
+		color = vec3(0.0, 1.0, 0.0);
+	} else {
+		color = vec3(0.0, 0.0, 1.0);
+	}
+
+	return closest_dist;
 }
 
 ///////////////////

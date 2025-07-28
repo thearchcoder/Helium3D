@@ -1,0 +1,98 @@
+[gd_scene load_steps=11 format=3 uid="uid://bsolmllue5hwt"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_plag6"]
+[ext_resource type="Script" uid="uid://bbpqoandsgx8k" path="res://ui/fields/image field/image_field.gd" id="2_0hh4d"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="3_q1vc6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fiq4o"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1l333"]
+content_margin_left = 5.0
+bg_color = Color(0.144063, 0.144063, 0.144062, 1)
+corner_radius_top_left = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wox1n"]
+content_margin_left = 5.0
+bg_color = Color(0.0646966, 0.0646966, 0.0646963, 1)
+corner_radius_top_left = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pkbj8"]
+content_margin_left = 5.0
+bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+corner_radius_top_left = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6e01i"]
+content_margin_left = 7.0
+content_margin_right = 7.0
+bg_color = Color(0.144063, 0.144063, 0.144062, 1)
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qqtfa"]
+content_margin_left = 7.0
+content_margin_right = 7.0
+bg_color = Color(0.0646966, 0.0646966, 0.0646963, 1)
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_crnpa"]
+content_margin_left = 7.0
+content_margin_right = 7.0
+bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+
+[node name="ImageField" instance=ExtResource("1_plag6")]
+custom_minimum_size = Vector2(1.45519e-11, 32)
+anchor_right = 0.182
+anchor_bottom = 0.03
+offset_right = 0.0999756
+offset_bottom = -0.400002
+theme_override_constants/separation = 0
+script = ExtResource("2_0hh4d")
+
+[node name="ImageButton" type="Button" parent="." index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 0
+theme_override_constants/icon_max_width = 68
+theme_override_fonts/font = ExtResource("3_q1vc6")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/focus = SubResource("StyleBoxEmpty_fiq4o")
+theme_override_styles/hover = SubResource("StyleBoxFlat_1l333")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_wox1n")
+theme_override_styles/normal = SubResource("StyleBoxFlat_pkbj8")
+text = "Open an Image"
+expand_icon = true
+
+[node name="DiscardImage" type="Button" parent="." index="1"]
+layout_mode = 2
+theme_override_constants/icon_max_width = 2
+theme_override_fonts/font = ExtResource("3_q1vc6")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/focus = SubResource("StyleBoxEmpty_fiq4o")
+theme_override_styles/hover = SubResource("StyleBoxFlat_6e01i")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_qqtfa")
+theme_override_styles/normal = SubResource("StyleBoxFlat_crnpa")
+text = "x"
+expand_icon = true
+
+[node name="FileDialog" type="FileDialog" parent="." index="3"]
+unique_name_in_owner = true
+auto_translate_mode = 1
+title = "Open a File"
+initial_position = 2
+size = Vector2i(1152, 648)
+content_scale_factor = 1.28
+ok_button_text = "Open"
+dialog_hide_on_ok = true
+cancel_button_text = "Close"
+file_mode = 0
+access = 2
+
+[connection signal="pressed" from="ImageButton" to="." method="_on_image_button_pressed"]
+[connection signal="pressed" from="DiscardImage" to="." method="_on_discard_image_pressed"]
+[connection signal="confirmed" from="FileDialog" to="." method="_on_file_dialog_confirmed"]

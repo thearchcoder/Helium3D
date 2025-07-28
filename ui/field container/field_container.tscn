@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://owbf3siulolw"]
+
+[ext_resource type="Script" uid="uid://bdpxx7gxw0lbj" path="res://ui/field container/field_container.gd" id="1_jrlfu"]
+
+[node name="FieldContainer" type="MarginContainer"]
+anchors_preset = -1
+anchor_right = 0.293
+anchor_bottom = 1.0
+offset_right = -0.350037
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+script = ExtResource("1_jrlfu")
+
+[node name="Fields" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Names" type="VBoxContainer" parent="Fields"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Values" type="VBoxContainer" parent="Fields"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3

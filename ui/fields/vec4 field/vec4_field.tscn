@@ -1,0 +1,72 @@
+[gd_scene load_steps=5 format=3 uid="uid://ckwux6dfo5ixp"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_edy2i"]
+[ext_resource type="Script" uid="uid://bti4jadt1h8tw" path="res://ui/fields/vec4 field/vec_4_field.gd" id="2_fw4gi"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="3_jagun"]
+[ext_resource type="PackedScene" uid="uid://btv7ewx22x217" path="res://ui/fields/float field/float_field.tscn" id="4_lsfv7"]
+
+[node name="Vec4Field" instance=ExtResource("1_edy2i")]
+script = ExtResource("2_fw4gi")
+range_min = Vector4(-20, -20, -20, -20)
+
+[node name="ComponentLabels" type="VBoxContainer" parent="." index="0"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="X" type="Label" parent="ComponentLabels" index="0"]
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(1, 0.215686, 0.137255, 1)
+theme_override_fonts/font = ExtResource("3_jagun")
+text = " X: "
+
+[node name="Y" type="Label" parent="ComponentLabels" index="1"]
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(0.395393, 0.810062, 0.231169, 1)
+theme_override_fonts/font = ExtResource("3_jagun")
+text = " Y: "
+
+[node name="Z" type="Label" parent="ComponentLabels" index="2"]
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(0.392851, 0.647535, 0.994128, 1)
+theme_override_fonts/font = ExtResource("3_jagun")
+text = " Z: "
+
+[node name="W" type="Label" parent="ComponentLabels" index="3"]
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(0.860258, 0.618013, 7.70092e-07, 1)
+theme_override_fonts/font = ExtResource("3_jagun")
+text = " W: "
+
+[node name="Components" type="VBoxContainer" parent="." index="1"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="X" parent="Components" index="0" instance=ExtResource("4_lsfv7")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Y" parent="Components" index="1" instance=ExtResource("4_lsfv7")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Z" parent="Components" index="2" instance=ExtResource("4_lsfv7")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="W" parent="Components" index="3" instance=ExtResource("4_lsfv7")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[connection signal="value_changed" from="Components/X" to="." method="_on_x_value_changed"]
+[connection signal="value_changed" from="Components/Y" to="." method="_on_y_value_changed"]
+[connection signal="value_changed" from="Components/Z" to="." method="_on_z_value_changed"]
+[connection signal="value_changed" from="Components/W" to="." method="_on_w_value_changed"]

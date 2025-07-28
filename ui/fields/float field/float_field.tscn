@@ -1,0 +1,45 @@
+[gd_scene load_steps=6 format=3 uid="uid://btv7ewx22x217"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_2r76m"]
+[ext_resource type="Script" uid="uid://cfm8dadf7a5pb" path="res://ui/fields/float field/float_field.gd" id="2_tyxyw"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="3_3f0ar"]
+[ext_resource type="Theme" uid="uid://dihfr8o2e4ckf" path="res://ui/themes/slider.tres" id="4_s62g5"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_b6m3n"]
+
+[node name="FloatField" instance=ExtResource("1_2r76m")]
+anchor_right = 0.108
+anchor_bottom = 0.025
+offset_right = 0.639999
+offset_bottom = 0.0
+script = ExtResource("2_tyxyw")
+
+[node name="LineEdit" type="LineEdit" parent="." index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.42
+theme_override_constants/minimum_character_width = 2
+theme_override_fonts/font = ExtResource("3_3f0ar")
+text = "0.0"
+alignment = 1
+expand_to_text_length = true
+
+[node name="HSeparator" type="VSeparator" parent="." index="1"]
+layout_mode = 2
+theme_override_constants/separation = 2
+theme_override_styles/separator = SubResource("StyleBoxEmpty_b6m3n")
+
+[node name="HSlider" type="HSlider" parent="." index="2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme = ExtResource("4_s62g5")
+theme_override_constants/center_grabber = 1
+min_value = -20.0
+max_value = 20.0
+allow_greater = true
+allow_lesser = true
+
+[connection signal="text_changed" from="LineEdit" to="." method="_on_line_edit_text_changed"]
+[connection signal="drag_ended" from="HSlider" to="." method="_on_h_slider_drag_ended"]
+[connection signal="value_changed" from="HSlider" to="." method="_on_h_slider_value_changed"]

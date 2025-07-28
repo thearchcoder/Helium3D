@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3 uid="uid://3bm0lhhd8bm0"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_qyg35"]
+[ext_resource type="Script" uid="uid://cvi8i3ou8b2qt" path="res://ui/fields/color field/color_field.gd" id="2_mk370"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cpmcy"]
+bg_color = Color(0, 0, 0, 0.352941)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0, 0, 0, 0.392157)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l6l4t"]
+
+[node name="ColorField" instance=ExtResource("1_qyg35")]
+anchor_right = 0.0333333
+anchor_bottom = 0.0296296
+offset_right = 0.0
+offset_bottom = 0.0
+theme_override_constants/separation = 0
+script = ExtResource("2_mk370")
+metadata/_edit_use_anchors_ = true
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="." index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_cpmcy")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_cpmcy")
+theme_override_styles/hover = SubResource("StyleBoxFlat_cpmcy")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_l6l4t")
+text = "e"
+
+[connection signal="color_changed" from="ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
+[connection signal="popup_closed" from="ColorPickerButton" to="." method="_on_color_picker_button_popup_closed"]

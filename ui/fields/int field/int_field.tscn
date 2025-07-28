@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=3 uid="uid://cm48vjc7rstpn"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_d11nk"]
+[ext_resource type="Script" uid="uid://drbtmju4ilsu3" path="res://ui/fields/int field/int_field.gd" id="2_eqig7"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="3_r87ke"]
+[ext_resource type="Theme" uid="uid://dihfr8o2e4ckf" path="res://ui/themes/slider.tres" id="4_7j4bt"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_adlxb"]
+
+[node name="IntField" instance=ExtResource("1_d11nk")]
+anchor_right = 0.238
+anchor_bottom = 0.037
+offset_right = 0.039978
+offset_bottom = 0.0400009
+script = ExtResource("2_eqig7")
+
+[node name="LineEdit" type="LineEdit" parent="." index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.42
+theme_override_constants/minimum_character_width = 2
+theme_override_fonts/font = ExtResource("3_r87ke")
+text = "0"
+alignment = 1
+expand_to_text_length = true
+
+[node name="HSeparator" type="VSeparator" parent="." index="1"]
+layout_mode = 2
+theme_override_constants/separation = 2
+theme_override_styles/separator = SubResource("StyleBoxEmpty_adlxb")
+
+[node name="HSlider" type="HSlider" parent="." index="2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme = ExtResource("4_7j4bt")
+theme_override_constants/center_grabber = 1
+min_value = -20.0
+max_value = 20.0
+allow_greater = true
+allow_lesser = true
+
+[connection signal="text_changed" from="LineEdit" to="." method="_on_line_edit_text_changed"]
+[connection signal="value_changed" from="HSlider" to="." method="_on_h_slider_value_changed"]

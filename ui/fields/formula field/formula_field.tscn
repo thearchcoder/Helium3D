@@ -1,0 +1,66 @@
+[gd_scene load_steps=9 format=3 uid="uid://hjiutbf52d4r"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_idpb3"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="2_788kb"]
+[ext_resource type="Script" uid="uid://dpq6x78nkhf10" path="res://ui/fields/formula field/formula_field.gd" id="2_t45rt"]
+[ext_resource type="PackedScene" uid="uid://caa5e0qf2jkom" path="res://ui/formula search menu/formula_search_menu.tscn" id="4_7tgqj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4o5ok"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7y4ma"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_20hyn"]
+bg_color = Color(0.0807833, 0.0807834, 0.0807832, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wa5cg"]
+
+[node name="FormulaField" instance=ExtResource("1_idpb3")]
+anchor_right = 0.2
+anchor_bottom = 0.054
+offset_right = 0.0
+offset_bottom = -3.32
+theme_override_constants/separation = 10
+script = ExtResource("2_t45rt")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." index="1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Left" type="Button" parent="HBoxContainer" index="0"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_788kb")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_4o5ok")
+text = " < "
+
+[node name="Label" type="Button" parent="HBoxContainer" index="1"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_788kb")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/focus = SubResource("StyleBoxEmpty_7y4ma")
+theme_override_styles/normal = SubResource("StyleBoxFlat_20hyn")
+text = "Selection field"
+
+[node name="Right" type="Button" parent="HBoxContainer" index="2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_788kb")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_wa5cg")
+text = " > "
+
+[node name="Popup" parent="." index="2" instance=ExtResource("4_7tgqj")]
+
+[node name="Label" type="Label" parent="." index="3"]
+visible = false
+layout_mode = 2
+text = "idea formula field, use selection field. but if we the button it opens a tree like structure to pick the formula, just like godots node adding menu."
+
+[connection signal="pressed" from="HBoxContainer/Left" to="." method="_on_left_pressed"]
+[connection signal="pressed" from="HBoxContainer/Label" to="." method="_on_label_pressed"]
+[connection signal="pressed" from="HBoxContainer/Right" to="." method="_on_right_pressed"]

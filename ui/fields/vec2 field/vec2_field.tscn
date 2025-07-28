@@ -1,0 +1,49 @@
+[gd_scene load_steps=5 format=3 uid="uid://ploxa600uqjm"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_k5gaa"]
+[ext_resource type="Script" uid="uid://c7cko67pj8psb" path="res://ui/fields/vec2 field/vec_2_field.gd" id="2_55y2c"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="3_vdvlb"]
+[ext_resource type="PackedScene" uid="uid://btv7ewx22x217" path="res://ui/fields/float field/float_field.tscn" id="4_nrbux"]
+
+[node name="Vec2Field" instance=ExtResource("1_k5gaa")]
+anchor_right = 0.192
+anchor_bottom = 0.092
+offset_right = 0.359985
+offset_bottom = -18.36
+script = ExtResource("2_55y2c")
+
+[node name="ComponentLabels" type="VBoxContainer" parent="." index="0"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="X" type="Label" parent="ComponentLabels" index="0"]
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(1, 0.215686, 0.137255, 1)
+theme_override_fonts/font = ExtResource("3_vdvlb")
+text = " X: "
+
+[node name="Y" type="Label" parent="ComponentLabels" index="1"]
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(0.395393, 0.810062, 0.231169, 1)
+theme_override_fonts/font = ExtResource("3_vdvlb")
+text = " Y: "
+
+[node name="Components" type="VBoxContainer" parent="." index="1"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="X" parent="Components" index="0" instance=ExtResource("4_nrbux")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Y" parent="Components" index="1" instance=ExtResource("4_nrbux")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[connection signal="value_changed" from="Components/X" to="." method="_on_x_value_changed"]
+[connection signal="value_changed" from="Components/Y" to="." method="_on_y_value_changed"]

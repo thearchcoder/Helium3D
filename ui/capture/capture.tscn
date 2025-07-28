@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://bflxulcqo30vy"]
+
+[ext_resource type="Script" uid="uid://yj1ftkft5due" path="res://ui/capture/capture.gd" id="1_k2smm"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_65adk"]
+bg_color = Color(0.0728426, 0.0728426, 0.0728426, 0.293)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="Capture" type="MarginContainer"]
+custom_minimum_size = Vector2(97.5, 97.5)
+anchors_preset = -1
+anchor_right = 0.051
+anchor_bottom = 0.09
+offset_right = -0.420006
+offset_bottom = 0.299995
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+script = ExtResource("1_k2smm")
+
+[node name="Capture" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="Capture"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="Capture/Control"]
+layout_mode = 2
+offset_left = -5.0
+offset_right = 93.0
+offset_bottom = 93.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_65adk")
+
+[node name="TextureRect" type="TextureRect" parent="Capture"]
+layout_mode = 2
+size_flags_vertical = 3

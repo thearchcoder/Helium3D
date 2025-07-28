@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dggmsfkvwvli5"]
+
+[ext_resource type="Shader" uid="uid://8mfobireefjm" path="res://scenes/main/texture_rect_pass.gdshader" id="1_0oopc"]
+
+[resource]
+shader = ExtResource("1_0oopc")
+shader_parameter/sharpness = 1.0
+shader_parameter/camera_kalaidoscope = 4.000000000014552
+shader_parameter/display_tiled_render = false

@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://db57n1ak0l5yd"]
+
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="1_mq4w3"]
+[ext_resource type="Script" uid="uid://dofu7tap8lsgf" path="res://ui/logs/logs.gd" id="1_r76s5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_utolb"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0, 0, 0, 0.0588235)
+
+[node name="Logs" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+script = ExtResource("1_r76s5")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("1_mq4w3")
+theme_override_font_sizes/normal_font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_utolb")

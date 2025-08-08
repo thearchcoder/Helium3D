@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://bhoexnwfcrsv5"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_goty3"]
+[ext_resource type="Script" uid="uid://d0g3uscj06q1s" path="res://ui/fields/button field/button_field.gd" id="2_j7sux"]
+
+[node name="ButtonField" instance=ExtResource("1_goty3")]
+anchor_right = 0.066
+anchor_bottom = 0.029000001
+offset_right = -0.18362427
+offset_bottom = -0.3200016
+theme_override_constants/separation = 0
+script = ExtResource("2_j7sux")
+
+[node name="Button" type="Button" parent="." index="1"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Button Field"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

@@ -1,0 +1,126 @@
+[gd_scene load_steps=13 format=3 uid="uid://btjotc720lyxd"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_x23c8"]
+[ext_resource type="Script" uid="uid://cjqhqftgkhuim" path="res://ui/fields/palette field/palette_field.gd" id="2_560la"]
+[ext_resource type="PackedScene" uid="uid://dv5u2gutb4uqn" path="res://ui/fields/palette field color block/palette_field_color_block.tscn" id="3_06evx"]
+[ext_resource type="Texture2D" uid="uid://xgfmikrv5y1t" path="res://resources/icons/gradientblur.svg" id="3_cbtqc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mnd2h"]
+bg_color = Color(0.0807833, 0.0807834, 0.0807832, 1)
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
+
+[sub_resource type="Gradient" id="Gradient_7w6g2"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.766393)
+colors = PackedColorArray(0.679304, 0.835563, 1, 1, 0.554142, 0.68827, 0.967115, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_qoncu"]
+gradient = SubResource("Gradient_7w6g2")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ptrqr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3iilv"]
+content_margin_left = 3.0
+content_margin_right = 3.0
+bg_color = Color(0.0807833, 0.0807834, 0.0807832, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7302w"]
+content_margin_left = 3.0
+content_margin_right = 3.0
+bg_color = Color(0.0605303, 0.0605304, 0.0605302, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8uu56"]
+content_margin_left = 3.0
+content_margin_right = 3.0
+bg_color = Color(0.111197, 0.111197, 0.111197, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_el3ur"]
+
+[node name="PaletteField" instance=ExtResource("1_x23c8")]
+custom_minimum_size = Vector2(1.45519e-11, 35)
+anchor_top = -0.012
+anchor_right = 0.157
+anchor_bottom = 0.044
+offset_top = -0.04
+offset_right = 0.849976
+offset_bottom = -33.52
+theme_override_constants/separation = 0
+script = ExtResource("2_560la")
+
+[node name="MarginContainer" type="MarginContainer" parent="." index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="Panel" type="Panel" parent="MarginContainer" index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_mnd2h")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" index="1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer" index="0"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+texture = SubResource("GradientTexture1D_qoncu")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer" index="2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Button" type="Button" parent="MarginContainer/HBoxContainer2" index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ptrqr")
+flat = true
+
+[node name="Blocks" type="Control" parent="MarginContainer" index="3"]
+unique_name_in_owner = true
+z_index = 1
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="PaletteFieldColorBlock" parent="MarginContainer/Blocks" index="0" instance=ExtResource("3_06evx")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+offset = 1.45519e-11
+
+[node name="PaletteFieldColorBlock2" parent="MarginContainer/Blocks" index="1" instance=ExtResource("3_06evx")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+color = Color(4.13924e-06, 0.547273, 0.732185, 1)
+
+[node name="BlurButton" type="Button" parent="." index="2"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_3iilv")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_7302w")
+theme_override_styles/hover = SubResource("StyleBoxFlat_8uu56")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_el3ur")
+icon = ExtResource("3_cbtqc")
+
+[connection signal="button_down" from="MarginContainer/HBoxContainer2/Button" to="." method="_on_button_button_down"]
+[connection signal="mouse_entered" from="MarginContainer/Blocks" to="." method="_on_blocks_mouse_entered"]
+[connection signal="mouse_exited" from="MarginContainer/Blocks" to="." method="_on_blocks_mouse_exited"]
+[connection signal="pressed" from="BlurButton" to="." method="_on_blur_button_pressed"]

@@ -1,0 +1,55 @@
+[gd_scene load_steps=5 format=3 uid="uid://4bx65d7nnvmf"]
+
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="1_fx3a6"]
+[ext_resource type="Script" uid="uid://dmr1gt6djfxds" path="res://ui/pages/formula page/formula_page.gd" id="1_px87o"]
+[ext_resource type="PackedScene" uid="uid://hjiutbf52d4r" path="res://ui/fields/formula field/formula_field.tscn" id="9_kw4c4"]
+
+[sub_resource type="FontVariation" id="FontVariation_fxm3f"]
+base_font = ExtResource("1_fx3a6")
+spacing_top = 1
+
+[node name="FormulaPage" type="MarginContainer"]
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1294.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+script = ExtResource("1_px87o")
+
+[node name="Fields" type="ScrollContainer" parent="."]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Fields"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Names" type="VBoxContainer" parent="Fields/HBoxContainer"]
+layout_mode = 2
+
+[node name="Formulas" type="Label" parent="Fields/HBoxContainer/Names"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/line_spacing = -15
+theme_override_fonts/font = SubResource("FontVariation_fxm3f")
+text = "
+Formula: 
+
+"
+vertical_alignment = 1
+
+[node name="Values" type="VBoxContainer" parent="Fields/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Formulas" parent="Fields/HBoxContainer/Values" instance=ExtResource("9_kw4c4")]
+layout_mode = 2
+options = Array[String](["None"])
+label_overrides = Array[String](["None"])
+
+[connection signal="value_changed" from="Fields/HBoxContainer/Values/Formulas" to="." method="set_formula"]

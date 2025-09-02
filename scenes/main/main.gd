@@ -6,6 +6,7 @@ var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
 var PATCH := VERSION.split('.')[2].split('-')[0]
 
+const MAX_FORMULAS := 10
 const LAZY_IMPORTING := true
 const VAR_TEMPLATES := {
 	'kifs_rotation': [
@@ -212,6 +213,8 @@ func _process(_delta: float) -> void:
 		if $VoxelizeWindow.visible: $VoxelizeWindow.visible = false
 	
 	%Fractal.material_override.set_shader_parameter('voxelization', $VoxelizeWindow.visible)
+	
+	%Export.disabled = $VoxelizedMeshWorld/Mesh.mesh == null
 
 func _input(event: InputEvent) -> void:
 	if %TextureRect.is_holding:
@@ -253,7 +256,7 @@ func expand_templates(formula_content: String) -> String:
 		if trimmed_line.begins_with('// template '):
 			var template_name := trimmed_line.substr(12).strip_edges()
 			for template_var in (VAR_TEMPLATES[template_name] as Array[String]):
-				expanded_lines.append(template_var)
+				expanded_lines.append('// ' + template_var)
 		else:
 			expanded_lines.append(line)
 	
@@ -323,6 +326,31 @@ func get_app_state(optimize_for_clipboard: bool = false) -> Dictionary:
 	
 	return data
 
+func create_duplicate(formula_name: String, var_data: Dictionary, original_content: String, path_to_formulas: String, dupe_identifier: String) -> void:
+	var path := path_to_formulas + formula_name + 'dupe' + dupe_identifier + '.gdshaderinc'
+	var file := FileAccess.open(path, FileAccess.WRITE)
+
+	var content := original_content
+	var lines := content.split('\n')
+
+	for i in range(lines.size()):
+		var prevent_replacement := false
+		
+		if i > 0 and lines[i - 1].strip_edges().begins_with("// [PREVENT-REPLACEMENT]"):
+			prevent_replacement = true
+		
+		if not prevent_replacement:
+			lines[i] = lines[i].replace(formula_name, formula_name + 'dupe' + dupe_identifier)
+		
+		# Add " Dupe X" to second line (index 1) if it exists
+		if i == 1 and lines.size() > 1:
+			lines[i] += ' Dupe ' + dupe_identifier.capitalize()
+
+	content = '\n'.join(lines)
+
+	file.store_string(content)
+	file.close()
+
 func initialize_formulas(path_to_formulas: String) -> void:
 	if formulas != []:
 		return
@@ -330,17 +358,36 @@ func initialize_formulas(path_to_formulas: String) -> void:
 	var paths: PackedStringArray = DirAccess.get_files_at(path_to_formulas)
 	var skipped_formulas: int = 0
 	
+	# Create dupes for all formulas
 	for formula_file_path in paths:
 		if formula_file_path.get_file().get_extension().ends_with('uid'):
 			continue
 		
 		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
 		var formula_file_contents: String = formula_file.get_as_text()
+		
 		formula_file_contents = expand_templates(formula_file_contents)
 		var data: Dictionary = parse_data(formula_file_contents, (paths.find(formula_file_path) / 2) + 1 - skipped_formulas)
+		
+		# Create duplicate for each formula (excluding already duplicated ones)
+		if not formula_file_path.contains('dupea.gdshaderinc'):
+			for i in MAX_FORMULAS:
+				create_duplicate(data['id'], data['variables'], formula_file_contents, path_to_formulas, "abcdefghijklmnopqrstuvwxyz".split("")[i])
+	
+	for formula_file_path in paths:
+		if formula_file_path.get_file().get_extension().ends_with('uid'):
+			continue
+		
+		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
+		var formula_file_contents: String = formula_file.get_as_text()
+		
+		formula_file_contents = expand_templates(formula_file_contents)
+		var data: Dictionary = parse_data(formula_file_contents, (paths.find(formula_file_path) / 2) + 1 - skipped_formulas)
+		
 		if data['disabled']:
 			skipped_formulas += 1
 			continue
+		
 		formulas.append(data)
 	
 	formulas.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["index"] < b["index"])
@@ -619,17 +666,6 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 				var function: String = 'max' if formula['type'] == 'difs' else 'min'
 				single_difs_code += '//sdf_result = ' + formula['id'] + '_sdf(original_z); de = ' + function + '(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@' + str(formula['index']) + '\n'
 		shader_code = shader_code.replace('// -@MultiDIFS', single_difs_code)
-		
-	if '// -@SingleFormulaCheck':
-		var check_code: String = ''
-		for i in 3:
-			for formula in formulas:
-				if formula['type'] == 'primitive' || formula['type'] == 'difs':
-					check_code += ' || formulas[' + str(i) + '] == ' + str(formula['index'])
-			check_code += '|| formulas[' + str(i) + '] <= 0'
-		
-		check_code = check_code.trim_prefix(' || ')
-		shader_code = shader_code.replace('// -@SingleFormulaCheck', "if ({check}) single_formula = true;".replace('{check}', check_code))
 	
 	if '// -@Uniforms' in shader_code:
 		var uniforms_code: String = ""
@@ -646,9 +682,44 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 		
 		shader_code = shader_code.replace('// -@Uniforms', uniforms_code)
 	
+	var maintype_count := 0
+	var primitive_count := 0
+	var difs_count := 0
+	
+	for current_formula in current_formulas:
+		if current_formula == -1 or current_formula == 0:
+			continue
+		
+		var formula_data: Dictionary = get_formula_data_from_index(current_formula)
+		var formula_type: String = formula_data['type']
+		
+		#print(formula_type, ' | ', formula_data['id'])
+		match formula_type:
+			"primitive":
+				primitive_count += 1
+			"difs":
+				difs_count += 1
+			_:
+				maintype_count += 1
+	
+	var single_formula := true
+	
+	if maintype_count >= 2 or primitive_count >= 2 or difs_count >= 2:
+		single_formula = false
+	elif maintype_count >= 1 and difs_count >= 1:
+		single_formula = false
+	elif maintype_count >= 1 and primitive_count >= 1:
+		single_formula = false
+	elif primitive_count >= 1 and difs_count >= 1:
+		single_formula = false
+	
+	#print('MULTI FORMULA: ', not single_formula)
+	%Fractal.material_override.set_shader_parameter('single_formula', single_formula)
+	
 	var lines := shader_code.split("\n")
 	var modified_lines := []
 	
+	var only_primitive_based_formulas: bool = true
 	var only_sdf_based_formulas: bool = true
 	
 	for formula in current_formulas:
@@ -656,9 +727,14 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 			continue
 		
 		var data: Dictionary = get_formula_data_from_index(formula)
-		if data['type'] != 'difs' && data['type'] != 'primitive':
+		if data['type'] != 'primitive':
+			only_primitive_based_formulas = false
+		if data['type'] != 'primitive' && data['type'] != 'difs':
 			only_sdf_based_formulas = false
 	
+	#print('ONLY PRIMITIVE BASED FORMULAS: ', only_primitive_based_formulas)
+	#print('ONLY SDF BASED FORMULAS: ', only_sdf_based_formulas)
+	%Fractal.material_override.set_shader_parameter('only_primitive_based_formulas', only_primitive_based_formulas)
 	%Fractal.material_override.set_shader_parameter('only_sdf_based_formulas', only_sdf_based_formulas)
 	
 	for i: int in range(lines.size()):
@@ -712,6 +788,7 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 	var file: FileAccess = FileAccess.open('res://renderer/generated_shader_code.gdshader', FileAccess.WRITE)
 	file.store_string(shader.code)
 	file.close()
+	#print('---------------------------------')
 
 func _on_difficulty_pressed() -> void:
 	if difficulty == 'simple':
@@ -765,6 +842,7 @@ func _on_randomize_pressed() -> void: $RandomizeWindow.visible = true
 
 func _on_voxelize_window_close_requested() -> void: 
 	$VoxelizeWindow.visible = false
+	await get_tree().process_frame
 	%SubViewport.refresh_taa()
 
 func _on_voxelize_pressed() -> void: 
@@ -777,6 +855,8 @@ func set_resolution(val: Vector2) -> void:
 			value_node.value = val
 
 func _on_voxelize_button_pressed() -> void:
+	%Voxelize.disabled = true
+	
 	var bounds_size: Vector3 = fields.get('bounds_size', Vector3(2.5, 2.5, 2.5))
 	var bounds_position: Vector3 = fields.get('bounds_position', Vector3.ZERO)
 	var resolution: int = fields.get('voxel_resolution', 450)
@@ -795,9 +875,6 @@ func _on_voxelize_button_pressed() -> void:
 	%Fractal.material_override.set_shader_parameter('sample_scale', max(bounds_size.x, bounds_size.y))
 	%Fractal.material_override.set_shader_parameter('voxel_screen_resolution', Vector2i(resolution, resolution))
 	
-	await get_tree().process_frame
-	await get_tree().process_frame
-	
 	var start_z: float = bounds_position.z + bounds_size.z * 0.5
 	var end_z: float = bounds_position.z - bounds_size.z * 0.5
 	var step_size: float = bounds_size.z / resolution
@@ -807,12 +884,18 @@ func _on_voxelize_button_pressed() -> void:
 	%Camera.rotation = Vector3.ZERO
 	%Camera.projection = Camera3D.ProjectionType.PROJECTION_ORTHOGONAL
 	
-	for i: int in resolution:
+	$Voxelization.StartCapture(resolution)
+	
+	await get_tree().process_frame
+	await get_tree().process_frame
+	
+	for i: int in resolution + 2:
 		%SubViewport.refresh_taa()
 		await get_tree().process_frame
-		%Player.position.z -= step_size
-		var layer: Image = (%PostViewport.get_texture() as ViewportTexture).get_image()
-		layer.save_png('res://layers/layer' + str(i) + '.png')
+		if i >= 2:
+			%Player.position.z -= step_size
+			var layer: Image = (%PostViewport.get_texture() as ViewportTexture).get_image()
+			$Voxelization.AddImage(i - 2, layer)
 	
 	%Player.position = original_player_position
 	%Head.rotation = original_head_rotation
@@ -823,163 +906,23 @@ func _on_voxelize_button_pressed() -> void:
 	%SubViewport.force_disable_low_scaling = false
 	%SubViewport.refresh_taa()
 	%Voxelize.release_focus()
-
-func create_voxel_mesh() -> void:
-	var voxel_data: Array = []
-	var voxel_size: float = 2.5 / 450.0
+	%VoxelizedMeshWorld.render_target_update_mode = SubViewport.UPDATE_ONCE
 	
-	for layer_idx: int in 450:
-		var layer_path: String = 'res://layers/layer' + str(layer_idx) + '.png'
-		if not FileAccess.file_exists(layer_path):
-			continue
-			
-		var layer_image: Image = Image.load_from_file(layer_path)
-		if not layer_image:
-			continue
-			
-		var layer_voxels: Array = []
+	$Voxelization.VoxelizeFromBuffer()
+	var voxel_mesh: ArrayMesh = await $Voxelization.MeshReady
+	
+	if voxel_mesh != null:
+		$VoxelizedMeshWorld/Mesh.mesh = voxel_mesh
 		
-		for y: int in 450:
-			var row_voxels: Array = []
-			for x: int in 450:
-				var pixel: Color = layer_image.get_pixel(x, y)
-				row_voxels.append(pixel.r > 0.5)
-			layer_voxels.append(row_voxels)
-		
-		voxel_data.append(layer_voxels)
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = Color.WHITE
+		$VoxelizedMeshWorld/Mesh.set_surface_override_material(0, mat)
 	
-	generate_mesh_from_voxels(voxel_data, voxel_size)
+	%SubViewport.refresh_taa()
+	%Voxelize.disabled = false
 
-func generate_mesh_from_voxels(voxel_data: Array, voxel_size: float) -> void:
-	var arrays: Array = []
-	arrays.resize(Mesh.ARRAY_MAX)
-	
-	var vertices: PackedVector3Array = []
-	var normals: PackedVector3Array = []
-	var indices: PackedInt32Array = []
-	
-	var vertex_index: int = 0
-	
-	for z: int in voxel_data.size():
-		var layer: Array = voxel_data[z]
-		for y: int in layer.size():
-			var row: Array = layer[y]
-			for x: int in row.size():
-				if not row[x]:
-					continue
-				
-				var pos: Vector3 = Vector3(x, y, z) * voxel_size
-				pos -= Vector3(225, 225, 225) * voxel_size
-				
-				if should_render_face(voxel_data, x, y, z, Vector3i.RIGHT):
-					add_face_vertices(vertices, normals, pos, voxel_size, Vector3.RIGHT)
-					add_face_indices(indices, vertex_index)
-					vertex_index += 4
-				
-				if should_render_face(voxel_data, x, y, z, Vector3i.LEFT):
-					add_face_vertices(vertices, normals, pos, voxel_size, Vector3.LEFT)
-					add_face_indices(indices, vertex_index)
-					vertex_index += 4
-				
-				if should_render_face(voxel_data, x, y, z, Vector3i.UP):
-					add_face_vertices(vertices, normals, pos, voxel_size, Vector3.UP)
-					add_face_indices(indices, vertex_index)
-					vertex_index += 4
-				
-				if should_render_face(voxel_data, x, y, z, Vector3i.DOWN):
-					add_face_vertices(vertices, normals, pos, voxel_size, Vector3.DOWN)
-					add_face_indices(indices, vertex_index)
-					vertex_index += 4
-				
-				if should_render_face(voxel_data, x, y, z, Vector3i.FORWARD):
-					add_face_vertices(vertices, normals, pos, voxel_size, Vector3.FORWARD)
-					add_face_indices(indices, vertex_index)
-					vertex_index += 4
-				
-				if should_render_face(voxel_data, x, y, z, Vector3i.BACK):
-					add_face_vertices(vertices, normals, pos, voxel_size, Vector3.BACK)
-					add_face_indices(indices, vertex_index)
-					vertex_index += 4
-	
-	arrays[Mesh.ARRAY_VERTEX] = vertices
-	arrays[Mesh.ARRAY_NORMAL] = normals
-	arrays[Mesh.ARRAY_INDEX] = indices
-	
-	var mesh: ArrayMesh = ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	
-	var mesh_instance: MeshInstance3D = MeshInstance3D.new()
-	mesh_instance.mesh = mesh
-	mesh_instance.name = "VoxelizedFractal"
-	
-	var material: StandardMaterial3D = StandardMaterial3D.new()
-	material.albedo_color = Color.WHITE
-	mesh_instance.material_override = material
-	
-	get_tree().current_scene.add_child(mesh_instance)
-	
-	ResourceSaver.save(mesh, "res://voxelized_fractal.tres")
+func _on_export_pressed() -> void:
+	%VoxelizationFileDialog.show()
 
-func should_render_face(voxel_data: Array, x: int, y: int, z: int, direction: Vector3i) -> bool:
-	var check_x: int = x + direction.x
-	var check_y: int = y + direction.y
-	var check_z: int = z + direction.z
-	
-	if check_z < 0 or check_z >= voxel_data.size():
-		return true
-	
-	var layer: Array = voxel_data[check_z]
-	if check_y < 0 or check_y >= layer.size():
-		return true
-	
-	var row: Array = layer[check_y]
-	if check_x < 0 or check_x >= row.size():
-		return true
-	
-	return not row[check_x]
-
-func add_face_vertices(vertices: PackedVector3Array, normals: PackedVector3Array, pos: Vector3, size: float, normal: Vector3) -> void:
-	var half_size: float = size * 0.5
-	
-	match normal:
-		Vector3.RIGHT:
-			vertices.append(pos + Vector3(half_size, -half_size, -half_size))
-			vertices.append(pos + Vector3(half_size, half_size, -half_size))
-			vertices.append(pos + Vector3(half_size, half_size, half_size))
-			vertices.append(pos + Vector3(half_size, -half_size, half_size))
-		Vector3.LEFT:
-			vertices.append(pos + Vector3(-half_size, -half_size, half_size))
-			vertices.append(pos + Vector3(-half_size, half_size, half_size))
-			vertices.append(pos + Vector3(-half_size, half_size, -half_size))
-			vertices.append(pos + Vector3(-half_size, -half_size, -half_size))
-		Vector3.UP:
-			vertices.append(pos + Vector3(-half_size, half_size, -half_size))
-			vertices.append(pos + Vector3(-half_size, half_size, half_size))
-			vertices.append(pos + Vector3(half_size, half_size, half_size))
-			vertices.append(pos + Vector3(half_size, half_size, -half_size))
-		Vector3.DOWN:
-			vertices.append(pos + Vector3(-half_size, -half_size, half_size))
-			vertices.append(pos + Vector3(-half_size, -half_size, -half_size))
-			vertices.append(pos + Vector3(half_size, -half_size, -half_size))
-			vertices.append(pos + Vector3(half_size, -half_size, half_size))
-		Vector3.FORWARD:
-			vertices.append(pos + Vector3(-half_size, -half_size, half_size))
-			vertices.append(pos + Vector3(half_size, -half_size, half_size))
-			vertices.append(pos + Vector3(half_size, half_size, half_size))
-			vertices.append(pos + Vector3(-half_size, half_size, half_size))
-		Vector3.BACK:
-			vertices.append(pos + Vector3(half_size, -half_size, -half_size))
-			vertices.append(pos + Vector3(-half_size, -half_size, -half_size))
-			vertices.append(pos + Vector3(-half_size, half_size, -half_size))
-			vertices.append(pos + Vector3(half_size, half_size, -half_size))
-	
-	for i: int in 4:
-		normals.append(normal)
-
-func add_face_indices(indices: PackedInt32Array, start_vertex: int) -> void:
-	indices.append(start_vertex)
-	indices.append(start_vertex + 1)
-	indices.append(start_vertex + 2)
-	indices.append(start_vertex)
-	indices.append(start_vertex + 2)
-	indices.append(start_vertex + 3)
+func _on_voxelization_file_dialog_file_selected(path: String) -> void:
+	$Voxelization.SaveMesh($VoxelizedMeshWorld/Mesh.mesh, path)

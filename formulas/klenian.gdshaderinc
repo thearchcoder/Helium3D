@@ -10,11 +10,6 @@
 // float box_size_z[0.0, 2.0] = 1.0
 // [CODE]
 
-vec2 wrap(vec2 x, vec2 a, vec2 s){
-	x -= s;
-	return (x - a * floor(x / a)) + s;
-}
-
 void klenian_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i, inout float DF, inout float a, inout float b, inout float f, inout vec3 llz, inout vec3 lz, inout bool escaped) {
 	vec3 z = z4.xyz;
 	float KleinR = fklenian_x;

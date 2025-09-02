@@ -34,3 +34,9 @@ func _on_popup_menu_focus_exited() -> void:
 
 func _on_mouse_entered() -> void: mouse_in_area = true
 func _on_mouse_exited() -> void: mouse_in_area = false
+
+func _on_popup_menu_id_pressed(id: int) -> void:
+	if type == 0:
+		$"../../../..".update_main()
+	elif type == 1 and id == 0:
+		$"../../../..".use_state(self)

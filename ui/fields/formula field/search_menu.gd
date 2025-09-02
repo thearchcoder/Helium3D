@@ -101,7 +101,8 @@ func _ready() -> void:
 	$"../../../..".connect('value_changed', update_selected_item)
 	await get_tree().process_frame
 	for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
-		add_option(formula['formatted_id'])
+		if not formula['formatted_id'].to_lower().contains(' dupe '):
+			add_option(formula['formatted_id'])
 	reload_popup()
 
 func _on_option_button_item_selected(index: int) -> void:
@@ -113,6 +114,7 @@ func _on_option_button_item_selected(index: int) -> void:
 func _on_search_close_button_pressed() -> void:
 	$"../../..".visible = false
 	filter = ''
+	reload_popup()
 
 func _on_popup_close_requested() -> void:
 	_on_search_close_button_pressed()

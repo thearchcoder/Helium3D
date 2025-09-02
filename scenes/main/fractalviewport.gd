@@ -95,10 +95,10 @@ func refresh_taa() -> void:
 		#if not get_tree().current_scene.busy_rendering_tiles:
 			#%Rendering.compute_tiled_render()
 
-func refresh_no_taa() -> void:
-	since_last_dynamic_update = 0.0
-	since_last_dynamic_update_frame = 0
-	%ProgressionWhiteNoiseViewport.reset()
-	
-	#if get_tree().current_scene.using_tiling and not get_tree().current_scene.busy_rendering_tiles:
-		#%Rendering.compute_tiled_render()
+#func refresh_no_taa() -> void:
+	#since_last_dynamic_update = 0.0
+	#since_last_dynamic_update_frame = 0
+	#%ProgressionWhiteNoiseViewport.reset()
+	#
+	##if get_tree().current_scene.using_tiling and not get_tree().current_scene.busy_rendering_tiles:
+		##%Rendering.compute_tiled_render()

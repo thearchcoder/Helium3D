@@ -15,19 +15,7 @@
 // template kifs_rotation
 // [CODE]
 
-#define sqrt_i3 0.57735
-#define aa ((1.0+sqrt(5.0))/2.0)
-#define bb (1.0/sqrt(aa*aa+1.0))
-
-vec3 cross_product(vec3 a, vec3 b) {
-	vec3 c;
-	c.x =  a.y*b.z - a.z*b.y;
-	c.y = -a.x*b.z + a.z*b.x;
-	c.z =  a.x*b.y - a.y*b.x;
-	return c;
-}
-
-vec3 generalized_box_fold(vec3 z, float folding_limit, float folding_value) {
+vec3 mandelbox_generalized_box_fold(vec3 z, float folding_limit, float folding_value) {
 	int poly_type = int(folding_limit);
 	int sides;
 
@@ -247,11 +235,11 @@ vec3 generalized_box_fold(vec3 z, float folding_limit, float folding_value) {
 	return new_z;
 }
 
-void boxFold(inout vec3 z, vec3 r) {
+void mandelbox_box_fold(inout vec3 z, vec3 r) {
 	z = 2.0 * clamp(z, -r, r) - z;
 }
 
-void sphereFold(inout vec3 z, inout float dz) {
+void mandelbox_sphere_fold(inout vec3 z, inout float dz) {
 	float r2 = dot(z,z);
 	if (r2 < fmandelbox_radius2) {
 		float temp = fmandelbox_radius1 / fmandelbox_radius2;
@@ -273,17 +261,17 @@ void mandelbox_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit,
 	z = rotate3d_point(z, fmandelbox_rotation1);
 	
 	if (fmandelbox_shape == 1) {
-		if (length(fmandelbox_box_folds.x) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.x));
-		if (length(fmandelbox_box_folds.y) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.y));
-		if (length(fmandelbox_box_folds.z) >= 0.0001) boxFold(z, vec3(fmandelbox_box_folds.z));
+		if (length(fmandelbox_box_folds.x) >= 0.0001) mandelbox_box_fold(z, vec3(fmandelbox_box_folds.x));
+		if (length(fmandelbox_box_folds.y) >= 0.0001) mandelbox_box_fold(z, vec3(fmandelbox_box_folds.y));
+		if (length(fmandelbox_box_folds.z) >= 0.0001) mandelbox_box_fold(z, vec3(fmandelbox_box_folds.z));
 	} else {
-		if (length(fmandelbox_box_folds.x) >= 0.0001) z = generalized_box_fold(z, float(fmandelbox_shape + 1), fmandelbox_box_folds.x);
-		if (length(fmandelbox_box_folds.y) >= 0.0001) z = generalized_box_fold(z, float(fmandelbox_shape + 1), fmandelbox_box_folds.y);
-		if (length(fmandelbox_box_folds.z) >= 0.0001) z = generalized_box_fold(z, float(fmandelbox_shape + 1), fmandelbox_box_folds.z);
+		if (length(fmandelbox_box_folds.x) >= 0.0001) z = mandelbox_generalized_box_fold(z, float(fmandelbox_shape + 1), fmandelbox_box_folds.x);
+		if (length(fmandelbox_box_folds.y) >= 0.0001) z = mandelbox_generalized_box_fold(z, float(fmandelbox_shape + 1), fmandelbox_box_folds.y);
+		if (length(fmandelbox_box_folds.z) >= 0.0001) z = mandelbox_generalized_box_fold(z, float(fmandelbox_shape + 1), fmandelbox_box_folds.z);
 	}
 	
 	z -= min(z, fmandelbox_fold1) * fmandelbox_fold1_strength;
-	sphereFold(z, dz);
+	mandelbox_sphere_fold(z, dz);
 	z *= fmandelbox_scale;
 	z += c;
 

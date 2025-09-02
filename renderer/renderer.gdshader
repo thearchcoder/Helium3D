@@ -128,9 +128,11 @@ uniform sampler2D bg_color;
 // Lighting / General
 uniform bool hard_shadows;
 // Other
+uniform bool single_formula = false;
 uniform sampler2D previous_frame : filter_nearest, hint_default_black;
 uniform sampler2D pixels_to_render : filter_nearest, hint_default_white;
 uniform float number_of_active_formulas;
+uniform bool only_primitive_based_formulas;
 uniform bool only_sdf_based_formulas;
 uniform float difs_smoothing;
 uniform bool exponential_smoothing;
@@ -198,16 +200,14 @@ vec2 scene_sdf(vec3 p) {
 	float r = length(z);
 	float de = 0.0;
 
-	bool single_formula = false;
-// -@SingleFormulaCheck
-
 	if (de_mode == 0) de = r / dz;
 	else if (de_mode == 1) de = 0.5 * log(r) * r / dz;
 	else if (de_mode == 2) {
 // -@AutomaticDE
 	}
 
-	if (only_sdf_based_formulas) de = 0.0;
+	if (only_primitive_based_formulas) de = 100000.0;
+	else if (only_sdf_based_formulas) de = 0.0;
 
 if (single_formula) {
 // -@SingleDIFS
@@ -332,9 +332,9 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 		return vec4(final_color, 1.0);
 	}
 
-	vec3 color;
+	vec3 overridden_color;
 	bool override_color = false;
-	vec3 data = ray_marcher(ray_origin, ray_dir, color, override_color);
+	vec3 data = ray_marcher(ray_origin, ray_dir, overridden_color, override_color);
 
 	float orbit_trap = data.x;
 	float dfo = data.y;
@@ -348,7 +348,6 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	else if (color_wrapping == 6) orbit_x = tan(orbit_x);
 
 	vec3 palette_color = 3.0 * pow(texture(palette, vec2(orbit_x, 0.0)).xyz, vec3(color_exponent));
-	if (override_color) palette_color = color;
 
 	vec3 p = ray_origin + ray_dir * dfo;
 	vec3 normal = calculate_normal(p, connect_normal_to_epsilon ? calc_epsilon(dfo) * normal_epsilon * 1000.0 : normal_epsilon);
@@ -369,6 +368,7 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 		if (bg_type == 1) final_color = texture(bg_image, uv).xyz;
 	} else {
 		if (display == 1) final_color = vec3(calcAO(p, normal));
+		else if (override_color) final_color = overridden_color;
 		else final_color = palette_color * compute_direct_lighting(p, ray_dir, ray_origin, normal);
 	}
 

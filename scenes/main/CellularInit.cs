@@ -213,12 +213,12 @@ public partial class CellularInit : Node
 
 	private void PrintParsedRules()
 	{
-		GD.Print("=== Parsed CA Rules ===");
-		GD.Print($"Birth Rules: [{string.Join(", ", m_BirthRules)}]");
-		GD.Print($"Survival Rules: [{string.Join(", ", m_SurvivalRules)}]");
-		GD.Print($"States: {m_States}");
-		GD.Print($"Neighborhood: {(m_UseVonNeumann ? "Von Neumann" : "Moore")}");
-		GD.Print("=====================");
+		//GD.Print("=== Parsed CA Rules ===");
+		//GD.Print($"Birth Rules: [{string.Join(", ", m_BirthRules)}]");
+		//GD.Print($"Survival Rules: [{string.Join(", ", m_SurvivalRules)}]");
+		//GD.Print($"States: {m_States}");
+		//GD.Print($"Neighborhood: {(m_UseVonNeumann ? "Von Neumann" : "Moore")}");
+		//GD.Print("=====================");
 	}
 
 	private int[] ParseNumberRange(string range_str)

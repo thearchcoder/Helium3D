@@ -22,23 +22,6 @@
 // template advanced_kifs_rotation
 // [CODE]
 
-float sdQuad(vec3 p, vec2 s){
-	p = abs(p)-vec3(s,0.00001).xzy;
-	return length(max(p, 0.0))+min(max(p.x, max(p.y, p.z)), 0.);
-}
-
-vec3 psort(vec3 p, bool sort) {
-	if (sort) {
-		if (p.x > p.y) p.xy = p.yx;
-		if (p.x > p.z) p.xz = p.zx;
-		if (p.y > p.z) p.yz = p.zy;
-		if (p.x > p.y) p.xy = p.yx;
-		if (p.x > p.z) p.xz = p.zx;
-		if (p.y > p.z) p.yz = p.zy;
-	}
-	return p;
-}
-
 void kochcube_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i, inout float s) {
 	vec3 p = z4.xyz;
 	s /= 2.0;

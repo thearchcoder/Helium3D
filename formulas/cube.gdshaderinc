@@ -11,5 +11,6 @@
 // [CODE]
 
 vec2 cube_sdf(vec4 z4) {
+// [PREVENT-REPLACEMENT]
 	return vec2(hollow_cube_sdf3d(z4.xyz - fcube_position, fcube_size, fcube_hollow ? fcube_hollow_edge : length(fcube_size * 2.0)) - fcube_roundness, 0.0);
 }

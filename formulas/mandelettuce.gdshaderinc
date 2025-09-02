@@ -11,7 +11,7 @@
 // int power[2, 8] = 2
 // [CODE]
 
-vec3 square(vec3 p, inout float dz) {
+vec3 mandelettuce_square(vec3 p, inout float dz) {
 	dz = dz * 2.0 * length(p);
 	float psi = abs(mod(atan(p.z, p.y) + PI / 8.0, PI / 4.0) - PI / 8.0);
 	p.yz = vec2(cos(psi), sin(psi)) * length(p.yz);
@@ -20,7 +20,7 @@ vec3 square(vec3 p, inout float dz) {
 	return p;
 }
 
-vec3 cube(vec3 p, inout float dz) {
+vec3 mandelettuce_cube(vec3 p, inout float dz) {
 	dz = dz * 3.0 * length(p) * length(p);
 	float psi = abs(mod(atan(p.z, p.y) + PI / 8.0, PI / 4.0) - PI / 8.0);
 	p.yz = vec2(cos(psi), sin(psi)) * length(p.yz);
@@ -30,27 +30,27 @@ vec3 cube(vec3 p, inout float dz) {
 	return p;
 }
 
-vec3 power_transform(vec3 p, inout float dz, int n) {
+vec3 mandelettuce_power_transform(vec3 p, inout float dz, int n) {
 	if (n == 2) {
-		return square(p, dz);
+		return mandelettuce_square(p, dz);
 	} else if (n == 3) {
-		return cube(p, dz);
+		return mandelettuce_cube(p, dz);
 	} else if (n == 4) {
-		return square(square(p, dz), dz);
+		return mandelettuce_square(mandelettuce_square(p, dz), dz);
 	} else if (n == 5) {
-		return square(cube(p, dz), dz);
+		return mandelettuce_square(mandelettuce_cube(p, dz), dz);
 	} else if (n == 6) {
-		return cube(square(p, dz), dz);
+		return mandelettuce_cube(mandelettuce_square(p, dz), dz);
 	} else if (n == 7) {
-		return cube(cube(p, dz), dz);
+		return mandelettuce_cube(mandelettuce_cube(p, dz), dz);
 	} else if (n == 8) {
-		return square(square(square(p, dz), dz), dz);
+		return mandelettuce_square(mandelettuce_square(mandelettuce_square(p, dz), dz), dz);
 	}
-	return square(p, dz);
+	return mandelettuce_square(p, dz);
 }
 void mandelettuce_iter(inout vec4 z, inout float dz, vec4 original_z, float orbit, int i) {
 	vec3 c = fmandelettuce_is_julia ? fmandelettuce_julia_c : original_z.xyz;
 	vec3 p = z.xyz;
-	p = power_transform(p, dz, fmandelettuce_power) + c;
+	p = mandelettuce_power_transform(p, dz, fmandelettuce_power) + c;
 	z.xyz = p;
 }

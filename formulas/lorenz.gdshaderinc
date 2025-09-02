@@ -7,10 +7,6 @@
 uniform sampler3D florenz_field;
 uniform vec3 florenz_field_bounds;
 
-vec3 quintic_interp(vec3 t) {
-	return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
-}
-
 vec2 lorenz_sdf(vec4 z4d) {
 	vec3 z = z4d.xyz;
 	vec3 uv = (z + florenz_field_bounds * 0.5) / florenz_field_bounds;

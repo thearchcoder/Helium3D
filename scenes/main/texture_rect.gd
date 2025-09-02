@@ -26,7 +26,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		camera.rotation.x = camera.rotation.x - adjusted_input.y * SENSITIVITY
 		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-89), deg_to_rad(89))
 		
-		%SubViewport.refresh_no_taa()
+		%SubViewport.refresh_taa()
 
 func _physics_process(delta: float) -> void:
 	if get_tree().current_scene.fields.has('resolution'):

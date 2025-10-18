@@ -31,7 +31,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if get_tree().current_scene.fields.has('resolution'):
 		var min_size: Vector2 = (get_tree().current_scene.fields['resolution'] * zoom) / 1.28
-		custom_minimum_size = min_size.min(%TextureRect.get_parent().size)
+		custom_minimum_size = min_size
 		%PostViewport.size = get_tree().current_scene.fields['resolution']
 	
 	if Input.is_action_just_pressed('mouse right click') and is_hovering:
@@ -96,4 +96,4 @@ func _on_mouse_entered() -> void: is_hovering = true
 func _on_mouse_exited() -> void: is_hovering = false
 
 func _on_zoom_value_changed(to:  float) -> void:
-	zoom = to
+	zoom = max(to, 0.0)

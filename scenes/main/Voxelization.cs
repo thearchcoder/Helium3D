@@ -10,9 +10,10 @@ public partial class Voxelization : Node
 	[Signal]
 	public delegate void MeshReadyEventHandler(ArrayMesh mesh);
 	
-	private readonly float m_VoxelSize = 2.5f / 450.0f;
-	private readonly Vector3 m_Spacing = Vector3.One * (2.5f / 450.0f);
-	private readonly int m_Threshold = 64;
+	private float m_VoxelSize;
+	private Vector3 m_Spacing;
+	private float m_WorldSize;
+	private int m_Threshold = 64;
 	
 	private volatile int m_ExpectedImages = 0;
 	private volatile int m_ProcessedImages = 0;
@@ -24,12 +25,13 @@ public partial class Voxelization : Node
 	private byte[,,] m_VoxelData;
 	private bool m_VoxelDataReady = false;
 	
-	public void StartCapture(int expected_images)
+	public void StartCapture(int expected_images, float world_size = 2.5f)
 	{
 		m_ExpectedImages = expected_images;
 		m_ProcessedImages = 0;
 		m_IsCapturing = true;
 		m_VoxelDataReady = false;
+		m_WorldSize = world_size;
 		
 		while (m_ProcessingQueue.TryDequeue(out _)) { }
 		
@@ -47,6 +49,10 @@ public partial class Voxelization : Node
 			m_ImageWidth = image.GetWidth();
 			m_ImageHeight = image.GetHeight();
 			m_VoxelData = new byte[m_ImageWidth, m_ImageHeight, m_ExpectedImages];
+			
+			float max_dimension = Math.Max(Math.Max(m_ImageWidth, m_ImageHeight), m_ExpectedImages);
+			m_VoxelSize = m_WorldSize / max_dimension;
+			m_Spacing = new Vector3(m_VoxelSize, m_VoxelSize, m_VoxelSize);
 		}
 		
 		byte[] raw_data = image.GetData();
@@ -287,5 +293,43 @@ public partial class Voxelization : Node
 		}
 		
 		return normals;
+	}
+	
+	// For saving the mesh.
+	// Called by GDScript.
+	public void SaveMesh(ArrayMesh mesh, string file_path)
+	{
+		var arrays = mesh.SurfaceGetArrays(0);
+		var vertices = (Vector3[])arrays[(int)Mesh.ArrayType.Vertex];
+		var indices = (int[])arrays[(int)Mesh.ArrayType.Index];
+
+		using var file = Godot.FileAccess.Open(file_path, Godot.FileAccess.ModeFlags.Write);
+		if (file == null)
+		{
+			GD.PrintErr($"Could not open file for writing: {file_path}");
+			return;
+		}
+
+		file.StoreLine("ply");
+		file.StoreLine("format ascii 1.0");
+		file.StoreLine($"element vertex {vertices.Length}");
+		file.StoreLine("property float x");
+		file.StoreLine("property float y");
+		file.StoreLine("property float z");
+		file.StoreLine($"element face {indices.Length / 3}");
+		file.StoreLine("property list uchar int vertex_indices");
+		file.StoreLine("end_header");
+
+		foreach (var vertex in vertices)
+		{
+			file.StoreLine($"{vertex.X} {vertex.Y} {vertex.Z}");
+		}
+
+		for (int i = 0; i < indices.Length; i += 3)
+		{
+			file.StoreLine($"3 {indices[i]} {indices[i + 1]} {indices[i + 2]}");
+		}
+
+		GD.Print($"Saved mesh to: {file_path}");
 	}
 }

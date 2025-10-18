@@ -6,7 +6,8 @@ var MAJOR := VERSION.split('.')[0]
 var MINOR := VERSION.split('.')[1]
 var PATCH := VERSION.split('.')[2].split('-')[0]
 
-const MAX_FORMULAS := 10
+const DUPES := 10
+const MAX_ACTIVE_FORMULAS := 10
 const LAZY_IMPORTING := true
 const VAR_TEMPLATES := {
 	'kifs_rotation': [
@@ -75,7 +76,6 @@ func _ready() -> void:
 	%PostDisplay.material.set_shader_parameter('previous_frame', previous_frame_texture)
 	%Fractal.material_override.set_shader_parameter('previous_frame', previous_frame_texture)
 	
-	# By default the difficulty is simple, So hide the advanced fields by updating the UI fields.
 	toggle_ui_difficulty()
 
 func action_occurred(add_to_history: bool = true, group_changes: bool = false) -> void:
@@ -200,6 +200,12 @@ func initialize_history() -> void:
 	history_at = -1
 
 func _process(_delta: float) -> void:
+	#var loading_icon: Image = %LoadingIcon.texture.get_image()
+	#loading_icon.rotate_90(CLOCKWISE)
+	#
+	#var loading_icon_texture: ImageTexture = ImageTexture.create_from_image(loading_icon)
+	#%LoadingIcon.texture = loading_icon_texture
+	
 	var current_image: Image = %PostViewport.get_texture().get_image()
 	%PostDisplay.material.set_shader_parameter('previous_frame', ImageTexture.create_from_image(current_image))
 	%Fractal.material_override.set_shader_parameter('previous_frame', previous_frame_texture)
@@ -370,8 +376,8 @@ func initialize_formulas(path_to_formulas: String) -> void:
 		var data: Dictionary = parse_data(formula_file_contents, (paths.find(formula_file_path) / 2) + 1 - skipped_formulas)
 		
 		# Create duplicate for each formula (excluding already duplicated ones)
-		if not formula_file_path.contains('dupea.gdshaderinc'):
-			for i in MAX_FORMULAS:
+		if not formula_file_path.contains('dupe'):
+			for i in DUPES:
 				create_duplicate(data['id'], data['variables'], formula_file_contents, path_to_formulas, "abcdefghijklmnopqrstuvwxyz".split("")[i])
 	
 	for formula_file_path in paths:
@@ -547,8 +553,6 @@ func update_app_state(data: Dictionary, full_update: bool = true) -> void:
 	var old_data: Dictionary = data.duplicate(true)
 	data = data.duplicate(true)
 	
-	print(data.get('keyframe_length'))
-	
 	if 'other' not in data:
 		data['other'] = {"keyframes": data.get("keyframes", {}), 'fps': data.get('fps', 60), 'interpolation': data.get('interpolation', 2), 'keyframe_length': data.get('keyframe_length', 1)}
 		
@@ -613,9 +617,10 @@ func count_non_zero(numbers: Array) -> int:
 	
 	return count
 
+var shader_code: String = preload('res://renderer/renderer.gdshader').code
+
 func update_fractal_code(current_formulas: Array[int]) -> void:
 	var shader := %Fractal.material_override.shader as Shader
-	var shader_code := shader.code
 	var formulas_forloop_code: Array = get_formulas_forloop_code()
 	var formulas_import_code: Array = get_formulas_import_code()
 	
@@ -637,6 +642,9 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 			if (single_formula && (!linear_de_check)) de = r / dz;
 			else de = 0.5 * log(r) * r / dz;
 		'''.replace('!linear_de_check', linear_de_check)
+		
+		if linear_de_check == '':
+			automatic_de_code = automatic_de_code.replace(' && ()', '')
 		
 		shader_code = shader_code.replace('// -@AutomaticDE', automatic_de_code)
 	
@@ -783,6 +791,17 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 	else:
 		if not modified_lines[7].begins_with('//'): modified_lines[7] = '//' + (modified_lines[7] as String)
 	
+	# Remove all comments to reduce shader compilation times
+	#var i: int = 0
+	#for line in (modified_lines as Array[String]):
+		#var comment_pos := line.find("//")
+		#
+		#if comment_pos != -1:
+			#line = line.substr(0, comment_pos)
+		#
+		#modified_lines[i] = line.rstrip(" \t")
+		#i += 1
+
 	shader.code = "\n".join(modified_lines)
 	
 	var file: FileAccess = FileAccess.open('res://renderer/generated_shader_code.gdshader', FileAccess.WRITE)
@@ -884,7 +903,7 @@ func _on_voxelize_button_pressed() -> void:
 	%Camera.rotation = Vector3.ZERO
 	%Camera.projection = Camera3D.ProjectionType.PROJECTION_ORTHOGONAL
 	
-	$Voxelization.StartCapture(resolution)
+	$Voxelization.StartCapture(resolution, max(bounds_size.x, max(bounds_size.y, bounds_size.z)))
 	
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -924,5 +943,5 @@ func _on_voxelize_button_pressed() -> void:
 func _on_export_pressed() -> void:
 	%VoxelizationFileDialog.show()
 
-func _on_voxelization_file_dialog_file_selected(path: String) -> void:
-	$Voxelization.SaveMesh($VoxelizedMeshWorld/Mesh.mesh, path)
+func _on_voxelization_file_dialog_file_selected() -> void:
+	$Voxelization.SaveMesh($VoxelizedMeshWorld/Mesh.mesh, %VoxelizationFileDialog.current_path)

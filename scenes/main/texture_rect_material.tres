@@ -4,6 +4,6 @@
 
 [resource]
 shader = ExtResource("1_0oopc")
-shader_parameter/sharpness = 1.0
 shader_parameter/camera_kalaidoscope = 4.000000000014552
 shader_parameter/display_tiled_render = false
+shader_parameter/mix_with_previous = false

@@ -91,7 +91,8 @@ vec3 romanescobroccoli_deform(in vec3 p) {
 	return vec3(dir/dirLen*cyl.x, cyl.y);
 }
 
-vec2 romanescobroccoli_sdf(vec3 p) {
+vec2 romanescobroccoli_sdf(vec4 p4d) {
+	vec3 p = p4d.xyz;
 	p.z = -p.z;
 	vec3 pp = p;
 	p = romanescobroccoli_deform(p);

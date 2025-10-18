@@ -1,0 +1,25 @@
+// [ID]
+// Kali box Dupe D
+// [OFFICIAL]
+// [IFS]
+// [VARS]
+// float scale[1.0, 2.0] = 1.5
+// vec3 offset1[(-2, -2, -2), (2, 2, 2)] = (1, 1, 1)
+// vec3 offset2[(-2, -2, -2), (2, 2, 2)] = (1, 1, 1)
+// [CODE]
+
+void kaliboxduped_iter(inout vec4 z4, inout float dz, vec4 original_z, float orbit, int i) {
+	vec3 z = z4.xyz;
+	float scale = fkaliboxduped_scale;
+	float MinR = 0.0;
+
+	z = fkaliboxduped_offset1 - abs(z);
+	float rr = dot(z, z);
+	float dividend = rr < MinR ? MinR : min(rr, 1.0);
+	float m = -scale / dividend;
+	z = z * m;
+	z += fkaliboxduped_offset2;
+	z4.xyz = z;
+
+	dz = dz * abs(m) + 1.0;
+}

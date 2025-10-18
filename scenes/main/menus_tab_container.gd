@@ -4,28 +4,40 @@ extends TabContainer
 var current_formulas: Array[int] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 var total_visible_formulas: int = 1:
 	set(value):
+		var old_value := total_visible_formulas
+		var start := Time.get_ticks_msec()
+		value = clamp(value, 1, get_tree().current_scene.MAX_ACTIVE_FORMULAS)
+		
+		if old_value == value:
+			return
+		
 		total_visible_formulas = value
-		total_visible_formulas = clamp(total_visible_formulas, 1, 5)
 		
 		var formula_tabcontainer: TabContainer = %TabContainer.get_node('Formula/TabContainer')
 		var formula_pages: Array[Node] = formula_tabcontainer.get_formula_pages()
-		for formula_page in formula_pages:
-			formula_page.reparent(formula_tabcontainer.get_node('Buffer'))
+		var buffer: Node = formula_tabcontainer.get_node('Buffer')
 		
-		for i in total_visible_formulas + 1:
-			for formula_page in formula_pages: 
-				if formula_page.page_number == i:
-					formula_page.reparent(formula_tabcontainer)
+		if old_value < value:
+			# Show pages from old_value to value-1
+			for i in range(old_value, value):
+				formula_pages[i].reparent(formula_tabcontainer)
+		else:
+			# Hide pages from value to old_value-1
+			for i in range(value, old_value):
+				formula_pages[i].reparent(buffer)
 		
 		if total_visible_formulas == 1:
 			$Formula/Buttons/AddFormula.disabled = false
 			$Formula/Buttons/RemoveFormula.disabled = true
-		elif total_visible_formulas == 5:
+		elif total_visible_formulas == get_tree().current_scene.MAX_ACTIVE_FORMULAS:
 			$Formula/Buttons/AddFormula.disabled = true
 			$Formula/Buttons/RemoveFormula.disabled = false
 		else:
 			$Formula/Buttons/AddFormula.disabled = false
 			$Formula/Buttons/RemoveFormula.disabled = false
+		
+		var end := Time.get_ticks_msec()
+		print(end - start, ' ms.')
 
 func _ready() -> void:
 	await get_tree().process_frame
@@ -58,7 +70,10 @@ func field_changed(field_name: String, value: Variant) -> void:
 	%SubViewport.refresh_taa()
 
 func set_formula(formula_name: String, for_page: int) -> void:
-	current_formulas[for_page - 1] = $Formula/TabContainer/Formula1/Fields/HBoxContainer/Values/Formulas.options.find(formula_name)
+	var formula_index: int = $Formula/TabContainer/Formula1/Fields/HBoxContainer/Values/Formulas.options.find(formula_name)
+	current_formulas[for_page - 1] = formula_index
+	$Formula/TabContainer.initialize_formula(formula_index, for_page)
+	
 	field_changed('formulas', current_formulas)
 	
 	var formula_node_name: String = 'F' + formula_name.replace(' ', '').to_lower()

@@ -1,8 +1,9 @@
-[gd_scene load_steps=80 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=83 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
 [ext_resource type="Script" uid="uid://b2eesw5c0v22p" path="res://scenes/main/attractor_init.gd" id="2_7nlll"]
+[ext_resource type="Shader" uid="uid://cbqmyudn47iy" path="res://scenes/main/loading_icon.gdshader" id="2_r1bmu"]
 [ext_resource type="Script" uid="uid://bvym81l6vx3qt" path="res://scenes/main/Voxelization.cs" id="2_rofvo"]
 [ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="3_4yvvm"]
 [ext_resource type="Script" uid="uid://4ttph603ay0x" path="res://scenes/main/CellularInit.cs" id="3_ii537"]
@@ -33,6 +34,30 @@
 [ext_resource type="Script" uid="uid://cesttaxsv6b8j" path="res://scenes/main/progression_white_noise_viewport.gd" id="29_gkmcc"]
 [ext_resource type="Shader" uid="uid://c5yoergjae7xm" path="res://scenes/main/progression_white_noise.gdshader" id="29_i7in8"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6w6mm"]
+shader = ExtResource("2_r1bmu")
+shader_parameter/color_min_iterations = 0
+shader_parameter/color_max_iterations = 0
+shader_parameter/coloring_mode = 0
+shader_parameter/coloring_offset = 0.0
+shader_parameter/exponential_smoothing = false
+shader_parameter/normal_map_enabled = false
+shader_parameter/normal_map_projection = 0
+shader_parameter/normal_map_triplanar_sharpness = 0.0
+shader_parameter/normal_map_scale = 0.0
+shader_parameter/normal_map_height = 0.0
+shader_parameter/fgyroid_position = Vector3(0, 0, 0)
+shader_parameter/fgyroid_scale = 3.43
+shader_parameter/fgyroid_sphere_radius = 0.9
+shader_parameter/fgyroid_thickness = 0.165
+shader_parameter/fgyroid_bias = 0.015
+shader_parameter/fgyroid_control = Vector4(0.5, 0.7, 2, 2)
+shader_parameter/fgyroid_offset = Vector2(1.715, 0.13)
+shader_parameter/fgyroid_oriented = true
+shader_parameter/fgyroid_abs = true
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_rofvo"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gkmcc"]
 bg_color = Color(0.09019608, 0.09019608, 0.09019608, 1)
 
@@ -50,7 +75,7 @@ bg_color = Color(0.10748, 0.10748, 0.10748, 1)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i7in8"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_s17dp"]
-viewport_path = NodePath("UI/HBoxContainer/VBoxContainer/VBoxContainer/PostViewport")
+viewport_path = NodePath("UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/PostViewport")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_p8abn"]
 viewport_path = NodePath("SubViewport")
@@ -149,7 +174,7 @@ corner_radius_bottom_left = 3
 corner_detail = 5
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_37hlw"]
-viewport_path = NodePath("UI/HBoxContainer/VBoxContainer/VBoxContainer/PostViewport")
+viewport_path = NodePath("UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/PostViewport")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_0bhws"]
 viewport_path = NodePath("VoxelizedMeshWorld")
@@ -228,13 +253,13 @@ shader_parameter/escape_radius = 0.0
 shader_parameter/de_mode = 1
 shader_parameter/camera_kalaidoscope = 1.0
 shader_parameter/formulas = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/ambient_occlusion_steps = 6
+shader_parameter/ambient_occlusion_steps = 0
 shader_parameter/ambient_occlusion_distance = 0.0
 shader_parameter/ambient_occlusion_light_affect = 0.0
-shader_parameter/ambient_occlusion_radius = 0.5
-shader_parameter/vignette_strength = 0.7
-shader_parameter/vignette_radius = 0.8
-shader_parameter/is_exponential = true
+shader_parameter/ambient_occlusion_radius = 0.0
+shader_parameter/vignette_strength = 0.0
+shader_parameter/vignette_radius = 0.0
+shader_parameter/is_exponential = false
 shader_parameter/fog_color = Color(0.5, 0.6, 0.7, 1)
 shader_parameter/fog_density = 0.01
 shader_parameter/fog_falloff = 1.64
@@ -277,8 +302,8 @@ shader_parameter/only_primitive_based_formulas = false
 shader_parameter/only_sdf_based_formulas = false
 shader_parameter/difs_smoothing = 0.0
 shader_parameter/exponential_smoothing = false
-shader_parameter/progression_strength = 100.0
-shader_parameter/voxelization = true
+shader_parameter/progression_strength = 0.0
+shader_parameter/voxelization = false
 shader_parameter/bounds_position = Vector3(0, 0, 0)
 shader_parameter/bounds_size = Vector3(0, 0, 0)
 shader_parameter/voxel_epsilon = 0.0
@@ -326,6 +351,54 @@ shader_parameter/time = 0.0
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_yss2u")
+
+[node name="ShaderCompilationLoading" type="ColorRect" parent="."]
+visible = false
+z_index = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.23200001)
+
+[node name="CenterContainer" type="CenterContainer" parent="ShaderCompilationLoading"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="VBoxContainer" parent="ShaderCompilationLoading/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="LoadingIcon" type="TextureRect" parent="ShaderCompilationLoading/CenterContainer/HBoxContainer"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_6w6mm")
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = SubResource("CanvasTexture_rofvo")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="ShaderCompilationLoading/CenterContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Shader compilation..."
+
+[node name="DummyGlitchTransfer" type="Window" parent="."]
+transparent_bg = true
+oversampling_override = 1.0
+size = Vector2i(66, 66)
+borderless = true
+always_on_top = true
+transparent = true
+extend_to_title = true
+mouse_passthrough = true
+sharp_corners = true
+minimize_disabled = true
+maximize_disabled = true
 
 [node name="Voxelization" type="Node" parent="."]
 script = ExtResource("2_rofvo")
@@ -530,11 +603,13 @@ layout_mode = 2
 theme_override_constants/separation = -5
 theme_override_styles/separator = SubResource("StyleBoxEmpty_i7in8")
 
-[node name="Label" type="Label" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer2"]
-custom_minimum_size = Vector2(1.4551915e-11, 30)
+[node name="RenderingStateLabel" type="Label" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(82, 30)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
-text = "Idle. "
+text = "Rendered"
+horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="VBoxContainer" type="HBoxContainer" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer2"]
@@ -551,20 +626,25 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(230, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+tooltip_text = "Zoom in the fractal image. (Alt + Scroll)"
 force_precision = true
 precision = 1
 range = Vector2(0.25, 3)
 value = 1.3000000000029104
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/HBoxContainer/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/HBoxContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 1
 script = ExtResource("7_20ti0")
 
-[node name="TextureRect" type="TextureRect" parent="UI/HBoxContainer/VBoxContainer/VBoxContainer"]
+[node name="TextureRect" type="TextureRect" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(-0.009, 1.4551915e-11)
 layout_mode = 2
 size_flags_horizontal = 6
 texture = SubResource("ViewportTexture_s17dp")
@@ -572,11 +652,13 @@ expand_mode = 1
 stretch_mode = 5
 script = ExtResource("6_dbdf5")
 
-[node name="PostViewport" type="SubViewport" parent="UI/HBoxContainer/VBoxContainer/VBoxContainer"]
+[node name="PostViewport" type="SubViewport" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
 size = Vector2i(450, 450)
+render_target_clear_mode = 1
+render_target_update_mode = 4
 
-[node name="PostDisplay" type="TextureRect" parent="UI/HBoxContainer/VBoxContainer/VBoxContainer/PostViewport"]
+[node name="PostDisplay" type="TextureRect" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/PostViewport"]
 unique_name_in_owner = true
 material = ExtResource("8_6lqo5")
 offset_right = 40.0
@@ -619,7 +701,6 @@ script = ExtResource("16_dmyle")
 
 [node name="Formula2" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
 visible = false
-anchors_preset = 15
 offset_left = 688.0
 offset_top = 37.0
 offset_right = 142.0
@@ -628,7 +709,6 @@ page_number = 2
 
 [node name="Formula3" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
 visible = false
-anchors_preset = 15
 offset_left = 688.0
 offset_top = 37.0
 offset_right = 142.0
@@ -637,7 +717,6 @@ page_number = 3
 
 [node name="Formula4" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
 visible = false
-anchors_preset = 15
 offset_left = 688.0
 offset_top = 37.0
 offset_right = 142.0
@@ -646,12 +725,51 @@ page_number = 4
 
 [node name="Formula5" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
 visible = false
-anchors_preset = 15
 offset_left = 688.0
 offset_top = 37.0
 offset_right = 142.0
 offset_bottom = 37.0
 page_number = 5
+
+[node name="Formula6" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 6
+
+[node name="Formula7" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 7
+
+[node name="Formula8" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 8
+
+[node name="Formula9" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 9
+
+[node name="Formula10" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 10
 
 [node name="Formula1" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer" instance=ExtResource("16_hfvnl")]
 layout_mode = 2
@@ -857,22 +975,16 @@ layout_mode = 2
 theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_5by50")
 current_tab = 0
 
-[node name="Upscaling" parent="UI/HBoxContainer/TabContainer/Tools/TabContainer" instance=ExtResource("19_l42h1")]
-layout_mode = 2
-fields_list_id = 12
-metadata/_tab_index = 0
-
 [node name="Tiling" parent="UI/HBoxContainer/TabContainer/Tools/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
 layout_mode = 2
 fields_list_id = 14
-metadata/_tab_index = 1
+metadata/_tab_index = 0
 
 [node name="Debug" parent="UI/HBoxContainer/TabContainer/Tools/TabContainer" instance=ExtResource("19_l42h1")]
 visible = false
 layout_mode = 2
 fields_list_id = 20
-metadata/_tab_index = 2
+metadata/_tab_index = 1
 
 [node name="Logs" parent="UI/HBoxContainer/TabContainer" instance=ExtResource("14_pnl7n")]
 unique_name_in_owner = true
@@ -931,7 +1043,7 @@ icon = ExtResource("16_p8abn")
 
 [node name="PlayingToggleButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(1.45519e-11, 28)
+custom_minimum_size = Vector2(31, 28)
 layout_mode = 2
 theme_override_constants/icon_max_width = 23
 theme_override_fonts/font = ExtResource("8_rhsly")
@@ -1154,6 +1266,7 @@ initial_position = 1
 size = Vector2i(1152, 648)
 content_scale_factor = 1.28
 access = 2
+filters = PackedStringArray("*.ply")
 
 [node name="AboutWindow" type="Window" parent="."]
 oversampling_override = 1.0
@@ -1637,12 +1750,11 @@ fov = 60.0
 unique_name_in_owner = true
 own_world_3d = true
 scaling_3d_mode = 2
-scaling_3d_scale = 0.25
 anisotropic_filtering_level = 4
 fsr_sharpness = 0.0
 size = Vector2i(450, 450)
 render_target_clear_mode = 1
-render_target_update_mode = 1
+render_target_update_mode = 4
 script = ExtResource("2_2kstx")
 
 [node name="Fractal" type="MeshInstance3D" parent="SubViewport"]
@@ -1687,22 +1799,6 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("CanvasTexture_7nlll")
 
-[node name="DummyGlitchTransfer" type="Window" parent="."]
-transparent_bg = true
-oversampling_override = 1.0
-size = Vector2i(1, 1)
-unresizable = true
-borderless = true
-always_on_top = true
-transparent = true
-unfocusable = true
-extend_to_title = true
-mouse_passthrough = true
-sharp_corners = true
-minimize_disabled = true
-maximize_disabled = true
-force_native = true
-
 [connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/AboutButton" to="." method="_on_about_button_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/SettingsButton" to="." method="_on_settings_button_pressed"]
@@ -1710,11 +1806,11 @@ force_native = true
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/RandomizeButton" to="." method="_on_randomize_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/VoxelizeButton" to="." method="_on_voxelize_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/DifficultyButton" to="." method="_on_difficulty_pressed"]
-[connection signal="value_changed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer/Zoom" to="UI/HBoxContainer/VBoxContainer/VBoxContainer/TextureRect" method="_on_zoom_value_changed"]
-[connection signal="mouse_entered" from="UI/HBoxContainer/VBoxContainer/VBoxContainer" to="UI/HBoxContainer/VBoxContainer/VBoxContainer" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="UI/HBoxContainer/VBoxContainer/VBoxContainer" to="UI/HBoxContainer/VBoxContainer/VBoxContainer" method="_on_mouse_exited"]
-[connection signal="mouse_entered" from="UI/HBoxContainer/VBoxContainer/VBoxContainer/TextureRect" to="UI/HBoxContainer/VBoxContainer/VBoxContainer/TextureRect" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="UI/HBoxContainer/VBoxContainer/VBoxContainer/TextureRect" to="UI/HBoxContainer/VBoxContainer/VBoxContainer/TextureRect" method="_on_mouse_exited"]
+[connection signal="value_changed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer/Zoom" to="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect" method="_on_zoom_value_changed"]
+[connection signal="mouse_entered" from="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer" to="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer" to="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect" to="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect" to="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect" method="_on_mouse_exited"]
 [connection signal="pressed" from="UI/HBoxContainer/TabContainer/Formula/Buttons/AddFormula" to="UI/HBoxContainer/TabContainer" method="_on_add_formula_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/TabContainer/Formula/Buttons/RemoveFormula" to="UI/HBoxContainer/TabContainer" method="_on_remove_formula_pressed"]
 [connection signal="tab_changed" from="UI/BottomBar" to="UI/BottomBar" method="_on_tab_changed"]
@@ -1733,7 +1829,7 @@ force_native = true
 [connection signal="mouse_entered" from="UI/BottomBar/Animation/Animation/AnimationTrack" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="UI/BottomBar/Animation/Animation/AnimationTrack" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_mouse_exited"]
 [connection signal="file_selected" from="FileDialog" to="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar" method="_on_file_dialog_confirmed"]
-[connection signal="file_selected" from="VoxelizationFileDialog" to="." method="_on_voxelization_file_dialog_file_selected"]
+[connection signal="confirmed" from="VoxelizationFileDialog" to="." method="_on_voxelization_file_dialog_file_selected"]
 [connection signal="close_requested" from="AboutWindow" to="." method="_on_window_close_requested"]
 [connection signal="pressed" from="AboutWindow/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/CloseButton" to="." method="_on_close_button_pressed"]
 [connection signal="close_requested" from="SettingsWindow" to="." method="_on_settings_window_close_requested"]

@@ -138,8 +138,6 @@ func _on_file_dialog_confirmed(path: String) -> void:
 func _on_antialiasing_value_changed(option: String) -> void:
 	if option == "None":
 		%SubViewport.set_antialiasing(%SubViewport.AntiAliasing.NONE)
-	elif option == "TAA":
-		%SubViewport.set_antialiasing(%SubViewport.AntiAliasing.TAA)
 	elif option == "FXAA":
 		%SubViewport.set_antialiasing(%SubViewport.AntiAliasing.FXAA)
 	elif option == "SMAA":

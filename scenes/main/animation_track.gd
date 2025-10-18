@@ -293,7 +293,7 @@ func _process(_delta: float) -> void:
 		
 		get_tree().current_scene.update_app_state(animation_frames_data[round(currently_at_frame)], false)
 		
-		if %SubViewport.antialiasing == %SubViewport.AntiAliasing.TAA and is_rendering and not using_tiling:
+		if is_rendering and not using_tiling:
 			waiting_for_taa = true
 			taa_frame_counter = 0
 		else:

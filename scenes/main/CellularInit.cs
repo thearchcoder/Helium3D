@@ -39,8 +39,8 @@ public partial class CellularInit : Node
 	private int[] m_MooreOffsets;
 	private int[] m_VonNeumannOffsets;
 
-	private CellData[] m_CellularGrid;
-	private CellData[] m_NewGrid;
+	private CellData[] m_CellularGrid = [];
+	private CellData[] m_NewGrid = [];
 	private byte[] m_TextureData;
 	private bool m_PrevForward = false;
 	private bool m_PrevReset = false;
@@ -492,10 +492,10 @@ public partial class CellularInit : Node
 
 			var fractal = GetNode("%Fractal");
 			var material = fractal.Get("material_override").As<ShaderMaterial>();
-			material.SetShaderParameter("voxel_data", distance_texture);
-			material.SetShaderParameter("voxel_bounds", bounds_uniform);
-			material.SetShaderParameter("voxel_grid_size", m_TextureSize);
-			material.SetShaderParameter("use_distance_field", true);
+			material.SetShaderParameter("fcellular_voxel_data", distance_texture);
+			material.SetShaderParameter("fcellular_voxel_bounds", bounds_uniform);
+			material.SetShaderParameter("fcellular_voxel_grid_size", m_TextureSize);
+			material.SetShaderParameter("fcellular_use_distance_field", true);
 		}
 		else
 		{
@@ -504,10 +504,10 @@ public partial class CellularInit : Node
 
 			var fractal = GetNode("%Fractal");
 			var material = fractal.Get("material_override").As<ShaderMaterial>();
-			material.SetShaderParameter("voxel_data", cellular_texture);
-			material.SetShaderParameter("voxel_bounds", bounds_uniform);
-			material.SetShaderParameter("voxel_grid_size", m_CellularSize);
-			material.SetShaderParameter("use_distance_field", false);
+			material.SetShaderParameter("fcellular_voxel_data", cellular_texture);
+			material.SetShaderParameter("fcellular_voxel_bounds", bounds_uniform);
+			material.SetShaderParameter("fcellular_voxel_grid_size", m_CellularSize);
+			material.SetShaderParameter("fcellular_use_distance_field", false);
 		}
 	}
 
@@ -675,7 +675,6 @@ public partial class CellularInit : Node
 		m_Center = m_CellularSize / 2.0f;
 		CalculateNeighborOffsets();
 		ParseCaRules(m_CaRules);
-		GenerateCellularAutomata();
 		UpdateShaderParameters();
 	}
 }

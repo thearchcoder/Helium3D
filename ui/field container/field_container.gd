@@ -333,7 +333,7 @@ func _ready() -> void:
 		],
 		# Rendering
 		2: [
-			{'name': 'anti_aliasing', 'type': 'selection', 'values': ['None', 'FXAA', 'TAA', 'SMAA'], 'default_value': 'None', 'onchange_override': func(val: Variant) -> void: 
+			{'name': 'anti_aliasing', 'type': 'selection', 'values': ['None', 'FXAA', 'SMAA'], 'default_value': 'None', 'onchange_override': func(val: Variant) -> void: 
 			%ToolBar._on_antialiasing_value_changed(val)
 			field_changed_non_shader('anti_aliasing', val)
 			},
@@ -360,11 +360,6 @@ func _ready() -> void:
 			field_changed_non_shader('resolution', val)
 			%SubViewport.refresh_taa()
 			},
-		],
-		# Tools / Upscaling
-		12: [
-			{'name': 'sharpness', 'type': 'float', 'from': 0.0, 'to': 3.0, 'default_value': 0.0, 'onchange_override': func(val: float) -> void: %PostDisplay.material.set_shader_parameter('sharpness', val)},
-			{'name': 'upscaling_factor', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 1.0, 'onchange_override': func(val: float) -> void: %SubViewport.set_upscaling_factor(val)},
 		],
 		# Tools / Tiling
 		14: [

@@ -88,8 +88,8 @@ func get_match_score(text: String, search_term: String) -> int:
 
 func _process(_delta: float) -> void:
 	if $"../../..".visible and Input.is_action_just_pressed('enter'):
-		$"../SearchCloseButton".emit_signal('pressed')
 		_on_option_button_item_selected($OptionButton.selected)
+		$"../SearchCloseButton".emit_signal('pressed')
 	
 	if $"../../..".visible and Input.is_action_just_pressed('escape'):
 		$"../SearchCloseButton".emit_signal('pressed')
@@ -106,10 +106,16 @@ func _ready() -> void:
 	reload_popup()
 
 func _on_option_button_item_selected(index: int) -> void:
-	if index != 0:
-		$"../../../..".index = get_formula_data_from_name($OptionButton.get_item_text(index))['index']
-	else:
-		$"../../../..".index = 0
+	if index == 0 or index == -1:
+		return
+	
+	var ind: int = get_formula_data_from_name($OptionButton.get_item_text(index))['index']
+	
+	for i in (get_tree().current_scene.MAX_ACTIVE_FORMULAS as int):
+		if ind in get_tree().current_scene.get_node('%TabContainer').current_formulas:
+			ind += 1
+
+	$"../../../..".index = ind
 
 func _on_search_close_button_pressed() -> void:
 	$"../../..".visible = false

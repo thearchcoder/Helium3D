@@ -1,5 +1,17 @@
 extends TabContainer
 
+#func check_container_initialization(synchronous: bool = false) -> void:
+	#for formula_page in get_formula_pages():
+		#if formula_page.get_parent().name != 'Buffer':
+			#formula_page.initialize(synchronous)
+
+func initialize_formula(formula_index: int, page_index: int) -> void:
+	var formula_page: Control = get_formula_page(page_index)
+	formula_page.initialize_formula(formula_index)
+
+#func _ready() -> void:
+	#check_container_initialization()
+
 func _process(delta: float) -> void:
 	%Fractal.material_override.set_shader_parameter('number_of_active_formulas', len(get_active_formula_pages()))
 	
@@ -27,8 +39,8 @@ func _process(delta: float) -> void:
 		tab_selected.get_node("Fields/HBoxContainer/Values/Formulas").index = index_right
 		tab_right.get_node("Fields/HBoxContainer/Values/Formulas").index = index_selected
 		current_tab += 1
-	#elif Input.is_action_just_pressed('swtich tab left'): current_tab = clamp(current_tab - 1, 0, get_child_count() - 1)
-	#elif Input.is_action_just_pressed('swtich tab right'): current_tab = clamp(current_tab + 1, 0, get_child_count() - 1)
+	elif Input.is_action_just_pressed('switch tab left'): current_tab = clamp(current_tab - 1, 0, get_child_count() - 1)
+	elif Input.is_action_just_pressed('switch tab right'): current_tab = clamp(current_tab + 1, 0, get_child_count() - 1)
 
 func set_difficulty(difficulty: String) -> void:
 	for formula_page in get_active_formula_pages():

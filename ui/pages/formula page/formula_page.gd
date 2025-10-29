@@ -70,15 +70,11 @@ func initialize_formula(formula_index: int) -> void:
 	var value_nodes_vbox: VBoxContainer = $Fields/HBoxContainer/Values.get_node(base_name)
 	var name_nodes_vbox: VBoxContainer = $Fields/HBoxContainer/Names.get_node(base_name)
 	
-	#print('init 2: ', formula_id)
-	
 	if formula_index not in %TabContainer.current_formulas:
 		return
 	
 	initialized_formulas.append(formula_index)
 	set_difficulty("simple")
-	
-	#print('init 3: ', formula_id)
 	
 	for variable_name in (variables.keys() as Array[String]):
 		var variable_data: Dictionary = variables[variable_name]

@@ -5,7 +5,6 @@ var current_formulas: Array[int] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 var total_visible_formulas: int = 1:
 	set(value):
 		var old_value := total_visible_formulas
-		var start := Time.get_ticks_msec()
 		value = clamp(value, 1, get_tree().current_scene.MAX_ACTIVE_FORMULAS)
 		
 		if old_value == value:
@@ -35,9 +34,6 @@ var total_visible_formulas: int = 1:
 		else:
 			$Formula/Buttons/AddFormula.disabled = false
 			$Formula/Buttons/RemoveFormula.disabled = false
-		
-		var end := Time.get_ticks_msec()
-		print(end - start, ' ms.')
 
 func _ready() -> void:
 	await get_tree().process_frame
@@ -73,6 +69,7 @@ func set_formula(formula_name: String, for_page: int) -> void:
 	var formula_index: int = $Formula/TabContainer/Formula1/Fields/HBoxContainer/Values/Formulas.options.find(formula_name)
 	current_formulas[for_page - 1] = formula_index
 	$Formula/TabContainer.initialize_formula(formula_index, for_page)
+	$Formula/TabContainer.set_difficulty(get_tree().current_scene.difficulty)
 	
 	field_changed('formulas', current_formulas)
 	

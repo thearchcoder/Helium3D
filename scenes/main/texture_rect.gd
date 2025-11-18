@@ -32,9 +32,22 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	if is_menu_rendered:
-		get_parent().modulate = Color(1.0, 1.0, 1.0, 0.0)
+		visible = false
+		%FrozenTextureRect.visible = true
+		#get_parent().modulate = Color(1.0, 1.0, 1.0, 0.0)
 	else:
-		get_parent().modulate = Color(1.0, 1.0, 1.0, 1.0)
+		visible = true
+		%FrozenTextureRect.visible = false
+		%FrozenTextureRect.texture = ImageTexture.create_from_image(texture.get_image())
+		#get_parent().modulate = Color(1.0, 1.0, 1.0, 1.0)
+	
+	# Sync frozen properties
+	%FrozenTextureRect.size = size
+	%FrozenTextureRect.global_position = global_position
+	%FrozenTextureRect.scale = scale
+	%FrozenTextureRect.custom_minimum_size = custom_minimum_size
+	%FrozenTextureRect.expand_mode = expand_mode
+	%FrozenTextureRect.stretch_mode = stretch_mode
 	
 	if get_tree().current_scene.fields.has('resolution'):
 		var min_size: Vector2 = (get_tree().current_scene.fields['resolution'] * zoom) / 1.28

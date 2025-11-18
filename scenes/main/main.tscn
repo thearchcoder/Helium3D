@@ -641,6 +641,14 @@ size_flags_vertical = 3
 alignment = 1
 script = ExtResource("7_20ti0")
 
+[node name="Node" type="Node" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
+
+[node name="FrozenTextureRect" type="TextureRect" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/Node"]
+unique_name_in_owner = true
+offset_top = 455.0
+offset_right = 1052.0
+offset_bottom = 455.0
+
 [node name="TextureRect" type="TextureRect" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2

@@ -18,7 +18,6 @@ func _ready() -> void:
 	if type == 1:
 		$PopupMenu.remove_item(0)
 		$PopupMenu.add_item('Use this')
-		$PopupMenu.add_item('Randomize this')
 		size.y = 80
 	else:
 		size.y = 40
@@ -37,6 +36,6 @@ func _on_mouse_exited() -> void: mouse_in_area = false
 
 func _on_popup_menu_id_pressed(id: int) -> void:
 	if type == 0:
-		$"../../../..".update_main()
+		%Randomization.update_base_scene()
 	elif type == 1 and id == 0:
-		$"../../../..".use_state(self)
+		%Randomization.use_state()

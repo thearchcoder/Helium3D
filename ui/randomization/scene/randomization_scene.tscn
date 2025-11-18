@@ -1,19 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://cmc2vesxs1g7q"]
+[gd_scene load_steps=5 format=3 uid="uid://cmc2vesxs1g7q"]
 
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="1_1mvh1"]
 [ext_resource type="Script" uid="uid://qcvqypvcpqdm" path="res://ui/randomization/scene/randomization_scene.gd" id="1_13oqj"]
+[ext_resource type="Script" uid="uid://dkgbpmxsqxgeu" path="res://ui/randomization/scene/texture_rect.gd" id="3_od1gw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_13oqj"]
 bg_color = Color(0.5127158, 0.5127158, 0.5127158, 0.044000003)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-corner_detail = 5
-expand_margin_left = 2.0
-expand_margin_top = 2.0
-expand_margin_right = 2.0
-expand_margin_bottom = 2.0
 
 [node name="RandomizationScene" type="MarginContainer"]
 anchors_preset = -1
@@ -53,6 +45,9 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_13oqj")
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+expand_mode = 3
+stretch_mode = 5
+script = ExtResource("3_od1gw")
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2

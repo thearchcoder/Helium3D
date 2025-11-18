@@ -83,7 +83,7 @@ func compute_tiled_render() -> void:
 				if force_stop_tiled_render: return
 				await get_tree().process_frame
 		
-		var texture: Texture = %TextureRect.texture
+		var texture: Texture = %PostDisplay.texture
 		var target_dir := DirAccess.open(get_tree().current_scene.HELIUM3D_PATH)
 		if not target_dir.dir_exists("tilerender"):
 			target_dir.make_dir("tilerender")

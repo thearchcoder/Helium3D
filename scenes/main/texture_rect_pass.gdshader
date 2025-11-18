@@ -3,8 +3,8 @@ shader_type canvas_item;
 uniform float camera_kalaidoscope = 1.0;
 uniform bool display_tiled_render = false;
 uniform sampler2D tiled_render;
-uniform sampler2D previous_frame: hint_default_black, filter_nearest;
-uniform sampler2D pixels_to_render: hint_default_black, filter_nearest;
+uniform sampler2D previous_frame: hint_default_transparent, filter_nearest;
+uniform sampler2D pixels_to_render: hint_default_transparent, filter_nearest;
 uniform bool mix_with_previous = false;
 
 #include "res://renderer/utility.gdshaderinc"
@@ -39,7 +39,7 @@ void fragment() {
 	vec4 prev = texture(previous_frame, uv);
 	vec4 pxinfo = texture(pixels_to_render, UV);
 
-	if (length(result.rgb) <= 0.0001 && length(prev.rgb) >= 0.0001 && !display_tiled_render) {
+	if (length(result.rgb) <= 0.0001) {
 		COLOR = prev;
 	} else {
 		COLOR = result;

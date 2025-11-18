@@ -4427,15 +4427,15 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	vec3 final_color;
 
 	if (building_mesh) {
-		//vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));
-		//vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
-		//vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
-//
-		//vec2 centered_uv = screen_uv;
-		//vec2 resolution_scale = voxel_screen_resolution / 450.0;
-		//vec3 sample_offset = camera_right * centered_uv.x * sample_scale / resolution_scale.x +
-		                    //camera_up * centered_uv.y * sample_scale / resolution_scale.y;
-		//vec3 sample_pos = ray_origin + sample_offset;
+		vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));
+		vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
+		vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
+
+		vec2 centered_uv = screen_uv;
+		vec2 resolution_scale = voxel_screen_resolution / 450.0;
+		vec3 sample_offset = camera_right * centered_uv.x * sample_scale / resolution_scale.x +
+		                    camera_up * centered_uv.y * sample_scale / resolution_scale.y;
+		vec3 sample_pos = ray_origin + sample_offset;
 		
 		vec2 uv = screen_uv;
 		uv *= max(float(voxel_resolution) / 450.0, 1.0);

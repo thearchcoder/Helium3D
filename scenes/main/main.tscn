@@ -1,4 +1,4 @@
-[gd_scene load_steps=83 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=84 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
@@ -153,12 +153,7 @@ load_path = "res://.godot/imported/icon.png-0c10cc1a538d23fad71adfeea25837c6.cte
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_62atk"]
 
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_s17dp"]
-content_margin_left = 4.0
-content_margin_top = 0.0
-content_margin_right = 4.0
-content_margin_bottom = 0.0
-color = Color(0.25565878, 0.2556588, 0.25565875, 1)
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rofvo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7nlll"]
 content_margin_left = 0.0
@@ -171,6 +166,8 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ii537"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_37hlw"]
 viewport_path = NodePath("UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/PostViewport")
@@ -1512,9 +1509,9 @@ unique_name_in_owner = true
 oversampling_override = 1.0
 title = "Randomize"
 initial_position = 1
-size = Vector2i(1300, 630)
+size = Vector2i(1720, 660)
 visible = false
-force_native = true
+content_scale_mode = 1
 content_scale_factor = 1.4
 theme_override_fonts/title_font = ExtResource("8_rhsly")
 
@@ -1527,74 +1524,67 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("4_s17dp")
 
-[node name="Scenes" type="MarginContainer" parent="RandomizeWindow/Randomization"]
+[node name="VBoxContainer" type="VBoxContainer" parent="RandomizeWindow/Randomization"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="PageControl" type="MarginContainer" parent="RandomizeWindow/Randomization/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="RandomizeWindow/Randomization/VBoxContainer/PageControl"]
+layout_mode = 2
+alignment = 1
+
+[node name="PageLeft" type="Button" parent="RandomizeWindow/Randomization/VBoxContainer/PageControl/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_rofvo")
+icon = ExtResource("16_p8abn")
+
+[node name="PageText" type="Label" parent="RandomizeWindow/Randomization/VBoxContainer/PageControl/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Page 1"
+
+[node name="PageRight" type="Button" parent="RandomizeWindow/Randomization/VBoxContainer/PageControl/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_rofvo")
+icon = ExtResource("18_37hlw")
+
+[node name="Scenes" type="MarginContainer" parent="RandomizeWindow/Randomization/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
+theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="RandomizeWindow/Randomization/Scenes"]
+[node name="VBoxContainer" type="HBoxContainer" parent="RandomizeWindow/Randomization/VBoxContainer/Scenes"]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Main" type="HBoxContainer" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer"]
+[node name="BaseScene" parent="RandomizeWindow/Randomization/VBoxContainer/Scenes/VBoxContainer" instance=ExtResource("5_s17dp")]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 3
-alignment = 1
+size_flags_horizontal = 3
+text = "Base Scene"
 
-[node name="RandomizationScene" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/Main" instance=ExtResource("5_s17dp")]
+[node name="RandomizedScene" parent="RandomizeWindow/Randomization/VBoxContainer/Scenes/VBoxContainer" instance=ExtResource("5_s17dp")]
+unique_name_in_owner = true
 layout_mode = 2
-text = "Main"
-
-[node name="HSeparator" type="HSeparator" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer"]
-layout_mode = 2
-theme_override_styles/separator = SubResource("StyleBoxLine_s17dp")
-
-[node name="RandomizedRow1" type="HBoxContainer" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-alignment = 1
-
-[node name="RandomizationScene1" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow1" instance=ExtResource("5_s17dp")]
-layout_mode = 2
-text = "Scene 1"
-type = 1
-
-[node name="RandomizationScene2" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow1" instance=ExtResource("5_s17dp")]
-layout_mode = 2
-text = "Scene 2"
-type = 1
-
-[node name="RandomizationScene3" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow1" instance=ExtResource("5_s17dp")]
-layout_mode = 2
-text = "Scene 3"
-type = 1
-
-[node name="RandomizedRow2" type="HBoxContainer" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="RandomizationScene4" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow2" instance=ExtResource("5_s17dp")]
-layout_mode = 2
-text = "Scene 4"
-type = 1
-
-[node name="RandomizationScene5" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow2" instance=ExtResource("5_s17dp")]
-layout_mode = 2
-text = "Scene 5"
-type = 1
-
-[node name="RandomizationScene6" parent="RandomizeWindow/Randomization/Scenes/VBoxContainer/RandomizedRow2" instance=ExtResource("5_s17dp")]
-layout_mode = 2
-text = "Scene 6"
+size_flags_horizontal = 3
+text = "Randomized Scene"
 type = 1
 
 [node name="Fields" type="MarginContainer" parent="RandomizeWindow/Randomization"]
+custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.8
 
 [node name="Panel" type="Panel" parent="RandomizeWindow/Randomization/Fields"]
 layout_mode = 2
@@ -1615,22 +1605,36 @@ horizontal_alignment = 1
 [node name="FieldContainer" parent="RandomizeWindow/Randomization/Fields/VBoxContainer" instance=ExtResource("19_l42h1")]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 0
 fields_list_id = 25
 
 [node name="MarginContainer" type="MarginContainer" parent="RandomizeWindow/Randomization/Fields/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
 
-[node name="Randomize" type="Button" parent="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Randomize" type="Button" parent="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+tooltip_text = "Shortcut: R"
 theme_override_constants/line_spacing = -10
 theme_override_fonts/font = ExtResource("8_rhsly")
-text = "
-Randomization
-"
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ii537")
+text = "Randomize"
+
+[node name="RandomizeLayered" type="Button" parent="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Same as randomize, But it takes the already randomized scene and randomizes it further. Shortcut: L"
+theme_override_constants/line_spacing = -10
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ii537")
+text = "Randomize Layered"
 
 [node name="VoxelizeWindow" type="Window" parent="."]
 unique_name_in_owner = true
@@ -1841,7 +1845,10 @@ texture = SubResource("CanvasTexture_7nlll")
 [connection signal="pressed" from="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2/DoneAuthor" to="." method="_on_done_author_pressed"]
 [connection signal="pressed" from="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2/CancelAuthor" to="." method="_on_cancel_author_pressed"]
 [connection signal="close_requested" from="RandomizeWindow" to="." method="_on_randomize_window_close_requested"]
-[connection signal="pressed" from="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer/Randomize" to="RandomizeWindow/Randomization" method="randomization"]
+[connection signal="pressed" from="RandomizeWindow/Randomization/VBoxContainer/PageControl/HBoxContainer/PageLeft" to="RandomizeWindow/Randomization" method="_on_page_left_pressed"]
+[connection signal="pressed" from="RandomizeWindow/Randomization/VBoxContainer/PageControl/HBoxContainer/PageRight" to="RandomizeWindow/Randomization" method="_on_page_right_pressed"]
+[connection signal="pressed" from="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer/VBoxContainer/Randomize" to="RandomizeWindow/Randomization" method="randomization"]
+[connection signal="pressed" from="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer/VBoxContainer/RandomizeLayered" to="RandomizeWindow/Randomization" method="layered_randomization"]
 [connection signal="close_requested" from="VoxelizeWindow" to="." method="_on_voxelize_window_close_requested"]
 [connection signal="mouse_entered" from="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal/FractalViewport" to="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal/FractalViewport" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal/FractalViewport" to="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal/FractalViewport" method="_on_mouse_exited"]

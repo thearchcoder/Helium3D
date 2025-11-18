@@ -76,7 +76,7 @@ func save_image(path: String) -> void:
 	if not path.ends_with('.png') and not path.ends_with('.jpg') and not path.ends_with('.jpeg') and not path.ends_with('.webp'):
 		path += '.png'
 	
-	var image: Image = %TextureRect.texture.get_image()
+	var image: Image = %PostDisplay.texture.get_image()
 	
 	if get_tree().current_scene.using_tiling and FileAccess.file_exists(get_tree().current_scene.HELIUM3D_PATH + '/tilerender/combined.png'):
 		image = Image.load_from_file(get_tree().current_scene.HELIUM3D_PATH + '/tilerender/combined.png')

@@ -13,6 +13,8 @@ const BOB_AMPLITUDE := 0.08
 
 @onready var head := %Player.get_node('Head')
 @onready var camera := %Player.get_node('Head').get_node('Camera')
+@onready var initial_texture := texture
+var is_menu_rendered: bool = false
 var velocity := Vector3.ZERO
 var is_holding := false
 var is_hovering := false
@@ -29,6 +31,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		%SubViewport.refresh_taa()
 
 func _physics_process(delta: float) -> void:
+	if is_menu_rendered:
+		get_parent().modulate = Color(1.0, 1.0, 1.0, 0.0)
+	else:
+		get_parent().modulate = Color(1.0, 1.0, 1.0, 1.0)
+	
 	if get_tree().current_scene.fields.has('resolution'):
 		var min_size: Vector2 = (get_tree().current_scene.fields['resolution'] * zoom) / 1.28
 		custom_minimum_size = min_size

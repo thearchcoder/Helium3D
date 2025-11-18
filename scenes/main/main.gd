@@ -44,6 +44,7 @@ var history_at: int = -1
 var last_saved_state: Dictionary = {}
 var is_applying_history: bool = false
 var white_display: Image
+var has_opened_randomization_menu: bool = false
 
 var previous_frame_texture: ImageTexture
 
@@ -65,7 +66,7 @@ func _ready() -> void:
 	DisplayServer.window_set_title("Helium3D", get_window().get_window_id())
 	action_occurred(false)
 	
-	var viewport_texture: ViewportTexture = %PostViewport.get_texture()
+	var viewport_texture: ViewportTexture = %TextureRect.get_texture()
 	var viewport_image: Image = viewport_texture.get_image()
 	var viewport_size: Vector2i = viewport_image.get_size()
 	var viewport_format := viewport_image.get_format()
@@ -206,7 +207,7 @@ func _process(_delta: float) -> void:
 	#var loading_icon_texture: ImageTexture = ImageTexture.create_from_image(loading_icon)
 	#%LoadingIcon.texture = loading_icon_texture
 	
-	var current_image: Image = %PostViewport.get_texture().get_image()
+	var current_image: Image = %TextureRect.get_texture().get_image()
 	%PostDisplay.material.set_shader_parameter('previous_frame', ImageTexture.create_from_image(current_image))
 	%Fractal.material_override.set_shader_parameter('previous_frame', previous_frame_texture)
 	
@@ -215,11 +216,11 @@ func _process(_delta: float) -> void:
 		if $SettingsWindow.visible: $SettingsWindow.visible = false
 		if $CrashSaveWindow.visible: $CrashSaveWindow.visible = false
 		if $AuthorWindow.visible: $AuthorWindow.visible = false
-		if $RandomizeWindow.visible: $RandomizeWindow.visible = false
+		if $RandomizeWindow.visible: _on_randomize_window_close_requested()
 		if $VoxelizeWindow.visible: $VoxelizeWindow.visible = false
 	
 	%Fractal.material_override.set_shader_parameter('voxelization', $VoxelizeWindow.visible)
-	
+	%TextureRect.is_menu_rendered = %RandomizeWindow.visible or %VoxelizeWindow.visible
 	%Export.disabled = $VoxelizedMeshWorld/Mesh.mesh == null
 
 func _input(event: InputEvent) -> void:
@@ -856,17 +857,52 @@ func _on_done_author_pressed() -> void:
 	$AuthorWindow.visible = false
 	author = %AuthorLineEdit.text
 
-func _on_randomize_window_close_requested() -> void: $RandomizeWindow.visible = false
-func _on_randomize_pressed() -> void: $RandomizeWindow.visible = true
+func _on_randomize_window_close_requested() -> void: 
+	$RandomizeWindow.visible = false
+	
+	if %Randomization.decided_randomization.get('is_null', false) == true:
+		update_app_state(%Randomization.undecided_randomization)
+	else:
+		update_app_state(%Randomization.decided_randomization)
+	
+	%Randomization.decided_randomization = {'is_null': true}
+
+func _on_randomize_pressed() -> void: 
+	$RandomizeWindow.visible = true
+	%Randomization.undecided_randomization = get_app_state()
+	_on_voxelize_window_close_requested()
+	
+	if not has_opened_randomization_menu:
+		has_opened_randomization_menu = true
+		%Randomization.update_base_scene()
+		await get_tree().process_frame
+		%Randomization.add_to_history(get_app_state())
+
+		%Randomization.randomization()
+	
+	if %Randomization.last_randomized_scene_data.get('is_null', false) != true:
+		update_app_state(%Randomization.last_randomized_scene_data)
 
 func _on_voxelize_window_close_requested() -> void: 
 	$VoxelizeWindow.visible = false
+	%Fractal.material_override.set_shader_parameter('voxelization', false)
+	%SubViewport.refresh_taa()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
 	await get_tree().process_frame
 	%SubViewport.refresh_taa()
 
 func _on_voxelize_pressed() -> void: 
 	$VoxelizeWindow.visible = true
 	%SubViewport.refresh_taa()
+	_on_randomize_window_close_requested()
 
 func set_resolution(val: Vector2) -> void:
 	for value_node in (Global.value_nodes as Array[Control]):
@@ -913,7 +949,7 @@ func _on_voxelize_button_pressed() -> void:
 		await get_tree().process_frame
 		if i >= 2:
 			%Player.position.z -= step_size
-			var layer: Image = (%PostViewport.get_texture() as ViewportTexture).get_image()
+			var layer: Image = (%TextureRect.get_texture() as ViewportTexture).get_image()
 			$Voxelization.AddImage(i - 2, layer)
 	
 	%Player.position = original_player_position

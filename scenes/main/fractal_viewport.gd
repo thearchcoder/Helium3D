@@ -3,7 +3,7 @@ extends TextureRect
 var is_hovering := false
 
 func _unhandled_input(event: InputEvent) -> void:
-	if Input.is_action_pressed('mouse right click') and MissingNode:
+	if Input.is_action_pressed('mouse right click'):
 		%TextureRect._unhandled_input(event)
 
 func _process(_delta: float) -> void:

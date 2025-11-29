@@ -257,16 +257,13 @@ shader_parameter/ambient_occlusion_radius = 0.0
 shader_parameter/vignette_strength = 0.0
 shader_parameter/vignette_radius = 0.0
 shader_parameter/is_exponential = false
-shader_parameter/fog_color = Color(0.5, 0.6, 0.7, 1)
+shader_parameter/fog_enabled = false
+shader_parameter/fog_volumetric = true
 shader_parameter/fog_density = 0.01
 shader_parameter/fog_falloff = 1.64
-shader_parameter/volumetric_fog = true
-shader_parameter/volumetric_fog_samples = 12
-shader_parameter/volumetric_fog_density = 0.002
-shader_parameter/volumetric_fog_color_lit = Color(1, 1, 1, 1)
-shader_parameter/volumetric_fog_color_unlit = Color(0, 0, 0, 1)
-shader_parameter/volumetric_fog_brightness = 3.0
-shader_parameter/volumetric_fog_dither_scale = 0.0039215684
+shader_parameter/fog_samples = 12
+shader_parameter/fog_brightness = 3.0
+shader_parameter/fog_dither_scale = 255.0
 shader_parameter/fresnel_color = Vector3(0, 0.7, 1)
 shader_parameter/fresnel_falloff = 5.0
 shader_parameter/fresnel_intensity = 0.0045
@@ -397,6 +394,7 @@ text = "Shader compilation..."
 transparent_bg = true
 oversampling_override = 1.0
 size = Vector2i(66, 66)
+visible = false
 borderless = true
 always_on_top = true
 transparent = true
@@ -459,6 +457,59 @@ offset_right = 1052.0
 offset_bottom = 65.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_gkmcc")
 
+[node name="SettingsButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Settings  "
+
+[node name="General" type="MenuButton" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " General "
+item_count = 8
+popup/item_0/text = "About"
+popup/item_0/id = 0
+popup/item_1/text = "Author"
+popup/item_1/id = 1
+popup/item_2/id = 7
+popup/item_2/separator = true
+popup/item_3/text = "Undo"
+popup/item_3/id = 2
+popup/item_4/text = "Redo"
+popup/item_4/id = 3
+popup/item_5/id = 6
+popup/item_5/separator = true
+popup/item_6/text = "Examples"
+popup/item_6/id = 4
+popup/item_7/text = "Website"
+popup/item_7/id = 5
+
+[node name="RandomizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Randomize  "
+
+[node name="VoxelizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Voxelize  "
+
 [node name="Save" type="MenuButton" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -486,71 +537,6 @@ popup/item_0/text = "Load File"
 popup/item_0/id = 1
 popup/item_1/text = "Load Clipboard"
 popup/item_1/id = 0
-
-[node name="Other" type="MenuButton" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-text = " Other "
-item_count = 4
-popup/item_0/text = "Undo"
-popup/item_0/id = 0
-popup/item_1/text = "Redo"
-popup/item_1/id = 2
-popup/item_2/text = "Examples"
-popup/item_2/id = 3
-popup/item_3/text = "Website"
-popup/item_3/id = 1
-
-[node name="AboutButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
-theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
-text = "  About  "
-
-[node name="SettingsButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
-theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
-text = "  Settings  "
-
-[node name="AuthorButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
-theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
-text = "  Author  "
-
-[node name="RandomizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
-theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
-text = "  Randomize  "
-
-[node name="VoxelizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
-theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
-text = "  Voxelize  "
 
 [node name="DifficultyButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
@@ -980,12 +966,12 @@ theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_vljsl")
 theme_override_styles/tab_hovered = SubResource("StyleBoxFlat_vljsl")
 theme_override_styles/tab_selected = SubResource("StyleBoxFlat_rt3fx")
 theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_i63gn")
-current_tab = 1
+current_tab = 0
 tabs_position = 1
 deselect_enabled = true
 
 [node name="Animation" type="HBoxContainer" parent="UI/BottomBar"]
-visible = false
+custom_minimum_size = Vector2(0, 211)
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -1202,6 +1188,7 @@ layout_mode = 2
 theme_override_constants/separation = 93
 
 [node name="Library" type="VBoxContainer" parent="UI/BottomBar"]
+visible = false
 custom_minimum_size = Vector2(0, 211)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1835,9 +1822,7 @@ grow_vertical = 2
 texture = SubResource("CanvasTexture_7nlll")
 
 [connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
-[connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/AboutButton" to="." method="_on_about_button_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/SettingsButton" to="." method="_on_settings_button_pressed"]
-[connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/AuthorButton" to="." method="_on_author_button_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/RandomizeButton" to="." method="_on_randomize_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/VoxelizeButton" to="." method="_on_voxelize_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/DifficultyButton" to="." method="_on_difficulty_pressed"]

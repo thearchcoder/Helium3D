@@ -555,7 +555,7 @@ func update_app_state(data: Dictionary, full_update: bool = true) -> void:
 	data = data.duplicate(true)
 	
 	if 'other' not in data:
-		data['other'] = {"keyframes": data.get("keyframes", {}), 'fps': data.get('fps', 60), 'interpolation': data.get('interpolation', 2), 'keyframe_length': data.get('keyframe_length', 1)}
+		data['other'] = {"keyframes": data.get("keyframes", []), 'fps': data.get('fps', 60), 'interpolation': data.get('interpolation', 2), 'keyframe_length': data.get('keyframe_length', 1)}
 		
 		if data.has('total_visible_formula_pages'):
 			data['other']['total_visible_formula_pages'] = data['total_visible_formula_pages']
@@ -606,7 +606,7 @@ func update_app_state(data: Dictionary, full_update: bool = true) -> void:
 		%AnimationTrack.update_fps(other_data.get('fps', 60))
 		%AnimationTrack.interpolation = other_data.get('interpolation', 3)
 		%AnimationTrack.keyframe_length = other_data.get('keyframe_length', 1)
-		%AnimationTrack.keyframes = other_data.get('keyframes', {})
+		%AnimationTrack.keyframes = other_data.get('keyframes', [])
 		%AnimationTrack.reload_keyframes()
 
 func count_non_zero(numbers: Array) -> int:

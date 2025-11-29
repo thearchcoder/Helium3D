@@ -34,6 +34,22 @@ func _ready() -> void:
 		if id == 0:
 			_on_load_from_clipboard_pressed()
 	)
+	%General.get_popup().connect('id_pressed', func(id: int) -> void:
+		if id == 0:
+			get_tree().current_scene._on_about_button_pressed()
+		if id == 1:
+			get_tree().current_scene._on_author_button_pressed()
+		if id == 2:
+			get_tree().current_scene.undo()
+		if id == 3:
+			get_tree().current_scene.redo()
+		if id == 4:
+			# TODO: Make a website. (examples page)
+			pass
+		if id == 5:
+			# TODO: Make a website.
+			pass
+		)
 
 func set_autosave_interval(value: float) -> void:
 	autosave_interval = value

@@ -110,6 +110,46 @@ vec3 compute_direct_lighting(vec3 p, vec3 rd, vec3 ro, vec3 normal) {
 	return total_light;
 }
 
+vec3 apply_volumetric_fog(vec3 ray_pos, vec3 ray_dir, vec3 pixel_color, float ray_hit_distance, vec2 pixel_pos) {
+	int frame = 0;
+	float start_ray_offset = interleaved_gradient_noise(pixel_pos, frame);
+	float fog_lit_percent = 0.0;
+
+	for (int i = 0; i < fog_samples; i++) {
+		float sample_t = (float(i) + start_ray_offset) / float(fog_samples);
+		vec3 test_pos = ray_pos + ray_dir * ray_hit_distance * sample_t;
+
+		float shadow1 = 0.0;
+		if (light1_enabled) {
+			vec3 to_light1 = normalize(light1_position - test_pos);
+			float light1_dist = length(light1_position - test_pos);
+			shadow1 = hard_shadow(test_pos, to_light1, shadow_epsilon, light1_dist);
+		}
+
+		float shadow2 = 0.0;
+		if (light2_enabled) {
+			vec3 to_light2 = normalize(light2_position - test_pos);
+			float light2_dist = length(light2_position - test_pos);
+			shadow2 = hard_shadow(test_pos, to_light2, shadow_epsilon, light2_dist);
+		}
+
+		float is_lit = 0.0;
+		if (light1_enabled && light2_enabled) {
+			is_lit = max(shadow1, shadow2);
+		} else if (light1_enabled) {
+			is_lit = shadow1;
+		} else if (light2_enabled) {
+			is_lit = shadow2;
+		}
+
+		fog_lit_percent = mix(fog_lit_percent, is_lit, 1.0 / float(i + 1));
+	}
+
+	vec3 fog_color_from_palette = texture(fog_palette, vec2(fog_lit_percent, 0.0)).xyz;
+	float absorb = exp(-ray_hit_distance * fog_density);
+	return mix(fog_color_from_palette * fog_brightness, pixel_color, absorb);
+}
+
 //float soft_shadow(vec3 point, vec3 dir, float start, float end) {
  	//float depth = start, dist;
 	//float shadow = 1.0;

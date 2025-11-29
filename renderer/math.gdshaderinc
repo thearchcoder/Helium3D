@@ -839,3 +839,16 @@ vec2 fibonacci_circle(float i, float n) {
 	float r = sqrt(i / n);
 	return vec2(cos(theta), sin(theta)) * r;
 }
+
+////////////////////////////
+// Volumetric Fog Helpers //
+////////////////////////////
+float interleaved_gradient_noise(vec2 pixel, int frame) {
+	pixel += float(frame) * 5.588238;
+	return fract(52.9829189 * fract(0.06711056 * pixel.x + 0.00583715 * pixel.y));
+}
+
+float hash_noise(vec2 p, int seed) {
+	p += float(seed) * 0.1234;
+	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+}

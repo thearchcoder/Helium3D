@@ -233,9 +233,14 @@ func _ready() -> void:
 		],
 		# Effects / Fog
 		9: [
-			{'name': 'fog_density', 'type': 'float', 'from': 0.0, 'to': 0.4, 'default_value': 0.0},
+			{'name': 'fog_enabled', 'type': 'bool', 'default_value': false},
+			{'name': 'fog_volumetric', 'type': 'bool', 'default_value': true},
+			{'name': 'fog_density', 'type': 'float', 'from': 0.0, 'to': 0.4, 'default_value': 0.01},
 			{'name': 'fog_falloff', 'type': 'float', 'from': 0.0, 'to': 4.1, 'default_value': 1.64},
-			{'name': 'fog_color', 'type': 'color', 'default_value': Color(0.5, 0.6, 0.7)},
+			{'name': 'fog_samples', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 12},
+			{'name': 'fog_palette', 'type': 'palette', 'default_value': {'special_field': true, 'type': 'palette', 'is_blurry': false, 'offsets': PackedFloat32Array([0.0, 1.0]), 'colors': PackedColorArray([Color(0.0, 0.0, 0.0), Color(1.0, 1.0, 1.0)])}},
+			{'name': 'fog_brightness', 'type': 'float', 'from': 0.0, 'to': 10.0, 'default_value': 3.0},
+			{'name': 'fog_dither_scale', 'type': 'float', 'from': 1.0, 'to': 512.0, 'default_value': 255.0},
 		],
 		# Modifiers / Cut
 		10: [

@@ -80,9 +80,14 @@ uniform float vignette_strength;
 uniform float vignette_radius;
 uniform bool is_exponential;
 // Effects / Fog
-uniform vec3 fog_color: source_color = vec3(0.5, 0.6, 0.7);
+uniform bool fog_enabled = false;
+uniform bool fog_volumetric = true;
 uniform float fog_density = 0.01;
 uniform float fog_falloff = 1.64;
+uniform int fog_samples = 12;
+uniform sampler2D fog_palette;
+uniform float fog_brightness = 3.0;
+uniform float fog_dither_scale = 255.0;
 // Effects / Fresnel
 uniform vec3 fresnel_color = vec3(0.0, 0.7, 1.0);
 uniform float fresnel_falloff = 5.0;
@@ -4344,8 +4349,6 @@ vec2 sdf_result;
 	return vec2(de, orbit).yx;
 }
 
-#include "lighting/ambient_occlusion.gdshaderinc"
-
 float calc_epsilon(float dfo) {
 	return relative_epsilon ? epsilon / 3.4 * dfo : epsilon;
 }
@@ -4421,9 +4424,9 @@ vec3 get_ray_direction(vec2 screen_uv, mat4 view_matrix, vec3 ro) {
 	else return normalize(vertex_ls - ro);
 }
 
-#include "lighting/lighting.gdshaderinc"
+#include "lighting.gdshaderinc"
 
-vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color) {
+vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color, vec2 resolution) {
 	vec3 final_color;
 
 	if (building_mesh) {
@@ -4433,14 +4436,13 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 
 		vec2 centered_uv = screen_uv;
 		vec2 resolution_scale = voxel_screen_resolution / 450.0;
-		vec3 sample_offset = camera_right * centered_uv.x * sample_scale / resolution_scale.x +
-		                    camera_up * centered_uv.y * sample_scale / resolution_scale.y;
+		vec3 sample_offset = camera_right * centered_uv.x * sample_scale / resolution_scale.x + camera_up * centered_uv.y * sample_scale / resolution_scale.y;
 		vec3 sample_pos = ray_origin + sample_offset;
-		
+
 		vec2 uv = screen_uv;
 		uv *= max(float(voxel_resolution) / 450.0, 1.0);
 		uv -= 0.5;
-		
+
 		vec3 pos = vec3(uv * 2.5, ray_origin.z);
 		vec2 sdf_data = scene_sdf(pos);
 		float distance_to_surface = sdf_data.y;
@@ -4501,9 +4503,16 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	}
 
 	// Fog
-	float fog_distance = dfo < max_distance ? dfo : max_distance;
-	float fog_amount = 1.0 - exp(-fog_density * fog_distance);
-	final_color = mix(final_color, fog_color, pow(fog_amount, fog_falloff));
+	if (fog_enabled) {
+		float fog_distance = dfo < max_distance ? dfo : max_distance;
+		if (fog_volumetric) {
+			final_color = apply_volumetric_fog(ray_origin, ray_dir, final_color, fog_distance, screen_uv * resolution);
+		} else {
+			float fog_amount = 1.0 - exp(-fog_density * fog_distance);
+			vec3 fog_color_from_palette = texture(fog_palette, vec2(fog_amount, 0.0)).xyz;
+			final_color = mix(final_color, fog_color_from_palette, pow(fog_amount, fog_falloff));
+		}
+	}
 
 	// Fresnel
 	if (dfo < max_distance) {
@@ -4522,6 +4531,13 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 		final_color = final_color * final_color;
 	}
 
+	// Dithering
+	if (dither) {
+		int frame = 0;
+		float noise = hash_noise(screen_uv * resolution, frame) * 2.0 - 1.0;
+		final_color += noise / fog_dither_scale;
+	}
+
 	// Debug
 	if (display == 2) return vec4(normal, 1.0);
 	else if (display == 3) return vec4(vec3(dfo * depth_scale), 1.0);
@@ -4534,7 +4550,7 @@ vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_m
 	vec3 current_dir = ray_dir;
 
 	// Initial ray
-	vec4 result = render_single_ray(current_origin, current_dir, screen_uv, projection_matrix, view_matrix, discard_color);
+	vec4 result = render_single_ray(current_origin, current_dir, screen_uv, projection_matrix, view_matrix, discard_color, resolution);
 	vec3 final_color = result.rgb;
 	bool hit_surface = result.a > 0.5;
 

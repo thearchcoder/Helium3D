@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://bflxulcqo30vy"]
+[gd_scene load_steps=4 format=3 uid="uid://bflxulcqo30vy"]
 
 [ext_resource type="Script" uid="uid://yj1ftkft5due" path="res://ui/capture/capture.gd" id="1_k2smm"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="2_0tu7x"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_65adk"]
 bg_color = Color(0.0728426, 0.0728426, 0.0728426, 0.293)
@@ -10,12 +11,12 @@ corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
 [node name="Capture" type="MarginContainer"]
-custom_minimum_size = Vector2(97.5, 97.5)
+custom_minimum_size = Vector2(0, 164)
 anchors_preset = -1
-anchor_right = 0.051
-anchor_bottom = 0.09
-offset_right = -0.420006
-offset_bottom = 0.299995
+anchor_right = 0.085
+anchor_bottom = 0.15200001
+offset_right = 0.80000305
+offset_bottom = -0.16000366
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 5
@@ -24,23 +25,32 @@ theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 script = ExtResource("1_k2smm")
 
-[node name="Capture" type="VBoxContainer" parent="."]
-layout_mode = 2
+[node name="PopupMenu" type="PopupMenu" parent="."]
+oversampling_override = 1.0
+size = Vector2i(107, 98)
+content_scale_factor = 1.28
+theme_override_fonts/font = ExtResource("2_0tu7x")
+item_count = 3
+item_0/text = "Use this"
+item_0/id = 0
+item_1/text = "Update"
+item_1/id = 1
+item_2/text = "Delete"
+item_2/id = 2
 
-[node name="Control" type="Control" parent="Capture"]
+[node name="Panel" type="Panel" parent="."]
 layout_mode = 2
-
-[node name="Panel" type="Panel" parent="Capture/Control"]
-layout_mode = 2
-offset_left = -5.0
-offset_right = 93.0
-offset_bottom = 93.0
-grow_horizontal = 2
-grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_65adk")
 
-[node name="TextureRect" type="TextureRect" parent="Capture"]
+[node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
+expand_mode = 3
+stretch_mode = 4
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="focus_exited" from="PopupMenu" to="." method="_on_popup_menu_focus_exited"]
+[connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]

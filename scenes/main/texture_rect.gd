@@ -34,12 +34,10 @@ func _physics_process(delta: float) -> void:
 	if is_menu_rendered:
 		visible = false
 		%FrozenTextureRect.visible = true
-		#get_parent().modulate = Color(1.0, 1.0, 1.0, 0.0)
 	else:
 		visible = true
 		%FrozenTextureRect.visible = false
 		%FrozenTextureRect.texture = ImageTexture.create_from_image(texture.get_image())
-		#get_parent().modulate = Color(1.0, 1.0, 1.0, 1.0)
 	
 	# Sync frozen properties
 	%FrozenTextureRect.size = size

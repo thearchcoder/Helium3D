@@ -1,4 +1,4 @@
-[gd_scene load_steps=84 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=85 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
@@ -30,6 +30,7 @@
 [ext_resource type="Texture2D" uid="uid://nlqvli442epy" path="res://resources/icons/hard drive.svg" id="20_0bhws"]
 [ext_resource type="Texture2D" uid="uid://dmkbei7asjjvr" path="res://resources/icons/circle.svg" id="22_an3xl"]
 [ext_resource type="Script" uid="uid://b0xu3c1kn7vkv" path="res://scenes/main/current_time.gd" id="22_s3o3g"]
+[ext_resource type="Script" uid="uid://dke5j7p0y4xgi" path="res://scenes/main/library.gd" id="25_tbnf8"]
 [ext_resource type="Script" uid="uid://cesttaxsv6b8j" path="res://scenes/main/progression_white_noise_viewport.gd" id="29_gkmcc"]
 [ext_resource type="Shader" uid="uid://c5yoergjae7xm" path="res://scenes/main/progression_white_noise.gdshader" id="29_i7in8"]
 
@@ -479,56 +480,20 @@ popup/item_0/id = 1
 popup/item_1/text = "Load Clipboard"
 popup/item_1/id = 0
 
-[node name="Help" type="MenuButton" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+[node name="Other" type="MenuButton" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
-text = " Help "
+text = " Other "
 item_count = 4
-popup/item_0/text = "Fractalforums"
+popup/item_0/text = "Undo"
 popup/item_0/id = 0
-popup/item_1/text = "Documentation"
+popup/item_1/text = "Redo"
 popup/item_1/id = 2
 popup/item_2/text = "Examples"
 popup/item_2/id = 3
 popup/item_3/text = "Website"
 popup/item_3/id = 1
-
-[node name="History" type="MenuButton" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-theme_override_fonts/font = ExtResource("8_rhsly")
-text = " History "
-item_count = 2
-popup/item_0/text = "Undo"
-popup/item_0/id = 0
-popup/item_1/text = "Redo"
-popup/item_1/id = 2
-
-[node name="UndoButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/History"]
-layout_mode = 0
-offset_left = 73.0
-offset_right = 129.0
-offset_bottom = 30.0
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
-theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
-text = "  Undo  "
-
-[node name="RedoButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/History"]
-layout_mode = 0
-offset_left = 129.0
-offset_right = 183.0
-offset_bottom = 30.0
-theme_override_fonts/font = ExtResource("8_rhsly")
-theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
-theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
-text = "  Redo  "
 
 [node name="AboutButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
@@ -552,7 +517,6 @@ text = "  Settings  "
 
 [node name="AuthorButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
@@ -563,7 +527,6 @@ text = "  Author  "
 
 [node name="RandomizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
@@ -1010,11 +973,12 @@ theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_vljsl")
 theme_override_styles/tab_hovered = SubResource("StyleBoxFlat_vljsl")
 theme_override_styles/tab_selected = SubResource("StyleBoxFlat_rt3fx")
 theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_i63gn")
-current_tab = 0
+current_tab = 1
 tabs_position = 1
 deselect_enabled = true
 
 [node name="Animation" type="HBoxContainer" parent="UI/BottomBar"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -1230,17 +1194,68 @@ visible = false
 layout_mode = 2
 theme_override_constants/separation = 93
 
-[node name="Library" type="HBoxContainer" parent="UI/BottomBar"]
-visible = false
-custom_minimum_size = Vector2(1.45519e-11, 200)
+[node name="Library" type="VBoxContainer" parent="UI/BottomBar"]
+custom_minimum_size = Vector2(0, 211)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 0
+script = ExtResource("25_tbnf8")
 metadata/_tab_index = 1
 
-[node name="GridContainer" type="GridContainer" parent="UI/BottomBar/Library"]
+[node name="ControlButtons" type="MarginContainer" parent="UI/BottomBar/Library"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/BottomBar/Library/ControlButtons"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Library/ControlButtons/VBoxContainer"]
+layout_mode = 2
+
+[node name="SetScrollStartButton" type="Button" parent="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(1.45519e-11, 28)
+layout_mode = 2
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("16_p8abn")
+
+[node name="AddCaptureButton" type="Button" parent="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+tooltip_text = "Add the current frame as a keyframe to animation."
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("19_6llfj")
+
+[node name="SetScrollEndButton" type="Button" parent="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(1.45519e-11, 28)
+layout_mode = 2
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("18_37hlw")
+
+[node name="HSeparator" type="HSeparator" parent="UI/BottomBar/Library/ControlButtons/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+theme_override_styles/separator = SubResource("StyleBoxFlat_6llfj")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/BottomBar/Library"]
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Library/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-columns = 7
+size_flags_vertical = 2
 
 [node name="DummyFocusButton" type="Button" parent="."]
 unique_name_in_owner = true
@@ -1841,6 +1856,9 @@ texture = SubResource("CanvasTexture_7nlll")
 [connection signal="mouse_exited" from="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_exited"]
 [connection signal="mouse_entered" from="UI/BottomBar/Animation/Animation/AnimationTrack" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="UI/BottomBar/Animation/Animation/AnimationTrack" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_mouse_exited"]
+[connection signal="pressed" from="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer/SetScrollStartButton" to="UI/BottomBar/Library" method="_on_set_scroll_start_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer/AddCaptureButton" to="UI/BottomBar/Library" method="_on_add_capture_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer/SetScrollEndButton" to="UI/BottomBar/Library" method="_on_set_scroll_end_button_pressed"]
 [connection signal="file_selected" from="FileDialog" to="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar" method="_on_file_dialog_confirmed"]
 [connection signal="confirmed" from="VoxelizationFileDialog" to="." method="_on_voxelization_file_dialog_file_selected"]
 [connection signal="close_requested" from="AboutWindow" to="." method="_on_window_close_requested"]

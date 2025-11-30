@@ -2,9 +2,8 @@ shader_type spatial;
 render_mode unshaded;
 
 // Disabled when possible to reduce shader compilation times.
-// Line numbers for these 3 lines must stay the same.
+// Line numbers for these 2 lines must stay the same.
 //#define USING_DOF
-//#define USING_TILING
 //#define USING_REFLECTIONS
 
 // Camera
@@ -118,9 +117,7 @@ uniform vec3 kalaidoscope;
 uniform int kalaidoscope_mode;
 // Tooling / Tiling
 uniform bool tiled;
-uniform int tiles_x;
-uniform int tiles_y;
-uniform int current_tile;
+uniform vec4 tile_bounds;
 // Tools / General
 uniform bool transparent_bg;
 // Tools / Debug
@@ -257,12 +254,25 @@ vec3 ray_marcher(vec3 ro, vec3 rd, inout vec3 palette_color_override, inout bool
 		dfo += max(point_distance * raystep_multiplier, calc_epsilon(dfo));
 		total_marches += 1.0;
 
-		if (point_distance < calc_epsilon(dfo) || dfo > max_distance) {
+		float hit_threshold = calc_epsilon(dfo);
+		if (point_distance < hit_threshold) {
+			// Refinement step
+			for(int j = 0; j < 3; j++) {
+				current_pos = ro + rd * dfo;
+				data = scene_sdf(current_pos);
+				dfo += data.y * 0.5;
+			}
 			orbit_trap_distance = data.x;
 			final_bounds_dist = bounds_dist;
 			final_bounds_color = bounds_color;
 			break;
-		};
+		}
+		if (dfo > max_distance) {
+			orbit_trap_distance = data.x;
+			final_bounds_dist = bounds_dist;
+			final_bounds_color = bounds_color;
+			break;
+		}
 	}
 
 	if (voxelization && final_bounds_dist < calc_epsilon(dfo)) {
@@ -522,42 +532,18 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 #define SET_ALBEDO bool discard_color = false; \
 	vec3 ro = (inverse(MODEL_MATRIX) * vec4(CAMERA_POSITION_WORLD, 1.0)).xyz; \
 	vec3 rd = get_ray_direction(SCREEN_UV, VIEW_MATRIX, ro); \
-	ALBEDO = calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX, discard_color) + 0.004; \
+	ALBEDO = max(calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX, discard_color), vec3(0.0)) + 0.004; \
 	if (discard_color) discard;
 
 void fragment() {
 	if (texture(pixels_to_render, UV).r < 0.5) discard;
 
-	float error_margin = 2.0;
-
-	#ifdef USING_TILING
 	if (tiled) {
-		int tile_idx = int(current_tile);
-		int t_x = int(tiles_x);
-		int t_y = int(tiles_y);
-
-		int tile_x_pos = tile_idx % t_x;
-		int tile_y_pos = tile_idx / t_x;
-
-		vec2 tile_size = 1.0 / vec2(float(t_x), float(t_y));
-		vec2 padding = error_margin / VIEWPORT_SIZE;
-
-		vec2 tile_start = vec2(float(tile_x_pos), float(tile_y_pos)) * tile_size;
-		vec2 tile_end = tile_start + tile_size;
-
-		vec2 tile_min = max(tile_start - padding, vec2(0.0));
-		vec2 tile_max = min(tile_end + padding, vec2(1.0));
-
-		if (SCREEN_UV.x >= tile_min.x && SCREEN_UV.x < tile_max.x &&
-		    SCREEN_UV.y >= tile_min.y && SCREEN_UV.y < tile_max.y) {
-			SET_ALBEDO
-		} else {
+		if (SCREEN_UV.x < tile_bounds.x || SCREEN_UV.x >= tile_bounds.z ||
+		    SCREEN_UV.y < tile_bounds.y || SCREEN_UV.y >= tile_bounds.w) {
 			discard;
 		}
-	} else {
-		SET_ALBEDO
 	}
-	#else
+
 	SET_ALBEDO
-	#endif
 }

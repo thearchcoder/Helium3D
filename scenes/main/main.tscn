@@ -1,4 +1,4 @@
-[gd_scene load_steps=85 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=84 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
@@ -18,7 +18,6 @@
 [ext_resource type="Script" uid="uid://bll313qxnpxar" path="res://scenes/main/menus_tab_container.gd" id="9_7154d"]
 [ext_resource type="PackedScene" uid="uid://btv7ewx22x217" path="res://ui/fields/float field/float_field.tscn" id="11_37hlw"]
 [ext_resource type="Script" uid="uid://dy6nqliruge83" path="res://scenes/main/voxel_viewport.gd" id="11_62atk"]
-[ext_resource type="PackedScene" uid="uid://db57n1ak0l5yd" path="res://ui/logs/logs.tscn" id="14_pnl7n"]
 [ext_resource type="Script" uid="uid://77ccf8ixmtdl" path="res://scenes/main/formula_tab_container.gd" id="16_dmyle"]
 [ext_resource type="PackedScene" uid="uid://4bx65d7nnvmf" path="res://ui/pages/formula page/formula_page.tscn" id="16_hfvnl"]
 [ext_resource type="Texture2D" uid="uid://c6re6si5pp758" path="res://resources/icons/left.svg" id="16_p8abn"]
@@ -289,9 +288,7 @@ shader_parameter/rotation = Vector3(0, 0, 0)
 shader_parameter/kalaidoscope = Vector3(0, 0, 0)
 shader_parameter/kalaidoscope_mode = 0
 shader_parameter/tiled = false
-shader_parameter/tiles_x = 0
-shader_parameter/tiles_y = 0
-shader_parameter/current_tile = 0
+shader_parameter/tile_bounds = Vector4(0, 0, 0, 0)
 shader_parameter/transparent_bg = false
 shader_parameter/display = 0
 shader_parameter/depth_scale = 0.0
@@ -492,6 +489,7 @@ popup/item_7/id = 5
 
 [node name="RandomizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
@@ -502,6 +500,7 @@ text = "  Randomize  "
 
 [node name="VoxelizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
@@ -947,12 +946,6 @@ visible = false
 layout_mode = 2
 fields_list_id = 20
 metadata/_tab_index = 1
-
-[node name="Logs" parent="UI/HBoxContainer/TabContainer" instance=ExtResource("14_pnl7n")]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-metadata/_tab_index = 6
 
 [node name="BottomBar" type="TabContainer" parent="UI"]
 layout_mode = 2

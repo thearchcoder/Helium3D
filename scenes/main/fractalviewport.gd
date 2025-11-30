@@ -1,6 +1,6 @@
 extends SubViewport
 
-enum AntiAliasing { FXAA, SMAA, NONE }
+enum AntiAliasing { FXAA, SMAA, NONE, TAA }
 
 var antialiasing := AntiAliasing.NONE
 var low_scaling: float
@@ -56,7 +56,6 @@ func _process(delta: float) -> void:
 	since_last_dynamic_update_frame += 1
 	previous_update_mode = render_target_update_mode
 
-
 func refresh_taa() -> void:
 	since_last_dynamic_update = 0.0
 	since_last_dynamic_update_frame = 0
@@ -68,18 +67,3 @@ func refresh_taa() -> void:
 	if not %AnimationTrack.is_playing:
 		await get_tree().process_frame
 		scaling_3d_scale = old_scaling_3d_scale
-	
-	#if get_tree().current_scene.using_tiling:
-		#if get_tree().current_scene.busy_rendering_tiles:
-			#%Rendering.stop_tiled_render()
-			#%Rendering.compute_tiled_render()
-		#if not get_tree().current_scene.busy_rendering_tiles:
-			#%Rendering.compute_tiled_render()
-
-#func refresh_no_taa() -> void:
-	#since_last_dynamic_update = 0.0
-	#since_last_dynamic_update_frame = 0
-	#%ProgressionWhiteNoiseViewport.reset()
-	#
-	##if get_tree().current_scene.using_tiling and not get_tree().current_scene.busy_rendering_tiles:
-		##%Rendering.compute_tiled_render()

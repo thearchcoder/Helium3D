@@ -27,13 +27,11 @@ var keyframe_length: float = 1.0:
 var taa_frame_counter: int = 0
 var waiting_for_taa: bool = false
 var rendering_tiles: bool = false
-var using_tiling: bool = false
 var render_start_time: float
 var time_estimate: float = 0.0
 
 func update_tiling_variables() -> void:
 	rendering_tiles = get_tree().current_scene.busy_rendering_tiles
-	using_tiling = get_tree().current_scene.using_tiling
 
 func _ready() -> void:
 	_on_set_time_start_button_pressed()
@@ -214,8 +212,8 @@ func process_frame() -> void:
 	
 	var image: Image = %SubViewport.get_texture().get_image()
 	
-	if get_tree().current_scene.using_tiling and FileAccess.file_exists(get_tree().current_scene.HELIUM3D_PATH + '/tilerender/combined.png'):
-		image = Image.load_from_file(get_tree().current_scene.HELIUM3D_PATH + '/tilerender/combined.png')
+	if %Fractal.material_override.get_shader_parameter('tiled') and get_tree().current_scene.last_tiled_render_image:
+		image = get_tree().current_scene.last_tiled_render_image
 	
 	if image and is_rendering and currently_at_frame >= 2:
 		var path: String = get_tree().current_scene.HELIUM3D_PATH + "/renders/frame_" + str(int(currently_at_frame - 2) + 1).trim_suffix('.0') + ".png"
@@ -227,8 +225,8 @@ func process_frame() -> void:
 		currently_at_frame += 1
 	
 	waiting_for_taa = false
-	
-	if using_tiling:
+
+	if %Fractal.material_override.get_shader_parameter('tiled'):
 		await get_tree().process_frame
 		%Rendering.compute_tiled_render()
 
@@ -245,8 +243,8 @@ func _process(_delta: float) -> void:
 		text += 'Time: ' + str(int((Time.get_unix_time_from_system() - render_start_time) * 100) / 100) + 's' + ' / ' + str(int(time_estimate * 100) / 100) + 's'
 	
 	%RenderButton.tooltip_text = text
-	
-	if not using_tiling:
+
+	if not %Fractal.material_override.get_shader_parameter('tiled'):
 		if waiting_for_taa and is_playing:
 			taa_frame_counter += 1
 			if taa_frame_counter >= get_tree().current_scene.taa_samples:
@@ -264,8 +262,8 @@ func _process(_delta: float) -> void:
 		%PlayingToggleButton.icon = preload('res://resources/icons/play-solid.svg')
 	
 	var wait := true
-	
-	if using_tiling:
+
+	if %Fractal.material_override.get_shader_parameter('tiled'):
 		wait = rendering_tiles
 	else:
 		wait = waiting_for_taa
@@ -277,7 +275,7 @@ func _process(_delta: float) -> void:
 		
 		get_tree().current_scene.update_app_state(animation_frames_data[round(currently_at_frame)], false)
 		
-		if is_rendering and not using_tiling:
+		if is_rendering and not %Fractal.material_override.get_shader_parameter('tiled'):
 			waiting_for_taa = true
 			taa_frame_counter = 0
 		else:

@@ -30,10 +30,10 @@ var fields: Dictionary = {}
 var other_fields: Array = ['total_visible_formula_pages', 'player_position', 'head_rotation', 'camera_rotation']
 var formulas: Array[Dictionary] = []
 var using_dof: bool = false
-var using_tiling: bool = false
 var author: String = ''
 var using_reflections: bool = false
 var busy_rendering_tiles: bool = false
+var last_tiled_render_image: Image
 var difficulty: String = 'simple':
 	set(value):
 		difficulty = value
@@ -49,7 +49,6 @@ var has_opened_randomization_menu: bool = false
 var previous_frame_texture: ImageTexture
 
 func _ready() -> void:
-	%Logs.print_console('Helium3D ' + VERSION)
 	$AboutWindow/HBoxContainer/VBoxContainer2/RichTextLabel.text = $AboutWindow/HBoxContainer/VBoxContainer2/RichTextLabel.text.replace('{version}', VERSION)
 	
 	var dir := DirAccess.open("res://")
@@ -781,16 +780,11 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 		modified_lines[5] = (modified_lines[5] as String).lstrip('/')
 	else:
 		if not modified_lines[5].begins_with('//'): modified_lines[5] = '//' + (modified_lines[5] as String)
-	
-	if using_tiling:
+
+	if using_reflections:
 		modified_lines[6] = (modified_lines[6] as String).lstrip('/')
 	else:
 		if not modified_lines[6].begins_with('//'): modified_lines[6] = '//' + (modified_lines[6] as String)
-	
-	if using_reflections:
-		modified_lines[7] = (modified_lines[7] as String).lstrip('/')
-	else:
-		if not modified_lines[7].begins_with('//'): modified_lines[7] = '//' + (modified_lines[7] as String)
 	
 	# Remove all comments to reduce shader compilation times
 	#var i: int = 0
@@ -821,8 +815,6 @@ func _on_difficulty_pressed() -> void:
 		toggle_ui_difficulty()
 	
 	# Toggle menu bar buttons
-	%History.visible = not %History.visible
-	%AuthorButton.visible = not %AuthorButton.visible
 	%RandomizeButton.visible = not %RandomizeButton.visible
 
 func toggle_ui_difficulty() -> void:

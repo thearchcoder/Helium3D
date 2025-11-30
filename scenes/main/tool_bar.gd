@@ -94,8 +94,8 @@ func save_image(path: String) -> void:
 	
 	var image: Image = %PostDisplay.texture.get_image()
 	
-	if get_tree().current_scene.using_tiling and FileAccess.file_exists(get_tree().current_scene.HELIUM3D_PATH + '/tilerender/combined.png'):
-		image = Image.load_from_file(get_tree().current_scene.HELIUM3D_PATH + '/tilerender/combined.png')
+	if %Fractal.material_override.get_shader_parameter('tiled') and get_tree().current_scene.last_tiled_render_image:
+		image = get_tree().current_scene.last_tiled_render_image
 	
 	if path.ends_with(".jpg") or path.ends_with(".jpeg"):
 		image.save_jpg(path)
@@ -166,7 +166,6 @@ func _on_load_from_clipboard_pressed() -> void:
 	data = data.lstrip(' ')
 	
 	if not data.begins_with('Helium3D['):
-		%Logs.print_console('Failed to load clip board text.')
 		return
 	
 	data = data.trim_prefix('Helium3D[')
@@ -178,7 +177,6 @@ func _on_load_from_clipboard_pressed() -> void:
 	
 	var file: FileAccess = FileAccess.open(get_tree().current_scene.HELIUM3D_PATH + '/clipboard_load_buffer.hlm', FileAccess.WRITE)
 	if file == null:
-		%Logs.print_console('Failed to create clipboard buffer file.')
 		return
 	
 	file.store_buffer(decompressed_data)

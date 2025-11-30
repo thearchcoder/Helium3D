@@ -125,7 +125,5 @@ func update_field_values(new_fields: Dictionary) -> void:
 			if not target_value_node.has_method('i_am_a_selection_field'):
 				if typeof(target_value_node.value) == typeof(field_val):
 					target_value_node.value = field_val
-				else:
-					%Logs.print_console("Failed to load field '" + field_name + "', Value: " + str(field_val))
 			else:
 				target_value_node.index = field_val

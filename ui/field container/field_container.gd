@@ -47,6 +47,40 @@ func stop_tiled_render() -> void:
 	await get_tree().process_frame
 	force_stop_tiled_render = false
 
+func update_tile_bounds() -> void:
+	var tiles_x_node: Node
+	var tiles_y_node: Node
+	var current_tile_node: Node
+
+	for value_node in (Global.value_nodes as Array[Node]):
+		if value_node.name == 'TilesX': tiles_x_node = value_node
+		if value_node.name == 'TilesY': tiles_y_node = value_node
+		if value_node.name == 'CurrentTile': current_tile_node = value_node
+
+	if not tiles_x_node or not tiles_y_node or not current_tile_node:
+		return
+
+	var tiles_x: int = tiles_x_node.value
+	var tiles_y: int = tiles_y_node.value
+	var current_tile: int = current_tile_node.value
+
+	var tile_x_pos: int = current_tile % tiles_x
+	var tile_y_pos: int = current_tile / tiles_x
+
+	var tile_size: Vector2 = Vector2(1.0 / float(tiles_x), 1.0 / float(tiles_y))
+	var error_margin: float = 2.0
+	var viewport_size: Vector2 = %SubViewport.size
+	var padding: Vector2 = Vector2(error_margin, error_margin) / viewport_size
+
+	var tile_start: Vector2 = Vector2(float(tile_x_pos), float(tile_y_pos)) * tile_size
+	var tile_end: Vector2 = tile_start + tile_size
+
+	var tile_min: Vector2 = (tile_start - padding).max(Vector2.ZERO)
+	var tile_max: Vector2 = (tile_end + padding).min(Vector2.ONE)
+
+	var tile_bounds: Vector4 = Vector4(tile_min.x, tile_min.y, tile_max.x, tile_max.y)
+	%Fractal.material_override.set_shader_parameter('tile_bounds', tile_bounds)
+
 func compute_tiled_render() -> void:
 	get_tree().current_scene.busy_rendering_tiles = true
 	%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
@@ -74,16 +108,18 @@ func compute_tiled_render() -> void:
 	
 	for i in total_tiles:
 		current_tile_node.value = i
+		%SubViewport.refresh_taa()
 		
 		if %SubViewport.antialiasing != %SubViewport.AntiAliasing.TAA:
 			if force_stop_tiled_render: return
+			await get_tree().process_frame
 			await get_tree().process_frame
 		else:
 			for j in (get_tree().current_scene.taa_samples as int):
 				if force_stop_tiled_render: return
 				await get_tree().process_frame
 		
-		var texture: Texture = %PostDisplay.texture
+		var texture: Texture = %SubViewport.get_texture()
 		var target_dir := DirAccess.open(get_tree().current_scene.HELIUM3D_PATH)
 		if not target_dir.dir_exists("tilerender"):
 			target_dir.make_dir("tilerender")
@@ -125,7 +161,7 @@ func compute_tiled_render() -> void:
 		if dir.file_exists(path):
 			dir.remove(path)
 	
-	final_image.save_png(get_tree().current_scene.HELIUM3D_PATH + "/tilerender/combined.png")
+	get_tree().current_scene.last_tiled_render_image = final_image
 	
 	%PostDisplay.material.set_shader_parameter('display_tiled_render', true)
 	%PostDisplay.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
@@ -371,15 +407,20 @@ func _ready() -> void:
 			{'name': 'progression_strength', 'type': 'float', 'from': 0, 'to': 100, 'default_value': 100},
 			{'name': 'tiled', 'type': 'bool', 'default_value': false, 'onchange_override': func(val: bool) -> void: 
 			%SubViewport.refresh_taa()
-			get_tree().current_scene.using_tiling = val
-			get_tree().current_scene.update_fractal_code(%TabContainer.current_formulas)
 			%Fractal.material_override.set_shader_parameter('tiled', val)
 			if not val:
 				%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
+				get_tree().current_scene.last_tiled_render_image = null
 			},
-			{'name': 'tiles_x', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},
-			{'name': 'tiles_y', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4},
-			{'name': 'current_tile', 'type': 'int', 'from': 0, 'to': 40, 'default_value': 0},
+			{'name': 'tiles_x', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4, 'onchange_override': func(_val: int) -> void:
+			update_tile_bounds()
+			},
+			{'name': 'tiles_y', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4, 'onchange_override': func(_val: int) -> void:
+			update_tile_bounds()
+			},
+			{'name': 'current_tile', 'type': 'int', 'from': 0, 'to': 40, 'default_value': 0, 'onchange_override': func(_val: int) -> void:
+			update_tile_bounds()
+			},
 			{'name': 'compute_tiled_render', 'type': 'bool', 'default_value': false, 'onchange_override': func(val: bool) -> void:
 				if Engine.get_frames_drawn() != 0: %Rendering.compute_tiled_render()
 				},

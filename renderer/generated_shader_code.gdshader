@@ -4659,8 +4659,9 @@ void fragment() {
 
 		float angle = 3.14159265 / camera_kalaidoscope;
 		float theta = atan(centered_uv.y, centered_uv.x);
+		float margin = 0.02;
 
-		if (theta < -angle || theta > angle) {
+		if (theta < -angle - margin || theta > angle + margin) {
 			discard;
 		}
 	}

@@ -534,9 +534,22 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 
 void fragment() {
 	if (texture(pixels_to_render, UV).r < 0.5) discard;
-	
+
+	if (camera_kalaidoscope > 1.0) {
+		float aspect_ratio = VIEWPORT_SIZE.x / VIEWPORT_SIZE.y;
+		vec2 centered_uv = SCREEN_UV - 0.5;
+		centered_uv.x *= aspect_ratio;
+
+		float angle = 3.14159265 / camera_kalaidoscope;
+		float theta = atan(centered_uv.y, centered_uv.x);
+
+		if (theta < -angle || theta > angle) {
+			discard;
+		}
+	}
+
 	SET_ALBEDO
-	
+
 	if (tiled) {
 		if (SCREEN_UV.x < tile_bounds.x || SCREEN_UV.x >= tile_bounds.z ||
 			SCREEN_UV.y < tile_bounds.y || SCREEN_UV.y >= tile_bounds.w) {

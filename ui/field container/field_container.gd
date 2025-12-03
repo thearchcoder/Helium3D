@@ -386,6 +386,7 @@ func _ready() -> void:
 			{'name': 'escape_radius', 'advanced_only': true, 'type': 'float', 'from': 0, 'to': 500, 'default_value': 16},
 			{'name': 'camera_kalaidoscope', 'advanced_only': true, 'type': 'float', 'from': 1, 'to': 20, 'default_value': 1, 'onchange_override': func(val: Variant) -> void:
 			%PostDisplay.material.set_shader_parameter('camera_kalaidoscope', val)
+			%Fractal.material_override.set_shader_parameter('camera_kalaidoscope', val)
 			field_changed_non_shader('camera_kalaidoscope', val)
 			},
 			{'name': 'fov', 'type': 'float', 'from': 10, 'to': 300, 'default_value': 75, 'advanced_only': true, 'onchange_override': func(val: Variant) -> void: 

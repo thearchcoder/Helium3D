@@ -95,7 +95,7 @@ func initialize_formula(formula_index: int) -> void:
 		
 		var as_array := value_node.name.to_snake_case().split("_")
 		var text := "_".join(PackedStringArray(as_array.slice(1))).to_pascal_case()
-		text = add_spaces(text).trim_prefix("4d ")
+		text = Global.add_spaces(text).trim_prefix("4d ")
 		
 		var label: Label = Label.new()
 		label.text = text + ": "
@@ -118,15 +118,6 @@ func initialize_formula(formula_index: int) -> void:
 
 func _on_value_changed(new_value: Variant, node: Control) -> void:
 	field_changed(node.get_meta("uniform_name"), new_value)
-
-func add_spaces(text: String) -> String:
-	var result := ""
-	for i in range(text.length()):
-		var character := text[i]
-		if i > 0 and character == character.to_upper():
-			result += " "
-		result += character
-	return result
 
 func i_am_a_formula_page() -> void: pass
 

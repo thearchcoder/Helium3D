@@ -6,6 +6,11 @@ func _ready() -> void:
 	Global.value_nodes.append(self)
 	value_changed.emit(value)
 
+var button_text: String = "Bool Button":
+	set(value):
+		button_text = value
+		$Button.text = button_text
+
 var is_button: bool = false:
 	set(value):
 		is_button = value

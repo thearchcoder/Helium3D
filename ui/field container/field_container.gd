@@ -433,15 +433,6 @@ func _ready() -> void:
 	update_fields_ui()
 	get_tree().current_scene.reload_difficulty()
 
-func add_spaces(text: String) -> String:
-	var result := ""
-	for i in range(text.length()):
-		var character := text[i]
-		if i > 0 and character == character.to_upper():
-			result += " "
-		result += character
-	return result
-
 func update_fields_ui() -> void:
 	for field in (fields as Array[Dictionary]):
 		var variable_data: Dictionary = field
@@ -525,6 +516,7 @@ func update_fields_ui() -> void:
 			value_node.value = variable_data['default_value']
 			value_node.name = variable_name.to_pascal_case()
 			value_node.is_button = variable_data.get('bool_button', false)
+			value_node.button_text = variable_name#!
 			value_node.connect('value_changed', variable_data.get('onchange_override', func(to: Variant) -> void: field_changed(uniform_name, to)))
 			%Values.add_child(value_node)
 		elif variable_data['type'] == 'image':
@@ -536,7 +528,7 @@ func update_fields_ui() -> void:
 		# Add name node
 		var as_array := variable_name.split('_')
 		var text := "_".join(PackedStringArray(as_array)).to_pascal_case()
-		text = add_spaces(text)
+		text = Global.add_spaces(text)
 		text = text.trim_prefix('4d ')
 		
 		var label: Label = Label.new()

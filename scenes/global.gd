@@ -2,6 +2,15 @@ extends Node
 
 var value_nodes: Array[Control] = []
 
+func add_spaces(text: String) -> String:
+	var result := ""
+	for i in range(text.length()):
+		var character := text[i]
+		if i > 0 and character == character.to_upper():
+			result += " "
+		result += character
+	return result
+
 func get_shader_field(field_name: String) -> Variant:
 	return %Fractal.material_override.get_shader_parameter(field_name)
 

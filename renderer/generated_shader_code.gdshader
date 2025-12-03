@@ -4501,8 +4501,7 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 		if (bg_type == 0) final_color = pow(texture(bg_color, vec2(acos(sph_dir.y) / PI, 0.0)).xyz, vec3(2.0));
 		if (bg_type == 1) final_color = texture(bg_image, uv).xyz;
 	} else {
-		if (display == 1) final_color = vec3(calcAO(p, normal));
-		else if (override_color) final_color = overridden_color;
+		if (override_color) final_color = overridden_color;
 		else final_color = palette_color * compute_direct_lighting(p, ray_dir, ray_origin, normal);
 	}
 
@@ -4549,7 +4548,8 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	}
 
 	// Debug
-	if (display == 2) return vec4(normal, 1.0);
+	if (display == 1) final_color = dfo <= max_distance ? vec3(calcAO(p, normal)) : vec3(0.0);
+	else if (display == 2) return vec4(normal, 1.0);
 	else if (display == 3) return vec4(vec3(dfo * depth_scale), 1.0);
 
 	return vec4(final_color, 1.0);

@@ -432,8 +432,8 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 
 	// Debug
 	if (display == 1) final_color = dfo <= max_distance ? vec3(calcAO(p, normal)) : vec3(0.0);
-	else if (display == 2) return vec4(normal, 1.0);
-	else if (display == 3) return vec4(vec3(dfo * depth_scale), 1.0);
+	else if (display == 2) final_color = normal;
+	else if (display == 3) final_color = vec3(dfo * depth_scale);
 
 	return vec4(final_color, 1.0);
 }

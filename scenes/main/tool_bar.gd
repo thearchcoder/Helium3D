@@ -4,7 +4,7 @@ var autosave_interval: float = 5.0 : set = set_autosave_interval
 var autosave_timer: Timer
 
 func recover() -> void:
-	%ToolBar.load_project_data(get_tree().current_scene.HELIUM3D_PATH + '/autosave.hlm')
+	%ToolBar.load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/autosave.hlm'))
 	%SubViewport.refresh_taa()
 
 func _ready() -> void:
@@ -59,7 +59,7 @@ func set_autosave_interval(value: float) -> void:
 		autosave_timer.start()
 
 func _on_autosave_timer_timeout() -> void:
-	var autosave_path: String = get_tree().current_scene.HELIUM3D_PATH + '/autosave.hlm'
+	var autosave_path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path('/autosave.hlm')
 	if not %CrashSaveWindow.visible:
 		save_project_data(autosave_path)
 
@@ -175,14 +175,14 @@ func _on_load_from_clipboard_pressed() -> void:
 	var decoded_data: PackedByteArray = Marshalls.base64_to_raw(data)
 	var decompressed_data: PackedByteArray = decoded_data.decompress_dynamic(-1, FileAccess.COMPRESSION_GZIP)
 	
-	var file: FileAccess = FileAccess.open(get_tree().current_scene.HELIUM3D_PATH + '/clipboard_load_buffer.hlm', FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_load_buffer.hlm'), FileAccess.WRITE)
 	if file == null:
 		return
 	
 	file.store_buffer(decompressed_data)
 	file.close()
 	
-	load_project_data(get_tree().current_scene.HELIUM3D_PATH + '/clipboard_load_buffer.hlm')
+	load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_load_buffer.hlm'))
 	
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -190,8 +190,8 @@ func _on_load_from_clipboard_pressed() -> void:
 	%SubViewport.refresh_taa()
 
 func _on_save_to_clipboard_pressed() -> void:
-	save_project_data(get_tree().current_scene.HELIUM3D_PATH + '/clipboard_save_buffer.hlm', ['keyframes'], true)
-	var file: PackedByteArray = FileAccess.get_file_as_bytes(get_tree().current_scene.HELIUM3D_PATH + '/clipboard_save_buffer.hlm')
+	save_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_save_buffer.hlm'), ['keyframes'], true)
+	var file: PackedByteArray = FileAccess.get_file_as_bytes(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_save_buffer.hlm'))
 	var compressed_data: PackedByteArray = file.compress(FileAccess.COMPRESSION_GZIP)
 	var encoded_data: String = Marshalls.raw_to_base64(compressed_data)
 	DisplayServer.clipboard_set('Helium3D[' + encoded_data + ']')

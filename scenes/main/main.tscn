@@ -919,30 +919,11 @@ layout_mode = 2
 fields_list_id = 17
 metadata/_tab_index = 2
 
-[node name="Tools" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
+[node name="Tools" parent="UI/HBoxContainer/TabContainer" instance=ExtResource("19_l42h1")]
 visible = false
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-metadata/_tab_index = 5
-
-[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Tools"]
-layout_mode = 2
-theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_5by50")
-current_tab = 0
-
-[node name="Tiling" parent="UI/HBoxContainer/TabContainer/Tools/TabContainer" instance=ExtResource("19_l42h1")]
 layout_mode = 2
 fields_list_id = 14
-metadata/_tab_index = 0
-
-[node name="Debug" parent="UI/HBoxContainer/TabContainer/Tools/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
-layout_mode = 2
-fields_list_id = 20
-metadata/_tab_index = 1
+metadata/_tab_index = 5
 
 [node name="BottomBar" type="TabContainer" parent="UI"]
 layout_mode = 2
@@ -1354,7 +1335,6 @@ oversampling_override = 1.0
 title = "Settings"
 initial_position = 1
 size = Vector2i(680, 380)
-visible = false
 force_native = true
 content_scale_factor = 1.4
 theme_override_fonts/title_font = ExtResource("8_rhsly")
@@ -1380,6 +1360,18 @@ current_tab = 0
 layout_mode = 2
 fields_list_id = 18
 metadata/_tab_index = 0
+
+[node name="Fractal" parent="SettingsWindow/Settings/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 12
+metadata/_tab_index = 1
+
+[node name="Debug" parent="SettingsWindow/Settings/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 20
+metadata/_tab_index = 2
 
 [node name="CrashSaveWindow" type="Window" parent="."]
 unique_name_in_owner = true

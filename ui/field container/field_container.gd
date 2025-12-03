@@ -294,10 +294,10 @@ func _ready() -> void:
 		# Settings / General
 		18: [
 			# TAA max samples
-			{'name': 'taa_samples', 'type': 'int', 'from': 2, 'to': 32, 'default_value': 16, 'onchange_override': func(val: int) -> void:
-				get_tree().current_scene.taa_samples = val
-				field_changed_non_shader('taa_samples', val)
-				},
+			#{'name': 'taa_samples', 'type': 'int', 'from': 2, 'to': 32, 'default_value': 16, 'onchange_override': func(val: int) -> void:
+				#get_tree().current_scene.taa_samples = val
+				#field_changed_non_shader('taa_samples', val)
+				#},
 			
 			# Texture filter
 			{'name': 'texture_filter', 'type': 'selection', 'values': ['Linear', 'Nearest'], 'default_value': 'Linear', 'onchange_override': func(val: String) -> void:
@@ -316,7 +316,9 @@ func _ready() -> void:
 				%SubViewport.low_scaling = val
 				field_changed_non_shader('low_scaling', val)
 				},
-			
+		],
+		# Settings / Fractal
+		12: [
 			# Fractal DIFS/Primitive smoothing
 			{'name': 'difs_smoothing', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 0.0},
 			{'name': 'exponential_smoothing', 'type': 'bool', 'default_value': false},
@@ -324,7 +326,7 @@ func _ready() -> void:
 		# Settings / Debug
 		20: [
 			{'name': 'display', 'type': 'selection', 'values': ['Render', 'Occlusion', 'Normals', 'Depth'], 'default_value': 'Render'},
-			{'name': 'depth_scale', 'advanced_only': true, 'type': 'float', 'from': 0, 'to': 4, 'default_value': 0.3}
+			{'name': 'depth_scale', 'type': 'float', 'from': 0, 'to': 4, 'default_value': 0.3}
 		],
 		# Modifiers / Transform
 		16: [
@@ -403,9 +405,9 @@ func _ready() -> void:
 			%SubViewport.refresh_taa()
 			},
 		],
-		# Tools / Tiling
+		# Tools
 		14: [
-			{'name': 'progression_strength', 'type': 'float', 'from': 0, 'to': 100, 'default_value': 100},
+			#{'name': 'progression_strength', 'type': 'float', 'from': 0, 'to': 100, 'default_value': 100},
 			{'name': 'tiled', 'type': 'bool', 'default_value': false, 'onchange_override': func(val: bool) -> void: 
 			%SubViewport.refresh_taa()
 			%Fractal.material_override.set_shader_parameter('tiled', val)
@@ -422,7 +424,7 @@ func _ready() -> void:
 			{'name': 'current_tile', 'type': 'int', 'from': 0, 'to': 40, 'default_value': 0, 'onchange_override': func(_val: int) -> void:
 			update_tile_bounds()
 			},
-			{'name': 'compute_tiled_render', 'type': 'bool', 'default_value': false, 'onchange_override': func(_val: bool) -> void:
+			{'name': 'compute_tiled_render', 'bool_button': true, 'type': 'bool', 'default_value': false, 'onchange_override': func(_val: bool) -> void:
 				if Engine.get_frames_drawn() != 0: %Rendering.compute_tiled_render()
 				},
 		]
@@ -522,6 +524,7 @@ func update_fields_ui() -> void:
 			value_node = BOOLEAN_FIELD_SCENE.instantiate()
 			value_node.value = variable_data['default_value']
 			value_node.name = variable_name.to_pascal_case()
+			value_node.is_button = variable_data.get('bool_button', false)
 			value_node.connect('value_changed', variable_data.get('onchange_override', func(to: Variant) -> void: field_changed(uniform_name, to)))
 			%Values.add_child(value_node)
 		elif variable_data['type'] == 'image':

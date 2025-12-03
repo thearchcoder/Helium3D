@@ -4549,8 +4549,8 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 
 	// Debug
 	if (display == 1) final_color = dfo <= max_distance ? vec3(calcAO(p, normal)) : vec3(0.0);
-	else if (display == 2) return vec4(normal, 1.0);
-	else if (display == 3) return vec4(vec3(dfo * depth_scale), 1.0);
+	else if (display == 2) final_color = normal;
+	else if (display == 3) final_color = vec3(dfo * depth_scale);
 
 	return vec4(final_color, 1.0);
 }
@@ -4565,13 +4565,11 @@ vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_m
 	bool hit_surface = result.a > 0.5;
 
 #ifdef USING_REFLECTIONS
-	// Ray hit data for initial ray
 	vec3 data = ray_marcher(current_origin, current_dir);
 	float dfo = data.y;
 	vec3 hit_point = current_origin + current_dir * dfo;
 	vec3 normal = calculate_normal(hit_point, relative_epsilon ? epsilon / 3.4 * dfo : epsilon);
 
-	// Calculate reflections
 	float reflection_strength = reflection_intensity;
 	bool reflections_enabled = reflection_intensity >= 0.0001;
 
@@ -4657,7 +4655,7 @@ void fragment() {
 
 	if (tiled) {
 		if (SCREEN_UV.x < tile_bounds.x || SCREEN_UV.x >= tile_bounds.z ||
-		    SCREEN_UV.y < tile_bounds.y || SCREEN_UV.y >= tile_bounds.w) {
+			SCREEN_UV.y < tile_bounds.y || SCREEN_UV.y >= tile_bounds.w) {
 			discard;
 		}
 	}

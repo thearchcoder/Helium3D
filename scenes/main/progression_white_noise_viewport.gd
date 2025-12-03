@@ -15,7 +15,7 @@ func _process(delta: float) -> void:
 	size = %SubViewport.size
 	time += delta
 	var pixels_to_render: ImageTexture = ImageTexture.create_from_image(get_texture().get_image())
-	%ProgressionWhiteNoise.material.set_shader_parameter('base_selection_ratio', get_tree().current_scene.fields['progression_strength'] / 100.0)
+	%ProgressionWhiteNoise.material.set_shader_parameter('base_selection_ratio', 1.0)#get_tree().current_scene.fields['progression_strength'] / 100.0)
 	%ProgressionWhiteNoise.material.set_shader_parameter('time', time)
 	%Fractal.material_override.set_shader_parameter('pixels_to_render', pixels_to_render)
 	%PostDisplay.material.set_shader_parameter('pixels_to_render', pixels_to_render)

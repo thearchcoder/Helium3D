@@ -450,7 +450,7 @@ func parse_data(data: String, index_override: int = -1) -> Dictionary:
 				"type": "selection",
 				"values": values_list,
 				"default_value": default_value,
-				"difficulty": var_difficulty if var_difficulty else "medium"
+				"difficulty": var_difficulty if var_difficulty else "simple"
 			}
 		elif var_type == "float" or var_type == "int":
 			var range_vals := values.split(", ")
@@ -461,7 +461,7 @@ func parse_data(data: String, index_override: int = -1) -> Dictionary:
 				"from": from_val,
 				"to": to_val,
 				"default_value": float(default_value) if "." in default_value else float(int(default_value)),
-				"difficulty": var_difficulty if var_difficulty else "medium"
+				"difficulty": var_difficulty if var_difficulty else "simple"
 			}
 		elif var_type == "vec3" or var_type == "vec4" or var_type == "vec2":
 			var vec_parts: Array = values.trim_prefix("(").trim_suffix(")").split("), (")
@@ -475,7 +475,7 @@ func parse_data(data: String, index_override: int = -1) -> Dictionary:
 					"from": Vector3(float(from_vec[0]), float(from_vec[1]), float(from_vec[2])),
 					"to": Vector3(float(to_vec[0]), float(to_vec[1]), float(to_vec[2])),
 					"default_value": Vector3(float(default_vec[0]), float(default_vec[1]), float(default_vec[2])),
-					"difficulty": var_difficulty if var_difficulty else "medium"
+					"difficulty": var_difficulty if var_difficulty else "simple"
 				}
 			elif var_type == 'vec4':
 				variables[var_name] = {
@@ -483,7 +483,7 @@ func parse_data(data: String, index_override: int = -1) -> Dictionary:
 					"from": Vector4(float(from_vec[0]), float(from_vec[1]), float(from_vec[2]), float(from_vec[3])),
 					"to": Vector4(float(to_vec[0]), float(to_vec[1]), float(to_vec[2]), float(to_vec[3])),
 					"default_value": Vector4(float(default_vec[0]), float(default_vec[1]), float(default_vec[2]), float(default_vec[3])),
-					"difficulty": var_difficulty if var_difficulty else "medium"
+					"difficulty": var_difficulty if var_difficulty else "simple"
 				}
 			elif var_type == 'vec2':
 				variables[var_name] = {
@@ -491,19 +491,19 @@ func parse_data(data: String, index_override: int = -1) -> Dictionary:
 					"from": Vector2(float(from_vec[0]), float(from_vec[1])),
 					"to": Vector2(float(to_vec[0]), float(to_vec[1])),
 					"default_value": Vector2(float(default_vec[0]), float(default_vec[1])),
-					"difficulty": var_difficulty if var_difficulty else "medium"
+					"difficulty": var_difficulty if var_difficulty else "simple"
 				}
 		elif var_type == "bool":
 			variables[var_name] = {
 				"type": "bool",
 				"default_value": default_value.to_lower() == "true",
-				"difficulty": var_difficulty if var_difficulty else "medium"
+				"difficulty": var_difficulty if var_difficulty else "simple"
 			}
 		elif var_type == "string":
 			variables[var_name] = {
 				"type": "string",
 				"default_value": default_value,
-				"difficulty": var_difficulty if var_difficulty else "medium"
+				"difficulty": var_difficulty if var_difficulty else "simple"
 			}
 	
 	result["variables"] = variables

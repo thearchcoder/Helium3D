@@ -65,6 +65,7 @@ func update_tile_bounds() -> void:
 	var current_tile: int = current_tile_node.value
 
 	var tile_x_pos: int = current_tile % tiles_x
+	@warning_ignore("integer_division")
 	var tile_y_pos: int = current_tile / tiles_x
 
 	var tile_size: Vector2 = Vector2(1.0 / float(tiles_x), 1.0 / float(tiles_y))
@@ -421,7 +422,7 @@ func _ready() -> void:
 			{'name': 'current_tile', 'type': 'int', 'from': 0, 'to': 40, 'default_value': 0, 'onchange_override': func(_val: int) -> void:
 			update_tile_bounds()
 			},
-			{'name': 'compute_tiled_render', 'type': 'bool', 'default_value': false, 'onchange_override': func(val: bool) -> void:
+			{'name': 'compute_tiled_render', 'type': 'bool', 'default_value': false, 'onchange_override': func(_val: bool) -> void:
 				if Engine.get_frames_drawn() != 0: %Rendering.compute_tiled_render()
 				},
 		]
@@ -432,10 +433,10 @@ func _ready() -> void:
 func add_spaces(text: String) -> String:
 	var result := ""
 	for i in range(text.length()):
-		var char := text[i]
-		if i > 0 and char == char.to_upper():
+		var character := text[i]
+		if i > 0 and character == character.to_upper():
 			result += " "
-		result += char
+		result += character
 	return result
 
 func update_fields_ui() -> void:

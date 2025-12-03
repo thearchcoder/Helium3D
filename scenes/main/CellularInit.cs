@@ -671,10 +671,10 @@ public partial class CellularInit : Node
 
 	public override void _Ready()
 	{
-		m_CellularSize = m_TextureSize;
-		m_Center = m_CellularSize / 2.0f;
-		CalculateNeighborOffsets();
-		ParseCaRules(m_CaRules);
-		UpdateShaderParameters();
+		//m_CellularSize = m_TextureSize;
+		//m_Center = m_CellularSize / 2.0f;
+		//CalculateNeighborOffsets();
+		//ParseCaRules(m_CaRules);
+		//UpdateShaderParameters();
 	}
 }

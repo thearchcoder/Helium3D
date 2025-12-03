@@ -76,8 +76,6 @@ func _on_button_button_down() -> void:
 	var block := BLOCK_SCENE.instantiate()
 	%Blocks.add_child(block)
 	block.offset = 0.5
-	
-	var first_pos: Vector2 = %Blocks.get_child(0).position
 	block.position = Vector2(0, size.y - 23)
 	
 	block.is_dragging = true

@@ -295,9 +295,9 @@ uniform int voxel_resolution;
 //uniform vec3 fbairddeltadupej_rotation1; // -@22
 //uniform vec3 fbairddeltadupej_rotation2; // -@22
 //uniform float fbairddeltadupej_scale; // -@22
-uniform vec4 fbasictransform_offset; // -@23
-uniform vec4 fbasictransform_scale; // -@23
-uniform vec2 fbasictransform_range; // -@23
+//uniform vec4 fbasictransform_offset; // -@23
+//uniform vec4 fbasictransform_scale; // -@23
+//uniform vec2 fbasictransform_range; // -@23
 //uniform vec4 fbasictransformdupea_offset; // -@24
 //uniform vec4 fbasictransformdupea_scale; // -@24
 //uniform vec2 fbasictransformdupea_range; // -@24
@@ -845,10 +845,10 @@ uniform vec2 fbasictransform_range; // -@23
 //uniform vec3 fjerusalemcubedupej_rotation2; // -@165
 //uniform vec3 fjerusalemcubedupej_abs_add; // -@165
 //uniform vec3 fjerusalemcubedupej_abs_minus; // -@165
-uniform int fkalaidotransform_axis; // -@166
-uniform int fkalaidotransform_mode; // -@166
-uniform float fkalaidotransform_symmetry; // -@166
-uniform vec2 fkalaidotransform_range; // -@166
+//uniform int fkalaidotransform_axis; // -@166
+//uniform int fkalaidotransform_mode; // -@166
+//uniform float fkalaidotransform_symmetry; // -@166
+//uniform vec2 fkalaidotransform_range; // -@166
 //uniform int fkalaidotransformdupea_axis; // -@167
 //uniform int fkalaidotransformdupea_mode; // -@167
 //uniform float fkalaidotransformdupea_symmetry; // -@167
@@ -2969,7 +2969,7 @@ uniform int fmandelbulb_quaternion_mode; // -@276
 //#include "res://formulas/bairddeltadupeh.gdshaderinc" // -@20
 //#include "res://formulas/bairddeltadupei.gdshaderinc" // -@21
 //#include "res://formulas/bairddeltadupej.gdshaderinc" // -@22
-#include "res://formulas/basictransform.gdshaderinc" // -@23
+//#include "res://formulas/basictransform.gdshaderinc" // -@23
 //#include "res://formulas/basictransformdupea.gdshaderinc" // -@24
 //#include "res://formulas/basictransformdupeb.gdshaderinc" // -@25
 //#include "res://formulas/basictransformdupec.gdshaderinc" // -@26
@@ -3112,7 +3112,7 @@ uniform int fmandelbulb_quaternion_mode; // -@276
 //#include "res://formulas/jerusalemcubedupeh.gdshaderinc" // -@163
 //#include "res://formulas/jerusalemcubedupei.gdshaderinc" // -@164
 //#include "res://formulas/jerusalemcubedupej.gdshaderinc" // -@165
-#include "res://formulas/kalaidotransform.gdshaderinc" // -@166
+//#include "res://formulas/kalaidotransform.gdshaderinc" // -@166
 //#include "res://formulas/kalaidotransformdupea.gdshaderinc" // -@167
 //#include "res://formulas/kalaidotransformdupeb.gdshaderinc" // -@168
 //#include "res://formulas/kalaidotransformdupec.gdshaderinc" // -@169
@@ -3580,7 +3580,7 @@ vec2 scene_sdf(vec3 p) {
 //if (current_formula == 20) bairddeltadupeh_iter(z, dz, original_z, orbit, i); //-@20
 //if (current_formula == 21) bairddeltadupei_iter(z, dz, original_z, orbit, i); //-@21
 //if (current_formula == 22) bairddeltadupej_iter(z, dz, original_z, orbit, i); //-@22
-if (current_formula == 23) basictransform_iter(z, dz, original_z, orbit, i); //-@23
+//if (current_formula == 23) basictransform_iter(z, dz, original_z, orbit, i); //-@23
 //if (current_formula == 24) basictransformdupea_iter(z, dz, original_z, orbit, i); //-@24
 //if (current_formula == 25) basictransformdupeb_iter(z, dz, original_z, orbit, i); //-@25
 //if (current_formula == 26) basictransformdupec_iter(z, dz, original_z, orbit, i); //-@26
@@ -3646,7 +3646,7 @@ if (current_formula == 23) basictransform_iter(z, dz, original_z, orbit, i); //-
 //if (current_formula == 163) jerusalemcubedupeh_iter(z, dz, original_z, orbit, i); //-@163
 //if (current_formula == 164) jerusalemcubedupei_iter(z, dz, original_z, orbit, i); //-@164
 //if (current_formula == 165) jerusalemcubedupej_iter(z, dz, original_z, orbit, i); //-@165
-if (current_formula == 166) kalaidotransform_iter(z, dz, original_z, orbit, i); //-@166
+//if (current_formula == 166) kalaidotransform_iter(z, dz, original_z, orbit, i); //-@166
 //if (current_formula == 167) kalaidotransformdupea_iter(z, dz, original_z, orbit, i); //-@167
 //if (current_formula == 168) kalaidotransformdupeb_iter(z, dz, original_z, orbit, i); //-@168
 //if (current_formula == 169) kalaidotransformdupec_iter(z, dz, original_z, orbit, i); //-@169

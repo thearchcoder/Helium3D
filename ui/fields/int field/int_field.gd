@@ -2,6 +2,7 @@ extends HBoxContainer
 
 signal value_changed(to: int)
 
+@warning_ignore("shadowed_global_identifier")
 @export var range: Vector2i = Vector2i(-20, 20)
 
 @export var value: int = 0:

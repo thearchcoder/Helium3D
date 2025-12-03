@@ -6,6 +6,7 @@ signal value_changed(to: float)
 @export var step := 0.0000001
 @export var force_precision := false
 @export var precision := 3
+@warning_ignore("shadowed_global_identifier")
 @export var range: Vector2 = Vector2(-20, 20):
 	set(value):
 		range = value
@@ -89,6 +90,6 @@ func _on_line_edit_text_changed(new_text: String) -> void:
 		
 		$LineEdit.caret_column = old_caret_column - 1
 
-func _on_h_slider_drag_ended(value_changed: bool) -> void:
-	if value_changed:
+func _on_h_slider_drag_ended(value_modified: bool) -> void:
+	if value_modified:
 		Global.action_occurred()

@@ -10,7 +10,7 @@ func _ready() -> void:
 	if image:
 		$TextureRect.texture = image
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if is_mouse_hovering and Input.is_action_just_pressed("mouse right click"):
 		get_parent().get_parent().get_parent().get_parent().remove_keyframe(data)
 	elif is_mouse_hovering and Input.is_action_just_pressed("mouse click"):

@@ -13,6 +13,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if mouse_in_area and Input.is_action_just_pressed('mouse click'):
 		$PopupMenu.grab_focus()
+		@warning_ignore("integer_division")
 		$PopupMenu.position = DisplayServer.mouse_get_position() + Vector2i(0, -31 / 2)
 		$PopupMenu.visible = true
 

@@ -222,7 +222,7 @@ func _process(_delta: float) -> void:
 	%TextureRect.is_menu_rendered = %RandomizeWindow.visible or %VoxelizeWindow.visible
 	%Export.disabled = $VoxelizedMeshWorld/Mesh.mesh == null
 
-func _input(event: InputEvent) -> void:
+func _input(_event: InputEvent) -> void:
 	if %TextureRect.is_holding:
 		return
 	
@@ -373,6 +373,7 @@ func initialize_formulas(path_to_formulas: String) -> void:
 		var formula_file_contents: String = formula_file.get_as_text()
 		
 		formula_file_contents = expand_templates(formula_file_contents)
+		@warning_ignore("integer_division")
 		var data: Dictionary = parse_data(formula_file_contents, (paths.find(formula_file_path) / 2) + 1 - skipped_formulas)
 		
 		# Create duplicate for each formula (excluding already duplicated ones)
@@ -388,6 +389,7 @@ func initialize_formulas(path_to_formulas: String) -> void:
 		var formula_file_contents: String = formula_file.get_as_text()
 		
 		formula_file_contents = expand_templates(formula_file_contents)
+		@warning_ignore("integer_division")
 		var data: Dictionary = parse_data(formula_file_contents, (paths.find(formula_file_path) / 2) + 1 - skipped_formulas)
 		
 		if data['disabled']:
@@ -436,7 +438,7 @@ func parse_data(data: String, index_override: int = -1) -> Dictionary:
 	var variables := {}
 	
 	for m in var_regex.search_all(vars_section):
-		var difficulty := m.get_string(1)
+		var var_difficulty := m.get_string(1)
 		var var_type := m.get_string(2)
 		var var_name := m.get_string(3)
 		var values := m.get_string(4)
@@ -448,18 +450,18 @@ func parse_data(data: String, index_override: int = -1) -> Dictionary:
 				"type": "selection",
 				"values": values_list,
 				"default_value": default_value,
-				"difficulty": difficulty if difficulty else "medium"
+				"difficulty": var_difficulty if var_difficulty else "medium"
 			}
 		elif var_type == "float" or var_type == "int":
 			var range_vals := values.split(", ")
-			var from_val: float = float(range_vals[0]) if "." in range_vals[0] else int(range_vals[0])
-			var to_val: float = float(range_vals[1]) if "." in range_vals[1] else int(range_vals[1])
+			var from_val: float = float(range_vals[0]) if "." in range_vals[0] else float(int(range_vals[0]))
+			var to_val: float = float(range_vals[1]) if "." in range_vals[1] else float(int(range_vals[1]))
 			variables[var_name] = {
 				"type": var_type,
 				"from": from_val,
 				"to": to_val,
-				"default_value": float(default_value) if "." in default_value else int(default_value),
-				"difficulty": difficulty if difficulty else "medium"
+				"default_value": float(default_value) if "." in default_value else float(int(default_value)),
+				"difficulty": var_difficulty if var_difficulty else "medium"
 			}
 		elif var_type == "vec3" or var_type == "vec4" or var_type == "vec2":
 			var vec_parts: Array = values.trim_prefix("(").trim_suffix(")").split("), (")
@@ -473,7 +475,7 @@ func parse_data(data: String, index_override: int = -1) -> Dictionary:
 					"from": Vector3(float(from_vec[0]), float(from_vec[1]), float(from_vec[2])),
 					"to": Vector3(float(to_vec[0]), float(to_vec[1]), float(to_vec[2])),
 					"default_value": Vector3(float(default_vec[0]), float(default_vec[1]), float(default_vec[2])),
-					"difficulty": difficulty if difficulty else "medium"
+					"difficulty": var_difficulty if var_difficulty else "medium"
 				}
 			elif var_type == 'vec4':
 				variables[var_name] = {
@@ -481,7 +483,7 @@ func parse_data(data: String, index_override: int = -1) -> Dictionary:
 					"from": Vector4(float(from_vec[0]), float(from_vec[1]), float(from_vec[2]), float(from_vec[3])),
 					"to": Vector4(float(to_vec[0]), float(to_vec[1]), float(to_vec[2]), float(to_vec[3])),
 					"default_value": Vector4(float(default_vec[0]), float(default_vec[1]), float(default_vec[2]), float(default_vec[3])),
-					"difficulty": difficulty if difficulty else "medium"
+					"difficulty": var_difficulty if var_difficulty else "medium"
 				}
 			elif var_type == 'vec2':
 				variables[var_name] = {
@@ -489,19 +491,19 @@ func parse_data(data: String, index_override: int = -1) -> Dictionary:
 					"from": Vector2(float(from_vec[0]), float(from_vec[1])),
 					"to": Vector2(float(to_vec[0]), float(to_vec[1])),
 					"default_value": Vector2(float(default_vec[0]), float(default_vec[1])),
-					"difficulty": difficulty if difficulty else "medium"
+					"difficulty": var_difficulty if var_difficulty else "medium"
 				}
 		elif var_type == "bool":
 			variables[var_name] = {
 				"type": "bool",
 				"default_value": default_value.to_lower() == "true",
-				"difficulty": difficulty if difficulty else "medium"
+				"difficulty": var_difficulty if var_difficulty else "medium"
 			}
 		elif var_type == "string":
 			variables[var_name] = {
 				"type": "string",
 				"default_value": default_value,
-				"difficulty": difficulty if difficulty else "medium"
+				"difficulty": var_difficulty if var_difficulty else "medium"
 			}
 	
 	result["variables"] = variables
@@ -550,7 +552,6 @@ func update_fields(new_fields: Dictionary) -> void:
 	%TabContainer.update_field_values(new_fields)
 
 func update_app_state(data: Dictionary, full_update: bool = true) -> void:
-	var old_data: Dictionary = data.duplicate(true)
 	data = data.duplicate(true)
 	
 	if 'other' not in data:
@@ -912,7 +913,6 @@ func _on_voxelize_button_pressed() -> void:
 	var original_head_rotation: Vector3 = %Head.rotation
 	var original_camera_rotation: Vector3 = %Camera.rotation
 	var original_viewport_size: Vector2i = %SubViewport.size
-	var original_camera_fov: float = %Camera.fov
 	
 	%Fractal.material_override.set_shader_parameter('building_mesh', true)
 	%SubViewport.refresh_taa()

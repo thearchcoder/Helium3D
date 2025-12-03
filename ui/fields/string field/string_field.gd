@@ -23,5 +23,5 @@ func _on_line_edit_text_changed(new_text: String) -> void:
 	value = new_text
 	value_changed.emit(new_text)
 
-func _on_line_edit_text_submitted(new_text: String) -> void:
+func _on_line_edit_text_submitted(_new_text: String) -> void:
 	Global.action_occurred()

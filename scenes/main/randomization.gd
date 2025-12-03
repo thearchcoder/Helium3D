@@ -5,7 +5,6 @@ var strength: float = 0.2
 
 var current_data: Dictionary = {}
 var randomized: Dictionary = {}
-@onready var randomization_scene: Control = $Scenes/VBoxContainer/RandomizedScene
 
 var decided_randomization: Dictionary = {'is_null': true}
 var undecided_randomization: Dictionary = {'is_null': true}

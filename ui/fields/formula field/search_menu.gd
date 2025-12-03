@@ -59,7 +59,6 @@ func matches_filter(text: String, search_term: String) -> bool:
 func get_match_score(text: String, search_term: String) -> int:
 	var text_lower := text.to_lower()
 	var search_lower := search_term.to_lower()
-	var score := 0
 	
 	if text_lower == search_lower:
 		return 1000

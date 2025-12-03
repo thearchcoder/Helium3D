@@ -138,7 +138,7 @@ func update_animation_frames_data() -> void:
 
 	animation_frames_data.append(keyframes[keyframes.size() - 1].duplicate(true))
 
-func insert_keyframe(at_second: float) -> void:
+func insert_keyframe() -> void:
 	var data: Dictionary = get_tree().current_scene.fields
 	data.merge({'total_visible_formula_pages': %TabContainer.total_visible_formulas, 'player_position': %Player.global_position, 'head_rotation': %Player.get_node('Head').global_rotation_degrees, 'camera_rotation': %Player.get_node('Head/Camera').global_rotation_degrees}, true)
 	var viewport_image: Image = %SubViewport.get_texture().get_image()
@@ -240,6 +240,7 @@ func _process(_delta: float) -> void:
 		text += '\n\n'
 		text += 'Frame: ' + str(int(currently_at_frame)) + ' / ' + str(len(animation_frames_data))
 		text += '\n\n'
+		@warning_ignore("integer_division")
 		text += 'Time: ' + str(int((Time.get_unix_time_from_system() - render_start_time) * 100) / 100) + 's' + ' / ' + str(int(time_estimate * 100) / 100) + 's'
 	
 	%RenderButton.tooltip_text = text
@@ -249,9 +250,6 @@ func _process(_delta: float) -> void:
 			taa_frame_counter += 1
 			if taa_frame_counter >= get_tree().current_scene.taa_samples:
 				process_frame()
-	
-	if is_mouse_hovering and Input.is_action_just_pressed('mouse click') and has_focus():
-		insert_keyframe(get_global_mouse_position().x / 50.0)
 	
 	if is_playing and currently_at_frame >= len(animation_frames_data):
 		is_playing = false
@@ -286,7 +284,7 @@ func _on_mouse_entered() -> void: is_mouse_hovering = true
 func _on_mouse_exited() -> void: is_mouse_hovering = false
 
 func _on_add_keyframe_button_pressed() -> void:
-	insert_keyframe(float(keyframes.size()))
+	insert_keyframe()
 	stop()
 
 func _on_set_time_start_button_pressed() -> void: currently_at_frame = 0
@@ -306,6 +304,7 @@ func _on_render_button_pressed() -> void:
 		_on_playing_toggle_button_pressed()
 
 func set_interpolation(index: int) -> void:
+	@warning_ignore("int_as_enum_without_cast")
 	interpolation = index
 
 func update_fps(value: int) -> void:

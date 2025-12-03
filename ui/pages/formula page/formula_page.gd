@@ -156,10 +156,10 @@ func _on_value_changed(new_value: Variant, node: Control) -> void:
 func add_spaces(text: String) -> String:
 	var result := ""
 	for i in range(text.length()):
-		var char := text[i]
-		if i > 0 and char == char.to_upper():
+		var character := text[i]
+		if i > 0 and character == character.to_upper():
 			result += " "
-		result += char
+		result += character
 	return result
 
 func i_am_a_formula_page() -> void: pass

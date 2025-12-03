@@ -2,7 +2,7 @@ extends VBoxContainer
 
 var is_mouse_hovering: bool = false
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if is_mouse_hovering and Input.is_action_just_released('texture zoom in') and not $TextureRect.is_holding:
 		%TextureRect.zoom += 0.1
 	if is_mouse_hovering and Input.is_action_just_released('texture zoom out') and not $TextureRect.is_holding:

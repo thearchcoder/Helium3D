@@ -73,7 +73,7 @@ func _ready() -> void:
 	%PostDisplay.material.set_shader_parameter('previous_frame', previous_frame_texture)
 	%Fractal.material_override.set_shader_parameter('previous_frame', previous_frame_texture)
 
-func action_occurred(add_to_history: bool = true, group_changes: bool = false) -> void:
+func action_occurred(add_to_history: bool = true) -> void:
 	if is_applying_history:
 		return
 	
@@ -86,42 +86,22 @@ func action_occurred(add_to_history: bool = true, group_changes: bool = false) -
 	if history_at < history.size() - 1:
 		history = history.slice(0, history_at + 1)
 	
-	# Create separate history entries for each changed field
-	if group_changes:
-		# Original behavior - group all changes together
+	var changes_keys: Array = changes.keys()
+	changes_keys.reverse()
+	for key: String in (changes_keys as Array[String]):
+		var old_value: Variant = null
+		if last_saved_state.has(key):
+			old_value = last_saved_state[key]
+		
 		var history_entry: Dictionary = {
-			"old_values": {},
-			"new_values": changes,
+			"old_values": {key: old_value},
+			"new_values": {key: changes[key]},
 			"timestamp": Time.get_unix_time_from_system()
 		}
-		
-		for key: String in (changes.keys() as Array[String]):
-			if last_saved_state.has(key):
-				history_entry["old_values"][key] = last_saved_state[key]
-			else:
-				history_entry["old_values"][key] = null
 		
 		if add_to_history:
 			history.append(history_entry)
 			history_at = history.size() - 1
-	else:
-		# New behavior - separate entry for each field
-		var changes_keys: Array = changes.keys()
-		changes_keys.reverse()
-		for key: String in (changes_keys as Array[String]):
-			var old_value: Variant = null
-			if last_saved_state.has(key):
-				old_value = last_saved_state[key]
-			
-			var history_entry: Dictionary = {
-				"old_values": {key: old_value},
-				"new_values": {key: changes[key]},
-				"timestamp": Time.get_unix_time_from_system()
-			}
-			
-			if add_to_history:
-				history.append(history_entry)
-				history_at = history.size() - 1
 	
 	last_saved_state = current_state.duplicate(true)
 	

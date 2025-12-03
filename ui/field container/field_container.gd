@@ -516,7 +516,7 @@ func update_fields_ui() -> void:
 			value_node.value = variable_data['default_value']
 			value_node.name = variable_name.to_pascal_case()
 			value_node.is_button = variable_data.get('bool_button', false)
-			value_node.button_text = variable_name#!
+			value_node.button_text = Global.add_spaces(variable_name.to_pascal_case())
 			value_node.connect('value_changed', variable_data.get('onchange_override', func(to: Variant) -> void: field_changed(uniform_name, to)))
 			%Values.add_child(value_node)
 		elif variable_data['type'] == 'image':
@@ -552,6 +552,9 @@ func update_fields_ui() -> void:
 		
 		$Fields/Names.add_child(label)
 		value_node.set_meta('name_node', label)
+		
+		if variable_data['type'] == 'bool' and variable_data.get('bool_button', false):
+			label.visible = false
 		
 		if variable_data.get('advanced_only', false):
 			get_tree().current_scene.advanced_ui_fields.append(value_node)

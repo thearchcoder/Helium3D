@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://dxdliar5ijtun"]
+[gd_scene load_steps=6 format=3 uid="uid://dxdliar5ijtun"]
 
 [ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_maum6"]
 [ext_resource type="Script" uid="uid://clw4nb6r6sx6p" path="res://ui/fields/boolean field/boolean_field.gd" id="2_s4s4l"]
 [ext_resource type="Texture2D" uid="uid://ce85pj68v1kge" path="res://resources/icons/checkbox.png" id="3_0vu63"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="4_vdkxp"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_agj6n"]
 
@@ -23,6 +24,8 @@ theme_override_icons/unchecked = ExtResource("3_0vu63")
 [node name="Button" type="Button" parent="." index="2"]
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("4_vdkxp")
 text = "Bool Button"
 
 [connection signal="toggled" from="CheckBox" to="." method="_on_check_box_toggled"]

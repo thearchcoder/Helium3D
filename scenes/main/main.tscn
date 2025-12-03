@@ -488,7 +488,6 @@ popup/item_7/id = 5
 
 [node name="RandomizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
@@ -499,7 +498,6 @@ text = "  Randomize  "
 
 [node name="VoxelizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")

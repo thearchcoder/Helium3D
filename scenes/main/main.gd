@@ -72,8 +72,6 @@ func _ready() -> void:
 	
 	%PostDisplay.material.set_shader_parameter('previous_frame', previous_frame_texture)
 	%Fractal.material_override.set_shader_parameter('previous_frame', previous_frame_texture)
-	
-	toggle_ui_difficulty()
 
 func action_occurred(add_to_history: bool = true, group_changes: bool = false) -> void:
 	if is_applying_history:
@@ -806,19 +804,19 @@ func _on_difficulty_pressed() -> void:
 	if difficulty == 'simple':
 		difficulty = 'advanced'
 		%DifficultyButton.text = 'Advanced Mode'
-		toggle_ui_difficulty()
+		reload_difficulty()
 	elif difficulty == 'advanced':
 		difficulty = 'simple'
 		%DifficultyButton.text = 'Simple Mode'
-		toggle_ui_difficulty()
-	
-	# Toggle menu bar buttons
-	%RandomizeButton.visible = not %RandomizeButton.visible
+		reload_difficulty()
 
-func toggle_ui_difficulty() -> void:
+func reload_difficulty() -> void:
+	set_ui_difficulty(difficulty == 'simple')
+
+func set_ui_difficulty(is_simple: bool) -> void:
 	for advanced_ui_field in advanced_ui_fields:
-		advanced_ui_field.visible = not advanced_ui_field.visible
-		advanced_ui_field.get_meta('name_node').visible = not advanced_ui_field.get_meta('name_node').visible
+		advanced_ui_field.visible = false if is_simple else true
+		advanced_ui_field.get_meta('name_node').visible = false if is_simple else true
 
 func _on_tree_exiting() -> void:
 	DirAccess.open(HELIUM3D_PATH).remove('heartbeat.hlm')

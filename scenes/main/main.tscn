@@ -1,4 +1,4 @@
-[gd_scene load_steps=84 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=80 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
@@ -30,8 +30,6 @@
 [ext_resource type="Texture2D" uid="uid://dmkbei7asjjvr" path="res://resources/icons/circle.svg" id="22_an3xl"]
 [ext_resource type="Script" uid="uid://b0xu3c1kn7vkv" path="res://scenes/main/current_time.gd" id="22_s3o3g"]
 [ext_resource type="Script" uid="uid://dke5j7p0y4xgi" path="res://scenes/main/library.gd" id="25_tbnf8"]
-[ext_resource type="Script" uid="uid://cesttaxsv6b8j" path="res://scenes/main/progression_white_noise_viewport.gd" id="29_gkmcc"]
-[ext_resource type="Shader" uid="uid://c5yoergjae7xm" path="res://scenes/main/progression_white_noise.gdshader" id="29_i7in8"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6w6mm"]
 shader = ExtResource("2_r1bmu")
@@ -299,7 +297,6 @@ shader_parameter/only_primitive_based_formulas = false
 shader_parameter/only_sdf_based_formulas = false
 shader_parameter/difs_smoothing = 0.0
 shader_parameter/exponential_smoothing = false
-shader_parameter/progression_strength = 0.0
 shader_parameter/voxelization = false
 shader_parameter/bounds_position = Vector3(0, 0, 0)
 shader_parameter/bounds_size = Vector3(0, 0, 0)
@@ -340,13 +337,6 @@ metadata/_custom_type_script = "uid://l7fr1idjfuni"
 
 [sub_resource type="Compositor" id="Compositor_s17dp"]
 compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_p8abn")])
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_gkmcc"]
-shader = ExtResource("29_i7in8")
-shader_parameter/base_selection_ratio = 0.1
-shader_parameter/time = 0.0
-
-[sub_resource type="CanvasTexture" id="CanvasTexture_7nlll"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_yss2u")
@@ -1335,7 +1325,7 @@ oversampling_override = 1.0
 title = "Settings"
 initial_position = 1
 size = Vector2i(680, 380)
-force_native = true
+visible = false
 content_scale_factor = 1.4
 theme_override_fonts/title_font = ExtResource("8_rhsly")
 
@@ -1787,22 +1777,6 @@ unique_name_in_owner = true
 environment = SubResource("Environment_4uuy8")
 compositor = SubResource("Compositor_s17dp")
 
-[node name="ProgressionWhiteNoiseViewport" type="SubViewport" parent="."]
-unique_name_in_owner = true
-render_target_clear_mode = 1
-render_target_update_mode = 4
-script = ExtResource("29_gkmcc")
-
-[node name="ProgressionWhiteNoise" type="TextureRect" parent="ProgressionWhiteNoiseViewport"]
-unique_name_in_owner = true
-material = SubResource("ShaderMaterial_gkmcc")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = SubResource("CanvasTexture_7nlll")
-
 [connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/RandomizeButton" to="." method="_on_randomize_pressed"]
@@ -1854,4 +1828,3 @@ texture = SubResource("CanvasTexture_7nlll")
 [connection signal="mouse_exited" from="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal/FractalViewport" to="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal/FractalViewport" method="_on_mouse_exited"]
 [connection signal="pressed" from="VoxelizeWindow/MarginContainer/VBoxContainer/Controls/Voxelize" to="." method="_on_voxelize_button_pressed"]
 [connection signal="pressed" from="VoxelizeWindow/MarginContainer/VBoxContainer/Controls/Export" to="." method="_on_export_pressed"]
-[connection signal="size_changed" from="SubViewport" to="ProgressionWhiteNoiseViewport" method="_on_sub_viewport_size_changed"]

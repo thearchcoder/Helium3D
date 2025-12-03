@@ -208,7 +208,7 @@ func calculate_time_estimate() -> float:
 	return remaining_frames * time_per_frame
 
 func process_frame() -> void:
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 	
 	var image: Image = %SubViewport.get_texture().get_image()
 	

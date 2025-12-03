@@ -5,7 +5,7 @@ var autosave_timer: Timer
 
 func recover() -> void:
 	%ToolBar.load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/autosave.hlm'))
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 
 func _ready() -> void:
 	autosave_timer = Timer.new()
@@ -82,7 +82,7 @@ func load_project_data(path: String) -> void:
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	if file:
 		get_tree().current_scene.update_app_state(file.get_var(), true)
-		%SubViewport.refresh_taa()
+		%SubViewport.refresh()
 		file.close()
 
 func save_image(path: String) -> void:
@@ -158,7 +158,7 @@ func _on_antialiasing_value_changed(option: String) -> void:
 		%SubViewport.set_antialiasing(%SubViewport.AntiAliasing.FXAA)
 	elif option == "SMAA":
 		%SubViewport.set_antialiasing(%SubViewport.AntiAliasing.SMAA)
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 	%DummyFocusButton.grab_focus()
 
 func _on_load_from_clipboard_pressed() -> void:
@@ -187,7 +187,7 @@ func _on_load_from_clipboard_pressed() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	await get_tree().process_frame
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 
 func _on_save_to_clipboard_pressed() -> void:
 	save_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_save_buffer.hlm'), ['keyframes'], true)
@@ -198,5 +198,5 @@ func _on_save_to_clipboard_pressed() -> void:
 
 func _on_quality_value_changed(option: String) -> void:
 	%SubViewport.set_quality(option.to_lower())
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 	%DummyFocusButton.grab_focus()

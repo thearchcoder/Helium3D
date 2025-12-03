@@ -138,7 +138,6 @@ uniform bool only_primitive_based_formulas;
 uniform bool only_sdf_based_formulas;
 uniform float difs_smoothing;
 uniform bool exponential_smoothing;
-uniform float progression_strength;
 // Voxelization
 uniform bool voxelization;
 uniform vec3 bounds_position;
@@ -4652,13 +4651,13 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 
 void fragment() {
 	if (texture(pixels_to_render, UV).r < 0.5) discard;
-
+	
+	SET_ALBEDO
+	
 	if (tiled) {
 		if (SCREEN_UV.x < tile_bounds.x || SCREEN_UV.x >= tile_bounds.z ||
 			SCREEN_UV.y < tile_bounds.y || SCREEN_UV.y >= tile_bounds.w) {
-			discard;
+			ALBEDO = vec3(0);
 		}
 	}
-
-	SET_ALBEDO
 }

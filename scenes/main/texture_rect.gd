@@ -28,7 +28,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		camera.rotation.x = camera.rotation.x - adjusted_input.y * SENSITIVITY
 		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-89), deg_to_rad(89))
 		
-		%SubViewport.refresh_taa()
+		%SubViewport.refresh()
 
 func _physics_process(delta: float) -> void:
 	if is_menu_rendered:
@@ -91,7 +91,7 @@ func _physics_process(delta: float) -> void:
 		var target_speed: float = speed * speed_multipler
 		
 		if direction:
-			%SubViewport.refresh_taa()
+			%SubViewport.refresh()
 		
 		var forward: Vector3 = -camera.global_transform.basis.z.normalized()
 		var right: Vector3 = camera.global_transform.basis.x.normalized()
@@ -102,10 +102,10 @@ func _physics_process(delta: float) -> void:
 		
 		if Input.is_action_pressed('up'):
 			velocity += up * speed * delta
-			%SubViewport.refresh_taa()
+			%SubViewport.refresh()
 		elif Input.is_action_pressed('down'):
 			velocity -= up * speed * delta
-			%SubViewport.refresh_taa()
+			%SubViewport.refresh()
 	
 	%Player.global_transform.origin += velocity * delta
 	velocity *= FRICTION

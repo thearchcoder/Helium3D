@@ -43,7 +43,7 @@ func field_changed_non_shader(field_name: String, value: Variant, update_viewpor
 	# A field changed but isn't mean't to be set in the shader
 	get_tree().current_scene.fields[field_name] = value
 	if update_viewport:
-		%SubViewport.refresh_taa()
+		%SubViewport.refresh()
 
 func field_changed(field_name: String, value: Variant) -> void:
 	get_tree().current_scene.fields[field_name] = value
@@ -63,7 +63,7 @@ func field_changed(field_name: String, value: Variant) -> void:
 			value.gradient = gradient
 	
 	%Fractal.material_override.set_shader_parameter(field_name, value)
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 
 func set_formula(formula_name: String, for_page: int) -> void:
 	var formula_index: int = $Formula/TabContainer/Formula1/Fields/HBoxContainer/Values/Formulas.options.find(formula_name)

@@ -14,7 +14,6 @@ void fragment() {
 	vec2 uv = UV;
 	if (uv.x < 0.0) discard;
 
-	vec4 result;
 	vec2 pixel_size = SCREEN_PIXEL_SIZE;
 	vec2 viewport_size = 1.0 / pixel_size;
 	float aspect_ratio = viewport_size.x / viewport_size.y;
@@ -26,22 +25,9 @@ void fragment() {
 	centered_uv.x /= aspect_ratio;
 	uv = centered_uv + 0.5;
 
-	vec4 center;
+	COLOR = texture(TEXTURE, uv);
 
 	if (display_tiled_render) {
-		center = texture(tiled_render, uv);
-	} else {
-		center = texture(TEXTURE, uv);
-	}
-
-	result = center;
-
-	vec4 prev = texture(previous_frame, uv);
-	vec4 pxinfo = texture(pixels_to_render, UV);
-
-	if (length(result.rgb) <= 0.0001) {
-		COLOR = prev;
-	} else {
-		COLOR = result;
+		COLOR = texture(tiled_render, uv);
 	}
 }

@@ -30,6 +30,7 @@ func set_antialiasing(target_aa: AntiAliasing) -> void:
 		screen_space_aa = SCREEN_SPACE_AA_DISABLED
 
 func _process(delta: float) -> void:
+	%PostViewport.render_target_update_mode = render_target_update_mode
 	var rendered_condition: bool = false
 	rendered_condition = since_last_dynamic_update_frame > 0 or previous_update_mode == UPDATE_WHEN_VISIBLE
 	
@@ -56,11 +57,9 @@ func _process(delta: float) -> void:
 	since_last_dynamic_update_frame += 1
 	previous_update_mode = render_target_update_mode
 
-func refresh_taa() -> void:
+func refresh() -> void:
 	since_last_dynamic_update = 0.0
 	since_last_dynamic_update_frame = 0
-	
-	%ProgressionWhiteNoiseViewport.reset()
 	
 	var old_scaling_3d_scale := scaling_3d_scale
 	scaling_3d_scale = old_scaling_3d_scale - randf_range(-0.00001, 0.00001) + 0.0000001

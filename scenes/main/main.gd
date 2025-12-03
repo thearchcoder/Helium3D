@@ -595,7 +595,7 @@ func update_app_state(data: Dictionary, full_update: bool = true) -> void:
 	author = other_data.get("author", "")
 	%AuthorLineEdit.text = author
 	
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 	
 	if full_update:
 		%AnimationTrack.update_fps(other_data.get('fps', 60))
@@ -874,7 +874,7 @@ func _on_randomize_pressed() -> void:
 func _on_voxelize_window_close_requested() -> void: 
 	$VoxelizeWindow.visible = false
 	%Fractal.material_override.set_shader_parameter('voxelization', false)
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 	await get_tree().process_frame
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -885,11 +885,11 @@ func _on_voxelize_window_close_requested() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	await get_tree().process_frame
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 
 func _on_voxelize_pressed() -> void: 
 	$VoxelizeWindow.visible = true
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 	_on_randomize_window_close_requested()
 
 func set_resolution(val: Vector2) -> void:
@@ -910,7 +910,7 @@ func _on_voxelize_button_pressed() -> void:
 	var original_viewport_size: Vector2i = %SubViewport.size
 	
 	%Fractal.material_override.set_shader_parameter('building_mesh', true)
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 	%SubViewport.force_disable_low_scaling = true
 	
 	%SubViewport.size = Vector2i(resolution, resolution)
@@ -932,7 +932,7 @@ func _on_voxelize_button_pressed() -> void:
 	await get_tree().process_frame
 	
 	for i: int in resolution + 2:
-		%SubViewport.refresh_taa()
+		%SubViewport.refresh()
 		await get_tree().process_frame
 		if i >= 2:
 			%Player.position.z -= step_size
@@ -946,7 +946,7 @@ func _on_voxelize_button_pressed() -> void:
 	%SubViewport.size = original_viewport_size
 	%Fractal.material_override.set_shader_parameter('building_mesh', false)
 	%SubViewport.force_disable_low_scaling = false
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 	%Voxelize.release_focus()
 	%VoxelizedMeshWorld.render_target_update_mode = SubViewport.UPDATE_ONCE
 	
@@ -960,7 +960,7 @@ func _on_voxelize_button_pressed() -> void:
 		mat.albedo_color = Color.WHITE
 		$VoxelizedMeshWorld/Mesh.set_surface_override_material(0, mat)
 	
-	%SubViewport.refresh_taa()
+	%SubViewport.refresh()
 	%Voxelize.disabled = false
 
 func _on_export_pressed() -> void:

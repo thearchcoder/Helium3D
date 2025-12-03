@@ -43,6 +43,8 @@ func _ready() -> void:
 			get_tree().current_scene.undo()
 		if id == 3:
 			get_tree().current_scene.redo()
+		if id == 8:
+			recover()
 		if id == 4:
 			# TODO: Make a website. (examples page)
 			pass
@@ -60,7 +62,7 @@ func set_autosave_interval(value: float) -> void:
 
 func _on_autosave_timer_timeout() -> void:
 	var autosave_path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path('/autosave.hlm')
-	if not %CrashSaveWindow.visible:
+	if not %CrashSaveWindow.visible and get_tree().current_scene.made_changes:
 		save_project_data(autosave_path)
 
 func save_project_data(path: String, exclude: Array[String] = [], optimize_for_clipboard: bool = false) -> void:

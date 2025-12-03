@@ -36,6 +36,7 @@ var busy_rendering_tiles: bool = false
 var last_tiled_render_image: Image
 var difficulty: String = 'simple'
 
+var made_changes := false
 var history: Array[Dictionary] = []
 var history_at: int = -1
 var last_saved_state: Dictionary = {}

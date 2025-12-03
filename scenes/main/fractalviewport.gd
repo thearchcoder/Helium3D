@@ -61,6 +61,9 @@ func refresh() -> void:
 	since_last_dynamic_update = 0.0
 	since_last_dynamic_update_frame = 0
 	
+	if Engine.get_frames_drawn() > 1:
+		get_tree().current_scene.made_changes = true
+	
 	var old_scaling_3d_scale := scaling_3d_scale
 	scaling_3d_scale = old_scaling_3d_scale - randf_range(-0.00001, 0.00001) + 0.0000001
 	if not %AnimationTrack.is_playing:

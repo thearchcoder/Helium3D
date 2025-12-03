@@ -429,6 +429,7 @@ func _ready() -> void:
 	}
 	fields = ALL_FIELD_CONTAINER_FIELDS[fields_list_id]
 	update_fields_ui()
+	get_tree().current_scene.reload_difficulty()
 
 func add_spaces(text: String) -> String:
 	var result := ""

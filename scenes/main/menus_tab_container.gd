@@ -69,7 +69,6 @@ func set_formula(formula_name: String, for_page: int) -> void:
 	var formula_index: int = $Formula/TabContainer/Formula1/Fields/HBoxContainer/Values/Formulas.options.find(formula_name)
 	current_formulas[for_page - 1] = formula_index
 	$Formula/TabContainer.initialize_formula(formula_index, for_page)
-	$Formula/TabContainer.set_difficulty(get_tree().current_scene.difficulty)
 	
 	field_changed('formulas', current_formulas)
 	

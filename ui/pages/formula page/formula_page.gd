@@ -13,44 +13,8 @@ const VECTOR4_FIELD_SCENE = preload('res://ui/fields/vec4 field/vec4_field.tscn'
 const SELECTION_FIELD_SCENE = preload('res://ui/fields/selection field/selection_field.tscn')
 const BOOLEAN_FIELD_SCENE = preload('res://ui/fields/boolean field/boolean_field.tscn')
 const STRING_FIELD_SCENE = preload('res://ui/fields/string field/string_field.tscn')
+
 var is_initialized := false
-
-func set_difficulty(difficulty: String) -> void:
-	# horrifying code below.
-	
-	if difficulty == 'advanced':
-		for value_container_node in $Fields/HBoxContainer/Values.get_children():
-			if value_container_node.name != 'Formulas':
-				
-				for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
-					if formula['id'].replace(' ', '') == value_container_node.name.trim_prefix('F'):
-						for value_node in value_container_node.get_children():
-							var snakecase_name: String = value_node.get_meta('snake_case_name', 'null')
-							var name_node: Control = $Fields/HBoxContainer/Names.get_node(NodePath(value_node.get_parent().name)).get_node(NodePath(value_node.name))
-							
-							if formula['variables'][snakecase_name]['difficulty'] == 'simple':
-								value_node.visible = false
-								name_node.visible = false
-							elif formula['variables'][snakecase_name]['difficulty'] == 'advanced':
-								value_node.visible = true
-								name_node.visible = true
-	if difficulty == 'simple':
-		for value_container_node in $Fields/HBoxContainer/Values.get_children():
-			if value_container_node.name != 'Formulas':
-				
-				for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
-					if formula['id'].replace(' ', '') == value_container_node.name.trim_prefix('F'):
-						for value_node in value_container_node.get_children():
-							var snakecase_name: String = value_node.get_meta('snake_case_name', 'null')
-							var name_node: Control = $Fields/HBoxContainer/Names.get_node(NodePath(value_node.get_parent().name)).get_node(NodePath(value_node.name))
-							
-							if formula['variables'][snakecase_name]['difficulty'] == 'advanced':
-								value_node.visible = false
-								name_node.visible = false
-							elif formula['variables'][snakecase_name]['difficulty'] == 'simple':
-								value_node.visible = true
-								name_node.visible = true
-
 var initialized_formulas: Array = []
 
 func initialize_formula(formula_index: int) -> void:
@@ -74,7 +38,6 @@ func initialize_formula(formula_index: int) -> void:
 		return
 	
 	initialized_formulas.append(formula_index)
-	set_difficulty("simple")
 	
 	for variable_name in (variables.keys() as Array[String]):
 		var variable_data: Dictionary = variables[variable_name]
@@ -127,6 +90,8 @@ func initialize_formula(formula_index: int) -> void:
 		value_node.connect("value_changed", Callable(self, "_on_value_changed").bind(value_node))
 		
 		value_nodes_vbox.add_child(value_node)
+		if variable_data["difficulty"] == "advanced":
+			get_tree().current_scene.advanced_ui_fields.append(value_node)
 		
 		var as_array := value_node.name.to_snake_case().split("_")
 		var text := "_".join(PackedStringArray(as_array.slice(1))).to_pascal_case()
@@ -149,6 +114,7 @@ func initialize_formula(formula_index: int) -> void:
 				label.add_theme_constant_override("line_spacing", 3)
 		
 		name_nodes_vbox.add_child(label)
+		value_node.set_meta("name_node", label)
 
 func _on_value_changed(new_value: Variant, node: Control) -> void:
 	field_changed(node.get_meta("uniform_name"), new_value)
@@ -207,5 +173,3 @@ func _ready() -> void:
 	if page_number == 1:
 		set_formula('mandelbulb')
 		$Fields/HBoxContainer/Values/Formulas.index = $Fields/HBoxContainer/Values/Formulas.options.find('mandelbulb')
-	
-	set_difficulty("simple")

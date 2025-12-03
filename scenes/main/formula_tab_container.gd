@@ -34,10 +34,6 @@ func _process(_delta: float) -> void:
 	elif Input.is_action_just_pressed('switch tab left'): current_tab = clamp(current_tab - 1, 0, get_child_count() - 1)
 	elif Input.is_action_just_pressed('switch tab right'): current_tab = clamp(current_tab + 1, 0, get_child_count() - 1)
 
-func set_difficulty(difficulty: String) -> void:
-	for formula_page in get_active_formula_pages():
-		formula_page.set_difficulty(difficulty)
-
 func get_active_formula_pages() -> Array[Node]:
 	var used_pages: Array[Node] = get_children()
 	used_pages.remove_at(used_pages.find($Buffer))

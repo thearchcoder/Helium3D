@@ -34,10 +34,7 @@ var author: String = ''
 var using_reflections: bool = false
 var busy_rendering_tiles: bool = false
 var last_tiled_render_image: Image
-var difficulty: String = 'simple':
-	set(value):
-		difficulty = value
-		%TabContainer.get_node('Formula/TabContainer').set_difficulty(difficulty)
+var difficulty: String = 'simple'
 
 var history: Array[Dictionary] = []
 var history_at: int = -1

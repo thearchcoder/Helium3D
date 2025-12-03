@@ -332,7 +332,7 @@ func get_app_state(optimize_for_clipboard: bool = false) -> Dictionary:
 	
 	return data
 
-func create_duplicate(formula_name: String, var_data: Dictionary, original_content: String, path_to_formulas: String, dupe_identifier: String) -> void:
+func create_duplicate(formula_name: String, original_content: String, path_to_formulas: String, dupe_identifier: String) -> void:
 	var path := path_to_formulas + formula_name + 'dupe' + dupe_identifier + '.gdshaderinc'
 	var file := FileAccess.open(path, FileAccess.WRITE)
 
@@ -378,7 +378,7 @@ func initialize_formulas(path_to_formulas: String) -> void:
 		# Create duplicate for each formula (excluding already duplicated ones)
 		if not formula_file_path.contains('dupe'):
 			for i in DUPES:
-				create_duplicate(data['id'], data['variables'], formula_file_contents, path_to_formulas, "abcdefghijklmnopqrstuvwxyz".split("")[i])
+				create_duplicate(data['id'], formula_file_contents, path_to_formulas, "abcdefghijklmnopqrstuvwxyz".split("")[i])
 	
 	for formula_file_path in paths:
 		if formula_file_path.get_file().get_extension().ends_with('uid'):

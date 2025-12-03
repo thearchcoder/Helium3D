@@ -145,7 +145,6 @@ border_width_bottom = 1
 border_color = Color(0.187, 0.187, 0.187, 0.724)
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_s17dp"]
-load_path = "res://.godot/imported/icon.png-0c10cc1a538d23fad71adfeea25837c6.ctex"
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6llfj"]
 

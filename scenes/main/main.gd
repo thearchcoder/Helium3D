@@ -23,7 +23,7 @@ const VAR_TEMPLATES := {
 	]
 }
 
-@onready var HELIUM3D_PATH: String = OS.get_environment("HOME") + "/.hlm"
+@onready var HELIUM3D_PATH: String = (OS.get_environment("USERPROFILE") if OS.get_name() == "Windows" else OS.get_environment("HOME")) + Global.path("/.hlm")
 var advanced_ui_fields: Array[Control] = []
 var taa_samples: int = 2
 var fields: Dictionary = {}
@@ -55,10 +55,10 @@ func _ready() -> void:
 	if not dir.dir_exists(HELIUM3D_PATH):
 		dir.make_dir(HELIUM3D_PATH)
 	
-	if FileAccess.file_exists(HELIUM3D_PATH + '/heartbeat.hlm') and FileAccess.file_exists(HELIUM3D_PATH + '/autosave.hlm'):
+	if FileAccess.file_exists(HELIUM3D_PATH + Global.path('/heartbeat.hlm')) and FileAccess.file_exists(HELIUM3D_PATH + Global.path('/autosave.hlm')):
 		crash_detected()
 	else:
-		var file: FileAccess = FileAccess.open(HELIUM3D_PATH + '/heartbeat.hlm', FileAccess.WRITE)
+		var file: FileAccess = FileAccess.open(HELIUM3D_PATH + Global.path('/heartbeat.hlm'), FileAccess.WRITE)
 		file.close()
 	
 	await RenderingServer.frame_post_draw

@@ -9,6 +9,11 @@ func action_occurred() -> void:
 	if Engine.get_frames_drawn() > 0 and get_tree():
 		get_tree().current_scene.action_occurred()
 
+func path(linux_path: String) -> String:
+	if OS.get_name() == "Windows":
+		return linux_path.replace('/', '\\')
+	return linux_path
+
 func show_yes_no_popup(title: String, message: String, parent_node: Node = null) -> bool:
 	var confirmation_dialog := AcceptDialog.new()
 	confirmation_dialog.title = title

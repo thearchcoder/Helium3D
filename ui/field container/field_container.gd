@@ -124,7 +124,7 @@ func compute_tiled_render() -> void:
 		if not target_dir.dir_exists("tilerender"):
 			target_dir.make_dir("tilerender")
 		var image: Image = texture.get_image()
-		var path: String = get_tree().current_scene.HELIUM3D_PATH + "/tilerender/tile_" + str(i) + ".png"
+		var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/tilerender/tile_") + str(i) + ".png"
 		image.save_png(path)
 		images.append(image)
 		tile_paths.append(path)

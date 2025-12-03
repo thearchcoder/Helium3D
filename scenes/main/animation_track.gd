@@ -216,7 +216,7 @@ func process_frame() -> void:
 		image = get_tree().current_scene.last_tiled_render_image
 	
 	if image and is_rendering and currently_at_frame >= 2:
-		var path: String = get_tree().current_scene.HELIUM3D_PATH + "/renders/frame_" + str(int(currently_at_frame - 2) + 1).trim_suffix('.0') + ".png"
+		var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/frame_") + str(int(currently_at_frame - 2) + 1).trim_suffix('.0') + ".png"
 		image.save_png(path)
 	
 	if not is_rendering:

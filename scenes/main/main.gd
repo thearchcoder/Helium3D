@@ -296,7 +296,7 @@ func get_app_state(optimize_for_clipboard: bool = false) -> Dictionary:
 	other_data["interpolation"] = %AnimationTrack.interpolation
 	other_data["keyframe_length"] = %AnimationTrack.keyframe_length
 	other_data["author"] = author
-	other_data["library"] = {}
+	other_data["library"] = $UI/BottomBar/Library.get_library_data()
 	
 	if optimize_for_clipboard:
 		for value_node in Global.value_nodes:
@@ -583,6 +583,7 @@ func update_app_state(data: Dictionary, full_update: bool = true) -> void:
 		%AnimationTrack.interpolation = other_data.get('interpolation', 3)
 		%AnimationTrack.keyframe_length = other_data.get('keyframe_length', 1)
 		%AnimationTrack.keyframes = other_data.get('keyframes', [])
+		$UI/BottomBar/Library.load_library_data(other_data.get('library', []))
 		%AnimationTrack.reload_keyframes()
 
 func count_non_zero(numbers: Array) -> int:

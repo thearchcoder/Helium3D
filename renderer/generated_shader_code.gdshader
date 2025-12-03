@@ -294,9 +294,9 @@ uniform int voxel_resolution;
 //uniform vec3 fbairddeltadupej_rotation1; // -@22
 //uniform vec3 fbairddeltadupej_rotation2; // -@22
 //uniform float fbairddeltadupej_scale; // -@22
-//uniform vec4 fbasictransform_offset; // -@23
-//uniform vec4 fbasictransform_scale; // -@23
-//uniform vec2 fbasictransform_range; // -@23
+uniform vec4 fbasictransform_offset; // -@23
+uniform vec4 fbasictransform_scale; // -@23
+uniform vec2 fbasictransform_range; // -@23
 //uniform vec4 fbasictransformdupea_offset; // -@24
 //uniform vec4 fbasictransformdupea_scale; // -@24
 //uniform vec2 fbasictransformdupea_range; // -@24
@@ -2505,10 +2505,10 @@ uniform int fmandelbulb_quaternion_mode; // -@276
 //uniform vec3 fsierpinskitetrahedrondupej_rotation1; // -@473
 //uniform vec3 fsierpinskitetrahedrondupej_rotation2; // -@473
 //uniform float fsierpinskitetrahedrondupej_scale; // -@473
-//uniform int fsintransform_axis; // -@474
-//uniform vec2 fsintransform_offset; // -@474
-//uniform vec2 fsintransform_scale; // -@474
-//uniform vec2 fsintransform_range; // -@474
+uniform int fsintransform_axis; // -@474
+uniform vec2 fsintransform_offset; // -@474
+uniform vec2 fsintransform_scale; // -@474
+uniform vec2 fsintransform_range; // -@474
 //uniform int fsintransformdupea_axis; // -@475
 //uniform vec2 fsintransformdupea_offset; // -@475
 //uniform vec2 fsintransformdupea_scale; // -@475
@@ -2968,7 +2968,7 @@ uniform int fmandelbulb_quaternion_mode; // -@276
 //#include "res://formulas/bairddeltadupeh.gdshaderinc" // -@20
 //#include "res://formulas/bairddeltadupei.gdshaderinc" // -@21
 //#include "res://formulas/bairddeltadupej.gdshaderinc" // -@22
-//#include "res://formulas/basictransform.gdshaderinc" // -@23
+#include "res://formulas/basictransform.gdshaderinc" // -@23
 //#include "res://formulas/basictransformdupea.gdshaderinc" // -@24
 //#include "res://formulas/basictransformdupeb.gdshaderinc" // -@25
 //#include "res://formulas/basictransformdupec.gdshaderinc" // -@26
@@ -3419,7 +3419,7 @@ uniform int fmandelbulb_quaternion_mode; // -@276
 //#include "res://formulas/sierpinskitetrahedrondupeh.gdshaderinc" // -@471
 //#include "res://formulas/sierpinskitetrahedrondupei.gdshaderinc" // -@472
 //#include "res://formulas/sierpinskitetrahedrondupej.gdshaderinc" // -@473
-//#include "res://formulas/sintransform.gdshaderinc" // -@474
+#include "res://formulas/sintransform.gdshaderinc" // -@474
 //#include "res://formulas/sintransformdupea.gdshaderinc" // -@475
 //#include "res://formulas/sintransformdupeb.gdshaderinc" // -@476
 //#include "res://formulas/sintransformdupec.gdshaderinc" // -@477
@@ -3579,7 +3579,7 @@ vec2 scene_sdf(vec3 p) {
 //if (current_formula == 20) bairddeltadupeh_iter(z, dz, original_z, orbit, i); //-@20
 //if (current_formula == 21) bairddeltadupei_iter(z, dz, original_z, orbit, i); //-@21
 //if (current_formula == 22) bairddeltadupej_iter(z, dz, original_z, orbit, i); //-@22
-//if (current_formula == 23) basictransform_iter(z, dz, original_z, orbit, i); //-@23
+if (current_formula == 23) basictransform_iter(z, dz, original_z, orbit, i); //-@23
 //if (current_formula == 24) basictransformdupea_iter(z, dz, original_z, orbit, i); //-@24
 //if (current_formula == 25) basictransformdupeb_iter(z, dz, original_z, orbit, i); //-@25
 //if (current_formula == 26) basictransformdupec_iter(z, dz, original_z, orbit, i); //-@26
@@ -3898,7 +3898,7 @@ if (current_formula == 276) mandelbulb_iter(z, dz, original_z, orbit, i); //-@27
 //if (current_formula == 471) sierpinskitetrahedrondupeh_iter(z, dz, original_z, orbit, i); //-@471
 //if (current_formula == 472) sierpinskitetrahedrondupei_iter(z, dz, original_z, orbit, i); //-@472
 //if (current_formula == 473) sierpinskitetrahedrondupej_iter(z, dz, original_z, orbit, i); //-@473
-//if (current_formula == 474) sintransform_iter(z, dz, original_z, orbit, i); //-@474
+if (current_formula == 474) sintransform_iter(z, dz, original_z, orbit, i); //-@474
 //if (current_formula == 475) sintransformdupea_iter(z, dz, original_z, orbit, i); //-@475
 //if (current_formula == 476) sintransformdupeb_iter(z, dz, original_z, orbit, i); //-@476
 //if (current_formula == 477) sintransformdupec_iter(z, dz, original_z, orbit, i); //-@477

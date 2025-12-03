@@ -44,10 +44,17 @@ func generate_offspring(data: Dictionary) -> Dictionary:
 	var main := get_tree().current_scene
 	var current_formulas: Array[int] = %TabContainer.current_formulas
 	
+	var mutated := false
+	var mutations_done := 0
+	
 	if randf() * 100.0 < chance:
 		offspring["rotation"] = _mutate_vector3(offspring["rotation"], -180.0, 180.0)
+		mutated = true
+		mutations_done += 1
 	if randf() * 100.0 < chance:
 		offspring["kalaidoscope"] = _mutate_vector3(offspring["kalaidoscope"], 1.0, 8.0)
+		mutated = true
+		mutations_done += 1
 	
 	for formula_index in current_formulas:
 		if formula_index <= 0:
@@ -72,40 +79,26 @@ func generate_offspring(data: Dictionary) -> Dictionary:
 			
 			match var_data['type']:
 				'float':
-					offspring[uniform_name] = _mutate_float(
-						offspring[uniform_name],
-						var_data['from'],
-						var_data['to']
-					)
+					offspring[uniform_name] = _mutate_float(offspring[uniform_name], var_data['from'], var_data['to'])
 				'int':
-					offspring[uniform_name] = _mutate_int(
-						offspring[uniform_name],
-						var_data['from'],
-						var_data['to']
-					)
+					offspring[uniform_name] = _mutate_int(offspring[uniform_name], var_data['from'], var_data['to'])
 				'vec3':
-					offspring[uniform_name] = _mutate_vector3_ranged(
-						offspring[uniform_name],
-						var_data['from'],
-						var_data['to']
-					)
+					offspring[uniform_name] = _mutate_vector3_ranged(offspring[uniform_name], var_data['from'], var_data['to'])
 				'vec4':
-					offspring[uniform_name] = _mutate_vector4_ranged(
-						offspring[uniform_name],
-						var_data['from'],
-						var_data['to']
-					)
+					offspring[uniform_name] = _mutate_vector4_ranged(offspring[uniform_name], var_data['from'], var_data['to'])
 				'vec2':
-					offspring[uniform_name] = _mutate_vector2_ranged(
-						offspring[uniform_name],
-						var_data['from'],
-						var_data['to']
-					)
+					offspring[uniform_name] = _mutate_vector2_ranged(offspring[uniform_name], var_data['from'], var_data['to'])
 				'bool':
 					offspring[uniform_name] = randf() < 0.5
 				'selection':
 					var values: Array = var_data['values']
 					offspring[uniform_name] = values[randi() % values.size()]
+			
+			mutated = true
+			mutations_done += 1
+	
+	if not mutated:
+		offspring["rotation"] = _mutate_vector3(offspring["rotation"], -180.0, 180.0)
 	
 	return offspring
 

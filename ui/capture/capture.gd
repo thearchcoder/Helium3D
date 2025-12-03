@@ -25,7 +25,7 @@ func _on_mouse_exited() -> void: mouse_in_area = false
 
 func _on_popup_menu_id_pressed(id: int) -> void:
 	if id == 0:
-		get_tree().current_scene.update_app_state(data)
+		get_tree().current_scene.update_app_state(data, false)
 	if id == 1:
 		texture = ImageTexture.create_from_image(get_tree().current_scene.get_node('UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect').texture.get_image())
 		data = get_tree().current_scene.get_app_state()

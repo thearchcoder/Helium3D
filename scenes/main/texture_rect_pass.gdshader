@@ -21,7 +21,7 @@ void fragment() {
 	vec2 centered_uv = uv - 0.5;
 
 	centered_uv.x *= aspect_ratio;
-	centered_uv = kalaido(centered_uv, 1.0, 0);
+	centered_uv = kalaido(centered_uv, camera_kalaidoscope, 0);
 	centered_uv.x /= aspect_ratio;
 	uv = centered_uv + 0.5;
 

@@ -2,6 +2,9 @@ extends HBoxContainer
 
 var autosave_interval: float = 5.0 : set = set_autosave_interval
 var autosave_timer: Timer
+var field_filter: String = 'project'
+var has_saved_before: bool = false
+var saved_path: String = ""
 
 func recover() -> void:
 	%ToolBar.load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/autosave.hlm'))
@@ -26,13 +29,24 @@ func _ready() -> void:
 			%FileDialog.show()
 		if id == 3:
 			_on_save_to_clipboard_pressed()
+		if id == 4 and has_saved_before:
+			save_project_data(saved_path)
+			%ProgramStateLabel.text = "Saving file"
+			await get_tree().create_timer(0.2).timeout
+			%ProgramStateLabel.text = "Rendered"
 		)
 	%Load.get_popup().connect('id_pressed', func(id: int) -> void:
-		if id == 1:
-			_on_load_pressed()
-			%FileDialog.show()
 		if id == 0:
 			_on_load_from_clipboard_pressed()
+		if id == 1:
+			_on_load_pressed('project')
+			%FileDialog.show()
+		if id == 2:
+			_on_load_pressed('lighting')
+			%FileDialog.show()
+		if id == 3:
+			_on_load_pressed('fractal')
+			%FileDialog.show()
 	)
 	%General.get_popup().connect('id_pressed', func(id: int) -> void:
 		if id == 0:
@@ -63,9 +77,9 @@ func set_autosave_interval(value: float) -> void:
 func _on_autosave_timer_timeout() -> void:
 	var autosave_path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path('/autosave.hlm')
 	if not %CrashSaveWindow.visible and get_tree().current_scene.made_changes:
-		save_project_data(autosave_path)
+		save_project_data(autosave_path, true)
 
-func save_project_data(path: String, exclude: Array[String] = [], optimize_for_clipboard: bool = false) -> void:
+func save_project_data(path: String, is_buffer: bool = false, exclude: Array[String] = [], optimize_for_clipboard: bool = false) -> void:
 	if not path.ends_with('.hlm'):
 		path += '.hlm'
 
@@ -77,13 +91,57 @@ func save_project_data(path: String, exclude: Array[String] = [], optimize_for_c
 			if data['other'].has(item):
 				data['other'].erase(item)
 		
-		file.store_var(data)
+		if file.store_var(data) and not is_buffer:
+			has_saved_before = true
+			saved_path = path
+			%Save.get_popup().set_item_disabled(4, false)
+			DisplayServer.window_set_title("Helium3D (" + path.get_file().split('.')[0] + ')', get_window().get_window_id())
+		
 		file.close()
 
-func load_project_data(path: String) -> void:
+func load_project_data(path: String, load_field_filter: String) -> void:
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	if file:
-		get_tree().current_scene.update_app_state(file.get_var(), true)
+		var fields: Dictionary = file.get_var()
+		
+		if load_field_filter != "" and load_field_filter != "project":
+			var filtered_fields: Dictionary = {}
+			
+			if load_field_filter == "lighting":
+				var lighting_prefixes := [
+					"light1_", "light2_",
+					"bg_type", "bg_color", "bg_image", "transparent_bg",
+					"hard_shadows", "shadow_steps", "shadow_epsilon", "shadow_raystep_multiplier",
+					"specular_intensity", "specular_sharpness",
+					"reflection_intensity", "reflection_bounces",
+					"ambient_occlusion_distance", "ambient_occlusion_radius", "ambient_occlusion_steps", "ambient_occlusion_light_affect",
+					"ambient_light", "ambient_light_from_background", "ambient_light_color",
+					"normal_map", "normal_map_enabled", "normal_map_projection", "normal_map_scale", "normal_map_triplanar_sharpness", "normal_map_height", "normal_epsilon", "connect_normal_to_epsilon",
+					"fresnel_color", "fresnel_intensity", "fresnel_falloff"
+				]
+				
+				for key in (fields.keys() as Array[String]):
+					for prefix in (lighting_prefixes as Array[String]):
+						if key == prefix or key.begins_with(prefix):
+							filtered_fields[key] = fields[key]
+							break
+			elif load_field_filter == "fractal":
+				var fractal_exact := ["sphere_inversion", "inversion_sphere", "translation", "rotation", "kalaidoscope", "kalaidoscope_mode"]
+				var formula_regex := RegEx.new()
+				formula_regex.compile("^f[a-z]+_")
+				
+				for key in (fields.keys() as Array[String]):
+					if key in fractal_exact or formula_regex.search(key):
+						filtered_fields[key] = fields[key]
+			
+			fields = filtered_fields
+		
+		has_saved_before = true
+		saved_path = path
+		%Save.get_popup().set_item_disabled(4, false)
+		DisplayServer.window_set_title("Helium3D (" + path.get_file().split('.')[0] + ')', get_window().get_window_id())
+
+		get_tree().current_scene.update_app_state(fields, true)
 		%SubViewport.refresh()
 		file.close()
 
@@ -115,10 +173,11 @@ func _on_save_picture_pressed() -> void:
 	%FileDialog.clear_filters()
 	%FileDialog.add_filter("*.png, *.jpg, *.jpeg, *.webp", "Images")
 
-func _on_load_pressed() -> void:
+func _on_load_pressed(load_field_filter: String) -> void:
+	field_filter = load_field_filter
 	%FileDialog.ok_button_text = "Open"
 	%FileDialog.file_mode = %FileDialog.FILE_MODE_OPEN_FILE
-	%FileDialog.title = "Load Project"
+	%FileDialog.title = "Load " + load_field_filter.capitalize()
 	%FileDialog.clear_filters()
 	%FileDialog.add_filter("*.hlm", "Helium3D Files")
 
@@ -151,7 +210,11 @@ func _on_file_dialog_confirmed(path: String) -> void:
 		save_project_data(path)
 		save_image(path)
 	elif %FileDialog.title == "Load Project":
-		load_project_data(path)
+		load_project_data(path, 'project')
+	elif %FileDialog.title == "Load Fractal":
+		load_project_data(path, 'fractal')
+	elif %FileDialog.title == "Load Lighting":
+		load_project_data(path, 'lighting')
 
 func _on_antialiasing_value_changed(option: String) -> void:
 	if option == "None":
@@ -184,7 +247,7 @@ func _on_load_from_clipboard_pressed() -> void:
 	file.store_buffer(decompressed_data)
 	file.close()
 	
-	load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_load_buffer.hlm'))
+	load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_load_buffer.hlm'), 'project')
 	
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -192,7 +255,7 @@ func _on_load_from_clipboard_pressed() -> void:
 	%SubViewport.refresh()
 
 func _on_save_to_clipboard_pressed() -> void:
-	save_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_save_buffer.hlm'), ['keyframes'], true)
+	save_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_save_buffer.hlm'), true, ['keyframes'], true)
 	var file: PackedByteArray = FileAccess.get_file_as_bytes(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_save_buffer.hlm'))
 	var compressed_data: PackedByteArray = file.compress(FileAccess.COMPRESSION_GZIP)
 	var encoded_data: String = Marshalls.raw_to_base64(compressed_data)

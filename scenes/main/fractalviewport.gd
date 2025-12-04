@@ -46,12 +46,16 @@ func _process(delta: float) -> void:
 		scaling_3d_scale = high_scaling
 		render_target_update_mode = UPDATE_ONCE
 	
+	var program_state: String = %ProgramStateLabel.text
 	if render_target_update_mode == UPDATE_DISABLED:
-		%RenderingStateLabel.text = "Rendered"
+		program_state = "Rendered"
 	elif render_target_update_mode == UPDATE_ONCE and since_last_dynamic_update_frame > 0:
-		%RenderingStateLabel.text = "Rendered"
+		program_state = "Rendered"
 	else:
-		%RenderingStateLabel.text = "Rendering"
+		program_state = "Rendering"
+	
+	if %ProgramStateLabel.text != "Saving file":
+		%ProgramStateLabel.text = program_state
 	
 	since_last_dynamic_update += delta
 	since_last_dynamic_update_frame += 1

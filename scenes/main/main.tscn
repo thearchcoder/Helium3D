@@ -504,7 +504,7 @@ layout_mode = 2
 tooltip_text = "Saving to clip board won't store animations. This is done to reduce the size of the clip board text."
 theme_override_fonts/font = ExtResource("8_rhsly")
 text = " Save "
-item_count = 4
+item_count = 5
 popup/item_0/text = "Save All"
 popup/item_0/id = 0
 popup/item_1/text = "Save Project"
@@ -513,6 +513,9 @@ popup/item_2/text = "Save Image"
 popup/item_2/id = 2
 popup/item_3/text = "Save to Clipboard"
 popup/item_3/id = 3
+popup/item_4/text = "Save Current File"
+popup/item_4/id = 4
+popup/item_4/disabled = true
 
 [node name="Load" type="MenuButton" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
@@ -520,11 +523,15 @@ layout_mode = 2
 tooltip_text = "Loading from clip board won't load animations. "
 theme_override_fonts/font = ExtResource("8_rhsly")
 text = " Load "
-item_count = 2
+item_count = 4
 popup/item_0/text = "Load File"
 popup/item_0/id = 1
 popup/item_1/text = "Load Clipboard"
 popup/item_1/id = 0
+popup/item_2/text = "Load Fractal Only"
+popup/item_2/id = 3
+popup/item_3/text = "Load Lighting Only"
+popup/item_3/id = 2
 
 [node name="DifficultyButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
@@ -545,7 +552,7 @@ layout_mode = 2
 theme_override_constants/separation = -5
 theme_override_styles/separator = SubResource("StyleBoxEmpty_i7in8")
 
-[node name="RenderingStateLabel" type="Label" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer2"]
+[node name="ProgramStateLabel" type="Label" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(82, 30)
 layout_mode = 2
@@ -1234,8 +1241,6 @@ mode_overrides_title = false
 file_mode = 0
 access = 2
 use_native_dialog = true
-option_count = 1
-option_0/name = "Load Lighting Only"
 
 [node name="VoxelizationFileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true

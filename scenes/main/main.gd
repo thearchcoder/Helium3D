@@ -224,10 +224,8 @@ func _input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed('shortcut load'):
 		%Load.get_popup().id_pressed.emit(1)
 	
-	if Input.is_action_just_pressed('shortcut load clipboard'):
-		%Load.get_popup().id_pressed.emit(0)
-	elif Input.is_action_just_pressed('shortcut save clipboard'):
-		%Save.get_popup().id_pressed.emit(3)
+	if Input.is_action_just_pressed('shortcut save current file'):
+		%Save.get_popup().id_pressed.emit(4)
 
 func expand_templates(formula_content: String) -> String:
 	var lines := formula_content.split('\n')

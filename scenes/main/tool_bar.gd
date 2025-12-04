@@ -7,7 +7,7 @@ var has_saved_before: bool = false
 var saved_path: String = ""
 
 func recover() -> void:
-	%ToolBar.load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/autosave.hlm'))
+	%ToolBar.load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/autosave.hlm'), 'project', true)
 	%SubViewport.refresh()
 
 func _ready() -> void:
@@ -99,7 +99,7 @@ func save_project_data(path: String, is_buffer: bool = false, exclude: Array[Str
 		
 		file.close()
 
-func load_project_data(path: String, load_field_filter: String) -> void:
+func load_project_data(path: String, load_field_filter: String, is_buffer: bool = false) -> void:
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	if file:
 		var fields: Dictionary = file.get_var()
@@ -136,10 +136,11 @@ func load_project_data(path: String, load_field_filter: String) -> void:
 			
 			fields = filtered_fields
 		
-		has_saved_before = true
-		saved_path = path
-		%Save.get_popup().set_item_disabled(4, false)
-		DisplayServer.window_set_title("Helium3D (" + path.get_file().split('.')[0] + ')', get_window().get_window_id())
+		if not is_buffer:
+			has_saved_before = true
+			saved_path = path
+			%Save.get_popup().set_item_disabled(4, false)
+			DisplayServer.window_set_title("Helium3D (" + path.get_file().split('.')[0] + ')', get_window().get_window_id())
 
 		get_tree().current_scene.update_app_state(fields, true)
 		%SubViewport.refresh()
@@ -247,7 +248,7 @@ func _on_load_from_clipboard_pressed() -> void:
 	file.store_buffer(decompressed_data)
 	file.close()
 	
-	load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_load_buffer.hlm'), 'project')
+	load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_load_buffer.hlm'), 'project', true)
 	
 	await get_tree().process_frame
 	await get_tree().process_frame

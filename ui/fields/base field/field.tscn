@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://xa6av42x8erd"]
+
+[node name="Field" type="HBoxContainer"]
+anchors_preset = -1
+anchor_right = 0.234
+anchor_bottom = 0.102
+offset_right = -0.280029
+offset_bottom = -0.160004
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="IAmAField" type="Control" parent="."]
+layout_mode = 2

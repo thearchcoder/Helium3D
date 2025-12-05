@@ -1,0 +1,14 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://dihfr8o2e4ckf"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_er6aa"]
+color = Color(0.288518, 0.288518, 0.288518, 1)
+thickness = 6
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_cwatc"]
+color = Color(0.158472, 0.158472, 0.158472, 1)
+thickness = 6
+
+[resource]
+HSlider/styles/grabber_area = SubResource("StyleBoxLine_er6aa")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxLine_er6aa")
+HSlider/styles/slider = SubResource("StyleBoxLine_cwatc")

@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://dxdliar5ijtun"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_maum6"]
+[ext_resource type="Script" uid="uid://clw4nb6r6sx6p" path="res://ui/fields/boolean field/boolean_field.gd" id="2_s4s4l"]
+[ext_resource type="Texture2D" uid="uid://ce85pj68v1kge" path="res://resources/icons/checkbox.png" id="3_0vu63"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="4_vdkxp"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_agj6n"]
+
+[node name="BooleanField" instance=ExtResource("1_maum6")]
+custom_minimum_size = Vector2(1.45519e-11, 27)
+offset_top = -1.0
+offset_right = -0.299988
+offset_bottom = -84.16
+theme_override_constants/separation = 0
+script = ExtResource("2_s4s4l")
+
+[node name="CheckBox" type="CheckBox" parent="." index="1"]
+layout_mode = 2
+theme_override_constants/icon_max_width = 16
+theme_override_styles/focus = SubResource("StyleBoxEmpty_agj6n")
+theme_override_icons/unchecked = ExtResource("3_0vu63")
+
+[node name="Button" type="Button" parent="." index="2"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("4_vdkxp")
+text = "Bool Button"
+
+[connection signal="toggled" from="CheckBox" to="." method="_on_check_box_toggled"]
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

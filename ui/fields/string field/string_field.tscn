@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://btwrcg0bafpas"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_nuga2"]
+[ext_resource type="Script" uid="uid://ba3g4v6p5tbj7" path="res://ui/fields/string field/string_field.gd" id="2_mqgyc"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="3_r5b10"]
+
+[node name="StringField" instance=ExtResource("1_nuga2")]
+custom_minimum_size = Vector2(1.45519e-11, 27)
+anchor_right = 0.105
+anchor_bottom = 0.025
+offset_right = -0.600006
+offset_bottom = 0.0
+script = ExtResource("2_mqgyc")
+
+[node name="LineEdit" type="LineEdit" parent="." index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.42
+theme_override_constants/minimum_character_width = 2
+theme_override_fonts/font = ExtResource("3_r5b10")
+placeholder_text = "..."
+expand_to_text_length = true
+
+[connection signal="text_changed" from="LineEdit" to="." method="_on_line_edit_text_changed"]
+[connection signal="text_submitted" from="LineEdit" to="." method="_on_line_edit_text_submitted"]

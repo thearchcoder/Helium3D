@@ -1,0 +1,1837 @@
+[gd_scene load_steps=80 format=3 uid="uid://coqv5flg782mg"]
+
+[ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
+[ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
+[ext_resource type="Script" uid="uid://b2eesw5c0v22p" path="res://scenes/main/attractor_init.gd" id="2_7nlll"]
+[ext_resource type="Shader" uid="uid://cbqmyudn47iy" path="res://scenes/main/loading_icon.gdshader" id="2_r1bmu"]
+[ext_resource type="Script" uid="uid://bvym81l6vx3qt" path="res://scenes/main/Voxelization.cs" id="2_rofvo"]
+[ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="3_4yvvm"]
+[ext_resource type="Script" uid="uid://4ttph603ay0x" path="res://scenes/main/CellularInit.cs" id="3_ii537"]
+[ext_resource type="Script" uid="uid://csen5k2ba045b" path="res://scenes/main/randomization.gd" id="4_s17dp"]
+[ext_resource type="Script" uid="uid://bj6ithljpyig5" path="res://scenes/main/tool_bar.gd" id="5_og0rs"]
+[ext_resource type="PackedScene" uid="uid://cmc2vesxs1g7q" path="res://ui/randomization/scene/randomization_scene.tscn" id="5_s17dp"]
+[ext_resource type="Script" uid="uid://b3inkhbdu1bbh" path="res://scenes/main/fractal_viewport.gd" id="6_6llfj"]
+[ext_resource type="Script" uid="uid://bss7wdopwtlls" path="res://scenes/main/texture_rect.gd" id="6_dbdf5"]
+[ext_resource type="Script" uid="uid://beio8vrwsvf2t" path="res://scenes/main/texture_rect_holder.gd" id="7_20ti0"]
+[ext_resource type="Material" uid="uid://dggmsfkvwvli5" path="res://scenes/main/texture_rect_material.tres" id="8_6lqo5"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="8_rhsly"]
+[ext_resource type="Script" uid="uid://bll313qxnpxar" path="res://scenes/main/menus_tab_container.gd" id="9_7154d"]
+[ext_resource type="PackedScene" uid="uid://btv7ewx22x217" path="res://ui/fields/float field/float_field.tscn" id="11_37hlw"]
+[ext_resource type="Script" uid="uid://dy6nqliruge83" path="res://scenes/main/voxel_viewport.gd" id="11_62atk"]
+[ext_resource type="Script" uid="uid://77ccf8ixmtdl" path="res://scenes/main/formula_tab_container.gd" id="16_dmyle"]
+[ext_resource type="PackedScene" uid="uid://4bx65d7nnvmf" path="res://ui/pages/formula page/formula_page.tscn" id="16_hfvnl"]
+[ext_resource type="Texture2D" uid="uid://c6re6si5pp758" path="res://resources/icons/left.svg" id="16_p8abn"]
+[ext_resource type="Texture2D" uid="uid://bmc0aovjk6nhv" path="res://resources/icons/play-solid.svg" id="17_s17dp"]
+[ext_resource type="Texture2D" uid="uid://dwjca5bw3kjvy" path="res://resources/icons/right.svg" id="18_37hlw"]
+[ext_resource type="Texture2D" uid="uid://bk11gdi7cx6r3" path="res://resources/icons/plus.svg" id="19_6llfj"]
+[ext_resource type="Script" uid="uid://d0v2vfon7rn3c" path="res://scenes/main/animation_track.gd" id="19_fsmeo"]
+[ext_resource type="PackedScene" uid="uid://owbf3siulolw" path="res://ui/field container/field_container.tscn" id="19_l42h1"]
+[ext_resource type="Texture2D" uid="uid://nlqvli442epy" path="res://resources/icons/hard drive.svg" id="20_0bhws"]
+[ext_resource type="Texture2D" uid="uid://dmkbei7asjjvr" path="res://resources/icons/circle.svg" id="22_an3xl"]
+[ext_resource type="Script" uid="uid://b0xu3c1kn7vkv" path="res://scenes/main/current_time.gd" id="22_s3o3g"]
+[ext_resource type="Script" uid="uid://dke5j7p0y4xgi" path="res://scenes/main/library.gd" id="25_tbnf8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6w6mm"]
+shader = ExtResource("2_r1bmu")
+shader_parameter/color_min_iterations = 0
+shader_parameter/color_max_iterations = 0
+shader_parameter/coloring_mode = 0
+shader_parameter/coloring_offset = 0.0
+shader_parameter/exponential_smoothing = false
+shader_parameter/normal_map_enabled = false
+shader_parameter/normal_map_projection = 0
+shader_parameter/normal_map_triplanar_sharpness = 0.0
+shader_parameter/normal_map_scale = 0.0
+shader_parameter/normal_map_height = 0.0
+shader_parameter/fgyroid_position = Vector3(0, 0, 0)
+shader_parameter/fgyroid_scale = 3.43
+shader_parameter/fgyroid_sphere_radius = 0.9
+shader_parameter/fgyroid_thickness = 0.165
+shader_parameter/fgyroid_bias = 0.015
+shader_parameter/fgyroid_control = Vector4(0.5, 0.7, 2, 2)
+shader_parameter/fgyroid_offset = Vector2(1.715, 0.13)
+shader_parameter/fgyroid_oriented = true
+shader_parameter/fgyroid_abs = true
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_rofvo"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gkmcc"]
+bg_color = Color(0.09019608, 0.09019608, 0.09019608, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i7in8"]
+bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0bhws"]
+bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_37hlw"]
+bg_color = Color(0.10748, 0.10748, 0.10748, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s17dp"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i7in8"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_s17dp"]
+viewport_path = NodePath("UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/PostViewport")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_p8abn"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p8abn"]
+bg_color = Color(0.105882, 0.105882, 0.105882, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0eucc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s17dp"]
+bg_color = Color(0.101961, 0.101961, 0.101961, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dmava"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gox76"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2g4vb"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5by50"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_21pjj"]
+bg_color = Color(0, 0, 0, 0.160784)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8bo68"]
+bg_color = Color(0, 0, 0, 0.231373)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vljsl"]
+content_margin_left = 8.0
+content_margin_top = 0.0
+content_margin_right = 8.0
+content_margin_bottom = 2.0
+bg_color = Color(0.12, 0.12, 0.12, 0)
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rt3fx"]
+content_margin_left = 8.0
+content_margin_top = 0.0
+content_margin_right = 8.0
+content_margin_bottom = 2.0
+bg_color = Color(0.12, 0.12, 0.12, 0)
+border_width_top = 2
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i63gn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_62atk"]
+content_margin_left = 4.0
+content_margin_right = 4.0
+bg_color = Color(0.462291, 0.462291, 0.462291, 0.044)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gubch"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_p8abn"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_s17dp"]
+font = ExtResource("8_rhsly")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_37hlw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6llfj"]
+bg_color = Color(1, 1, 1, 1)
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.187, 0.187, 0.187, 0.724)
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_s17dp"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6llfj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0bhws"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_62atk"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rofvo"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7nlll"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0, 0, 0, 0.094000004)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ii537"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_37hlw"]
+viewport_path = NodePath("UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/PostViewport")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_0bhws"]
+viewport_path = NodePath("VoxelizedMeshWorld")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gkmcc"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_6llfj"]
+sky_top_color = Color(0.29054558, 0.50750065, 0.7860874, 1)
+sky_curve = 0.11768766
+ground_curve = 0.036050033
+sun_angle_max = 22.0
+energy_multiplier = 2.0
+
+[sub_resource type="Sky" id="Sky_0bhws"]
+sky_material = SubResource("ProceduralSkyMaterial_6llfj")
+
+[sub_resource type="Environment" id="Environment_62atk"]
+background_mode = 2
+sky = SubResource("Sky_0bhws")
+tonemap_mode = 4
+tonemap_exposure = 1.25
+ssao_enabled = true
+glow_enabled = true
+adjustment_enabled = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ul884"]
+render_priority = 0
+shader = ExtResource("3_4yvvm")
+shader_parameter/camera_type = 0
+shader_parameter/dof_enabled = false
+shader_parameter/dof_samples = 0
+shader_parameter/dof_focal_distance = 0.0
+shader_parameter/dof_lens_distance = 0.0
+shader_parameter/dof_aperture = 0.0
+shader_parameter/light1_intensity = 0.0
+shader_parameter/light2_intensity = 0.0
+shader_parameter/light1_enabled = false
+shader_parameter/light2_enabled = false
+shader_parameter/light1_position = Vector3(0, 0, 0)
+shader_parameter/light2_position = Vector3(0, 0, 0)
+shader_parameter/light1_color = Vector3(0, 0, 0)
+shader_parameter/light2_color = Vector3(0, 0, 0)
+shader_parameter/light1_radius = 0.0
+shader_parameter/light2_radius = 0.0
+shader_parameter/ambient_light_from_background = false
+shader_parameter/ambient_light = 0.0
+shader_parameter/ambient_light_color = Vector3(0, 0, 0)
+shader_parameter/color_exponent = 0.0
+shader_parameter/specular_intensity = 0.0
+shader_parameter/specular_sharpness = 0.0
+shader_parameter/reflection_intensity = 0.0
+shader_parameter/reflection_bounces = 0
+shader_parameter/normal_map_enabled = false
+shader_parameter/normal_map_projection = 0
+shader_parameter/normal_map_triplanar_sharpness = 0.0
+shader_parameter/normal_map_scale = 0.0
+shader_parameter/normal_map_height = 0.0
+shader_parameter/normal_epsilon = 0.0
+shader_parameter/connect_normal_to_epsilon = false
+shader_parameter/shadow_steps = 32
+shader_parameter/shadow_raystep_multiplier = 1.0
+shader_parameter/shadow_epsilon = 0.01
+shader_parameter/coloring_mode = 0
+shader_parameter/color_offset = 0.0
+shader_parameter/color_wrapping = 0
+shader_parameter/color_min_iterations = 0
+shader_parameter/color_max_iterations = 0
+shader_parameter/iterations = 8
+shader_parameter/max_steps = 120
+shader_parameter/max_distance = 30.0
+shader_parameter/raystep_multiplier = 1.0
+shader_parameter/epsilon = 3e-06
+shader_parameter/relative_epsilon = false
+shader_parameter/interior_mode = false
+shader_parameter/escape_radius = 0.0
+shader_parameter/de_mode = 1
+shader_parameter/camera_kalaidoscope = 1.0
+shader_parameter/formulas = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/ambient_occlusion_steps = 0
+shader_parameter/ambient_occlusion_distance = 0.0
+shader_parameter/ambient_occlusion_light_affect = 0.0
+shader_parameter/ambient_occlusion_radius = 0.0
+shader_parameter/vignette_strength = 0.0
+shader_parameter/vignette_radius = 0.0
+shader_parameter/is_exponential = false
+shader_parameter/fog_enabled = false
+shader_parameter/fog_volumetric = true
+shader_parameter/fog_density = 0.01
+shader_parameter/fog_falloff = 1.64
+shader_parameter/fog_samples = 12
+shader_parameter/fog_brightness = 3.0
+shader_parameter/fog_dither_scale = 255.0
+shader_parameter/fresnel_color = Vector3(0, 0.7, 1)
+shader_parameter/fresnel_falloff = 5.0
+shader_parameter/fresnel_intensity = 0.0045
+shader_parameter/tone_mapping = 0
+shader_parameter/exposure = 1.0
+shader_parameter/gamma = 2.2
+shader_parameter/outline_color = Color(1, 0.5, 0.2, 1)
+shader_parameter/outline_intensity = 0.0
+shader_parameter/outline_threshold = 0.0
+shader_parameter/outline_falloff = 0.0
+shader_parameter/outline = false
+shader_parameter/dither = false
+shader_parameter/repeat_gap = Vector3(0, 0, 0)
+shader_parameter/repeat = false
+shader_parameter/cut = false
+shader_parameter/cut_normal = Vector3(0, 0, 0)
+shader_parameter/cut_position = Vector3(0, 0, 0)
+shader_parameter/sphere_inversion = false
+shader_parameter/inversion_sphere = Vector4(0, 0, 0, 0)
+shader_parameter/inversion_angle = 0.0
+shader_parameter/translation = Vector3(0, 0, 0)
+shader_parameter/rotation = Vector3(0, 0, 0)
+shader_parameter/kalaidoscope = Vector3(0, 0, 0)
+shader_parameter/kalaidoscope_mode = 0
+shader_parameter/tiled = false
+shader_parameter/tile_bounds = Vector4(0, 0, 0, 0)
+shader_parameter/transparent_bg = false
+shader_parameter/display = 0
+shader_parameter/depth_scale = 0.0
+shader_parameter/bg_type = 0
+shader_parameter/hard_shadows = false
+shader_parameter/single_formula = false
+shader_parameter/number_of_active_formulas = 0.0
+shader_parameter/only_primitive_based_formulas = false
+shader_parameter/only_sdf_based_formulas = false
+shader_parameter/difs_smoothing = 0.0
+shader_parameter/exponential_smoothing = false
+shader_parameter/voxelization = false
+shader_parameter/bounds_position = Vector3(0, 0, 0)
+shader_parameter/bounds_size = Vector3(0, 0, 0)
+shader_parameter/voxel_epsilon = 0.0
+shader_parameter/voxel_screen_resolution = Vector2(0, 0)
+shader_parameter/sample_scale = 4.0
+shader_parameter/building_mesh = false
+shader_parameter/voxel_resolution = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_eu6rh"]
+size = Vector3(4000, 4000, -4000)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_suufn"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_aai6c"]
+dof_blur_far_distance = 115.51
+dof_blur_far_transition = 66.15
+
+[sub_resource type="Environment" id="Environment_4uuy8"]
+background_energy_multiplier = 0.4
+glow_enabled = true
+glow_intensity = 0.25
+glow_strength = 0.83
+glow_bloom = 1.0
+glow_blend_mode = 0
+
+[sub_resource type="GDScript" id="GDScript_ii537"]
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_p8abn"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = SubResource("GDScript_ii537")
+metadata/_custom_type_script = "uid://l7fr1idjfuni"
+
+[sub_resource type="Compositor" id="Compositor_s17dp"]
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_p8abn")])
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_yss2u")
+
+[node name="ShaderCompilationLoading" type="ColorRect" parent="."]
+visible = false
+z_index = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.23200001)
+
+[node name="CenterContainer" type="CenterContainer" parent="ShaderCompilationLoading"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="VBoxContainer" parent="ShaderCompilationLoading/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="LoadingIcon" type="TextureRect" parent="ShaderCompilationLoading/CenterContainer/HBoxContainer"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_6w6mm")
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = SubResource("CanvasTexture_rofvo")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="ShaderCompilationLoading/CenterContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Shader compilation..."
+
+[node name="DummyGlitchTransfer" type="Window" parent="."]
+transparent_bg = true
+oversampling_override = 1.0
+size = Vector2i(66, 66)
+visible = false
+borderless = true
+always_on_top = true
+transparent = true
+extend_to_title = true
+mouse_passthrough = true
+sharp_corners = true
+minimize_disabled = true
+maximize_disabled = true
+
+[node name="Voxelization" type="Node" parent="."]
+script = ExtResource("2_rofvo")
+
+[node name="AttractorInit" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_7nlll")
+
+[node name="CellularInit" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_ii537")
+
+[node name="UI" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.55
+theme_override_constants/separation = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="ToolBar" type="HBoxContainer" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1.4551915e-11, 30)
+layout_mode = 2
+theme_override_constants/separation = 0
+script = ExtResource("5_og0rs")
+
+[node name="Control" type="Control" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/Control"]
+z_index = -1
+layout_mode = 0
+offset_right = 1052.0
+offset_bottom = 65.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_gkmcc")
+
+[node name="SettingsButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Settings  "
+
+[node name="General" type="MenuButton" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " General "
+item_count = 9
+popup/item_0/text = "Recover"
+popup/item_0/id = 8
+popup/item_1/text = "About"
+popup/item_1/id = 0
+popup/item_2/text = "Author"
+popup/item_2/id = 1
+popup/item_3/id = 7
+popup/item_3/separator = true
+popup/item_4/text = "Undo"
+popup/item_4/id = 2
+popup/item_5/text = "Redo"
+popup/item_5/id = 3
+popup/item_6/id = 6
+popup/item_6/separator = true
+popup/item_7/text = "Examples"
+popup/item_7/id = 4
+popup/item_8/text = "Website"
+popup/item_8/id = 5
+
+[node name="RandomizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Randomize  "
+
+[node name="VoxelizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Voxelize  "
+
+[node name="Save" type="MenuButton" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Saving to clip board won't store animations. This is done to reduce the size of the clip board text."
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Save "
+item_count = 5
+popup/item_0/text = "Save All"
+popup/item_0/id = 0
+popup/item_1/text = "Save Project"
+popup/item_1/id = 1
+popup/item_2/text = "Save Image"
+popup/item_2/id = 2
+popup/item_3/text = "Save to Clipboard"
+popup/item_3/id = 3
+popup/item_4/text = "Save Current File"
+popup/item_4/id = 4
+popup/item_4/disabled = true
+
+[node name="Load" type="MenuButton" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Loading from clip board won't load animations. "
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Load "
+item_count = 4
+popup/item_0/text = "Load File"
+popup/item_0/id = 1
+popup/item_1/text = "Load Clipboard"
+popup/item_1/id = 0
+popup/item_2/text = "Load Fractal Only"
+popup/item_2/id = 3
+popup/item_3/text = "Load Lighting Only"
+popup/item_3/id = 2
+
+[node name="DifficultyButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_i7in8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0bhws")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37hlw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s17dp")
+text = "  Simple Mode  "
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UI/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="VSeparator" type="VSeparator" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+theme_override_constants/separation = -5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_i7in8")
+
+[node name="ProgramStateLabel" type="Label" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(82, 30)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Rendered"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="HBoxContainer" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "   Zoom: "
+
+[node name="Zoom" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer" instance=ExtResource("11_37hlw")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(230, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Zoom in the fractal image. (Alt + Scroll)"
+force_precision = true
+precision = 1
+range = Vector2(0.25, 3)
+value = 1.3000000000029104
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+script = ExtResource("7_20ti0")
+
+[node name="Node" type="Node" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
+
+[node name="FrozenTextureRect" type="TextureRect" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/Node"]
+unique_name_in_owner = true
+offset_top = 455.0
+offset_right = 1052.0
+offset_bottom = 455.0
+
+[node name="TextureRect" type="TextureRect" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 6
+texture = SubResource("ViewportTexture_s17dp")
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("6_dbdf5")
+
+[node name="PostViewport" type="SubViewport" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+size = Vector2i(450, 450)
+render_target_clear_mode = 1
+render_target_update_mode = 4
+
+[node name="PostDisplay" type="TextureRect" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/PostViewport"]
+unique_name_in_owner = true
+material = ExtResource("8_6lqo5")
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("ViewportTexture_p8abn")
+
+[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.1
+theme_override_constants/side_margin = 0
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/panel = SubResource("StyleBoxFlat_p8abn")
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_0eucc")
+current_tab = 0
+drag_to_rearrange_enabled = true
+tabs_rearrange_group = 1
+script = ExtResource("9_7154d")
+
+[node name="Formula" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+metadata/_tab_index = 0
+
+[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Formula"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_s17dp")
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_dmava")
+current_tab = 0
+drag_to_rearrange_enabled = true
+tabs_rearrange_group = 2
+script = ExtResource("16_dmyle")
+
+[node name="Buffer" type="Node" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer"]
+
+[node name="Formula2" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 2
+
+[node name="Formula3" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 3
+
+[node name="Formula4" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 4
+
+[node name="Formula5" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 5
+
+[node name="Formula6" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 6
+
+[node name="Formula7" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 7
+
+[node name="Formula8" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 8
+
+[node name="Formula9" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 9
+
+[node name="Formula10" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer/Buffer" instance=ExtResource("16_hfvnl")]
+visible = false
+offset_left = 688.0
+offset_top = 37.0
+offset_right = 142.0
+offset_bottom = 37.0
+page_number = 10
+
+[node name="Formula1" parent="UI/HBoxContainer/TabContainer/Formula/TabContainer" instance=ExtResource("16_hfvnl")]
+layout_mode = 2
+theme_override_constants/margin_bottom = 5
+metadata/_tab_index = 0
+
+[node name="Buttons" type="HBoxContainer" parent="UI/HBoxContainer/TabContainer/Formula"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+
+[node name="AddFormula" type="Button" parent="UI/HBoxContainer/TabContainer/Formula/Buttons"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gox76")
+text = " Add "
+
+[node name="RemoveFormula" type="Button" parent="UI/HBoxContainer/TabContainer/Formula/Buttons"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gox76")
+disabled = true
+text = " Remove "
+
+[node name="Rendering" parent="UI/HBoxContainer/TabContainer" instance=ExtResource("19_l42h1")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+fields_list_id = 2
+metadata/_tab_index = 1
+
+[node name="Lighting" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 2
+
+[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Lighting"]
+layout_mode = 2
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
+current_tab = 0
+
+[node name="Light 1" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+fields_list_id = 7
+metadata/_tab_index = 0
+
+[node name="Light 2" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 7
+light_id = 2
+metadata/_tab_index = 1
+
+[node name="Background" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 19
+metadata/_tab_index = 2
+
+[node name="General" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 6
+metadata/_tab_index = 3
+
+[node name="Material" type="MarginContainer" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 4
+
+[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer/Material"]
+layout_mode = 2
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
+current_tab = 0
+
+[node name="Diffuse" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+fields_list_id = 15
+metadata/_tab_index = 0
+
+[node name="Ambient Occlusion" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 23
+metadata/_tab_index = 1
+
+[node name="Ambient" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 24
+metadata/_tab_index = 2
+
+[node name="Normals" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer/Material/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 22
+metadata/_tab_index = 3
+
+[node name="Effects" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 3
+
+[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Effects"]
+layout_mode = 2
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_5by50")
+current_tab = 1
+
+[node name="Bloom" parent="UI/HBoxContainer/TabContainer/Effects/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 3
+metadata/_tab_index = 0
+
+[node name="Outline" parent="UI/HBoxContainer/TabContainer/Effects/TabContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Fresnel" parent="UI/HBoxContainer/TabContainer/Effects/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 11
+metadata/_tab_index = 2
+
+[node name="Vignette" parent="UI/HBoxContainer/TabContainer/Effects/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 8
+metadata/_tab_index = 3
+
+[node name="Fog" parent="UI/HBoxContainer/TabContainer/Effects/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 9
+metadata/_tab_index = 4
+
+[node name="Tone Mapping" parent="UI/HBoxContainer/TabContainer/Effects/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 4
+metadata/_tab_index = 5
+
+[node name="DOF" parent="UI/HBoxContainer/TabContainer/Effects/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 5
+metadata/_tab_index = 6
+
+[node name="Modifiers" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 4
+
+[node name="TabContainer" type="TabContainer" parent="UI/HBoxContainer/TabContainer/Modifiers"]
+layout_mode = 2
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_5by50")
+current_tab = 0
+
+[node name="Cut" parent="UI/HBoxContainer/TabContainer/Modifiers/TabContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+fields_list_id = 10
+metadata/_tab_index = 0
+
+[node name="Transform" parent="UI/HBoxContainer/TabContainer/Modifiers/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 16
+metadata/_tab_index = 1
+
+[node name="Repeat" parent="UI/HBoxContainer/TabContainer/Modifiers/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 17
+metadata/_tab_index = 2
+
+[node name="Tools" parent="UI/HBoxContainer/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 14
+metadata/_tab_index = 5
+
+[node name="BottomBar" type="TabContainer" parent="UI"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.0
+theme_override_constants/side_margin = 0
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/panel = SubResource("StyleBoxFlat_21pjj")
+theme_override_styles/tabbar_background = SubResource("StyleBoxFlat_8bo68")
+theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_vljsl")
+theme_override_styles/tab_hovered = SubResource("StyleBoxFlat_vljsl")
+theme_override_styles/tab_selected = SubResource("StyleBoxFlat_rt3fx")
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_i63gn")
+current_tab = 0
+tabs_position = 1
+deselect_enabled = true
+
+[node name="Animation" type="HBoxContainer" parent="UI/BottomBar"]
+custom_minimum_size = Vector2(0, 211)
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Animation" type="VBoxContainer" parent="UI/BottomBar/Animation"]
+custom_minimum_size = Vector2(1.45519e-11, 200)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="ControlButtons" type="MarginContainer" parent="UI/BottomBar/Animation/Animation"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer"]
+layout_mode = 2
+
+[node name="SetTimeStartButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1.45519e-11, 28)
+layout_mode = 2
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("16_p8abn")
+
+[node name="PlayingToggleButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(31, 28)
+layout_mode = 2
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("17_s17dp")
+
+[node name="SetTimeEndButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1.45519e-11, 28)
+layout_mode = 2
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("18_37hlw")
+
+[node name="AddKeyframeButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Add the current frame as a keyframe to animation."
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("19_6llfj")
+
+[node name="RenderButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("20_0bhws")
+
+[node name="VSeparator" type="VSeparator" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_p8abn")
+
+[node name="Fields" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="KeyframeLength" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/KeyframeLength"]
+layout_mode = 2
+text = "Keyframe Length: "
+label_settings = SubResource("LabelSettings_s17dp")
+
+[node name="LineEdit" type="LineEdit" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/KeyframeLength"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_37hlw")
+text = "1"
+placeholder_text = "1"
+alignment = 1
+
+[node name="FPS" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/FPS"]
+layout_mode = 2
+text = "FPS: "
+label_settings = SubResource("LabelSettings_s17dp")
+
+[node name="FPSLineEdit" type="LineEdit" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/FPS"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_37hlw")
+text = "60"
+placeholder_text = "60"
+alignment = 1
+
+[node name="Interpolation" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/Interpolation"]
+layout_mode = 2
+text = "Interpolation: "
+label_settings = SubResource("LabelSettings_s17dp")
+
+[node name="OptionButton" type="OptionButton" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/Interpolation"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+selected = 2
+item_count = 3
+popup/item_0/text = "Linear"
+popup/item_0/id = 0
+popup/item_1/text = "Bezier"
+popup/item_1/id = 1
+popup/item_2/text = "Hermite"
+popup/item_2/id = 2
+
+[node name="Frame" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/Frame"]
+layout_mode = 2
+text = "Frame: 1 / 240"
+label_settings = SubResource("LabelSettings_s17dp")
+
+[node name="Time" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/Time"]
+layout_mode = 2
+text = "Time: 1s / 5m 32s"
+label_settings = SubResource("LabelSettings_s17dp")
+
+[node name="VSeparator2" type="VSeparator" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxEmpty_p8abn")
+
+[node name="HSeparator" type="HSeparator" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+theme_override_styles/separator = SubResource("StyleBoxFlat_6llfj")
+
+[node name="CurrentTime" type="MarginContainer" parent="UI/BottomBar/Animation/Animation"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/CurrentTime"]
+layout_mode = 2
+script = ExtResource("22_s3o3g")
+
+[node name="Time" type="Sprite2D" parent="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer"]
+unique_name_in_owner = true
+z_index = 1
+texture = ExtResource("22_an3xl")
+region_enabled = true
+region_rect = Rect2(0, 6, 12, 6)
+
+[node name="ColorRect" type="ColorRect" parent="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer/Time"]
+z_index = 1
+offset_left = -1.0
+offset_right = 1.0
+offset_bottom = 144.0
+metadata/_edit_use_anchors_ = true
+
+[node name="AnimationTrack" type="MarginContainer" parent="UI/BottomBar/Animation/Animation"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 6
+script = ExtResource("19_fsmeo")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Keyframes" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+
+[node name="Fields" type="HBoxContainer" parent="UI/BottomBar/Animation/Animation/AnimationTrack/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 93
+
+[node name="Library" type="VBoxContainer" parent="UI/BottomBar"]
+visible = false
+custom_minimum_size = Vector2(0, 211)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+script = ExtResource("25_tbnf8")
+metadata/_tab_index = 1
+
+[node name="ControlButtons" type="MarginContainer" parent="UI/BottomBar/Library"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/BottomBar/Library/ControlButtons"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Library/ControlButtons/VBoxContainer"]
+layout_mode = 2
+
+[node name="SetScrollStartButton" type="Button" parent="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(1.45519e-11, 28)
+layout_mode = 2
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("16_p8abn")
+
+[node name="AddCaptureButton" type="Button" parent="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+tooltip_text = "Add the current frame as a keyframe to animation."
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("19_6llfj")
+
+[node name="SetScrollEndButton" type="Button" parent="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(1.45519e-11, 28)
+layout_mode = 2
+theme_override_constants/icon_max_width = 23
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
+icon = ExtResource("18_37hlw")
+
+[node name="HSeparator" type="HSeparator" parent="UI/BottomBar/Library/ControlButtons/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+theme_override_styles/separator = SubResource("StyleBoxFlat_6llfj")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/BottomBar/Library"]
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/BottomBar/Library/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 2
+
+[node name="DummyFocusButton" type="Button" parent="."]
+unique_name_in_owner = true
+offset_left = -67.0
+offset_top = 136.0
+offset_right = -59.0
+offset_bottom = 144.0
+
+[node name="FileDialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+initial_position = 2
+size = Vector2i(1152, 648)
+force_native = true
+content_scale_factor = 1.28
+ok_button_text = "Open"
+dialog_hide_on_ok = true
+mode_overrides_title = false
+file_mode = 0
+access = 2
+use_native_dialog = true
+
+[node name="VoxelizationFileDialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+initial_position = 1
+size = Vector2i(1152, 648)
+content_scale_factor = 1.28
+access = 2
+filters = PackedStringArray("*.ply")
+
+[node name="AboutWindow" type="Window" parent="."]
+oversampling_override = 1.0
+title = "About Helium3D"
+initial_position = 1
+size = Vector2i(680, 380)
+visible = false
+force_native = true
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="AboutWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AboutWindow/HBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="AboutWindow/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+
+[node name="TextureRect" type="TextureRect" parent="AboutWindow/HBoxContainer/VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture = SubResource("CompressedTexture2D_s17dp")
+expand_mode = 1
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="AboutWindow/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RichTextLabel" type="RichTextLabel" parent="AboutWindow/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/line_separation = -8
+theme_override_fonts/normal_font = ExtResource("8_rhsly")
+theme_override_font_sizes/normal_font_size = 20
+text = "	
+	==== General
+
+		Version: {version}
+
+		License: GNU General Public License 3
+
+		Helium3D Copyright (C) 2025 Muhammad Ahmad
+	
+
+	==== Credits
+
+		Sphairahedron formula: Kento Nakamura
+
+		DE Information: Krzyzstof Marczak
+
+		Fractalforums: For helping me with this project
+"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="AboutWindow/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+alignment = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="AboutWindow/HBoxContainer/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="CloseButton" type="Button" parent="AboutWindow/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(100, 1.45519e-11)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_6llfj")
+text = "OK"
+
+[node name="SettingsWindow" type="Window" parent="."]
+oversampling_override = 1.0
+title = "Settings"
+initial_position = 1
+size = Vector2i(680, 380)
+visible = false
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="Settings" type="MarginContainer" parent="SettingsWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 7
+
+[node name="TabContainer" type="TabContainer" parent="SettingsWindow/Settings"]
+layout_mode = 2
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
+current_tab = 0
+
+[node name="General" parent="SettingsWindow/Settings/TabContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+fields_list_id = 18
+metadata/_tab_index = 0
+
+[node name="Fractal" parent="SettingsWindow/Settings/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 12
+metadata/_tab_index = 1
+
+[node name="Debug" parent="SettingsWindow/Settings/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
+layout_mode = 2
+fields_list_id = 20
+metadata/_tab_index = 2
+
+[node name="CrashSaveWindow" type="Window" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Recover crash save?"
+initial_position = 1
+size = Vector2i(500, 180)
+visible = false
+force_native = true
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="HBoxContainer" type="VBoxContainer" parent="CrashSaveWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="CrashSaveWindow/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CrashSaveWindow/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="CrashSaveWindow/HBoxContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Uh oh! Looks like the app crashed.
+Would you like to recover the last auto save?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="CrashSaveWindow/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer2" type="HBoxContainer" parent="CrashSaveWindow/HBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="RecoverButton" type="Button" parent="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Recover :) "
+
+[node name="CrashSaveCancelButton" type="Button" parent="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " No thanks. "
+
+[node name="AuthorWindow" type="Window" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Author"
+initial_position = 1
+size = Vector2i(500, 120)
+visible = false
+force_native = true
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="HBoxContainer" type="VBoxContainer" parent="AuthorWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="MarginContainer2" type="MarginContainer" parent="AuthorWindow/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 0
+
+[node name="VBoxContainer" type="HBoxContainer" parent="AuthorWindow/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="AuthorWindow/HBoxContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Author: "
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AuthorLineEdit" type="LineEdit" parent="AuthorWindow/HBoxContainer/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("8_rhsly")
+
+[node name="MarginContainer" type="MarginContainer" parent="AuthorWindow/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer2" type="HBoxContainer" parent="AuthorWindow/HBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="DoneAuthor" type="Button" parent="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_0bhws")
+text = " Done "
+
+[node name="CancelAuthor" type="Button" parent="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_62atk")
+text = " Cancel "
+
+[node name="RandomizeWindow" type="Window" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Randomize"
+initial_position = 1
+size = Vector2i(1720, 660)
+visible = false
+content_scale_mode = 1
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="Randomization" type="HBoxContainer" parent="RandomizeWindow"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_s17dp")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RandomizeWindow/Randomization"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="PageControl" type="MarginContainer" parent="RandomizeWindow/Randomization/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="RandomizeWindow/Randomization/VBoxContainer/PageControl"]
+layout_mode = 2
+alignment = 1
+
+[node name="PageLeft" type="Button" parent="RandomizeWindow/Randomization/VBoxContainer/PageControl/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_rofvo")
+icon = ExtResource("16_p8abn")
+
+[node name="PageText" type="Label" parent="RandomizeWindow/Randomization/VBoxContainer/PageControl/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Page 1"
+
+[node name="PageRight" type="Button" parent="RandomizeWindow/Randomization/VBoxContainer/PageControl/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_rofvo")
+icon = ExtResource("18_37hlw")
+
+[node name="Scenes" type="MarginContainer" parent="RandomizeWindow/Randomization/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="HBoxContainer" parent="RandomizeWindow/Randomization/VBoxContainer/Scenes"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="BaseScene" parent="RandomizeWindow/Randomization/VBoxContainer/Scenes/VBoxContainer" instance=ExtResource("5_s17dp")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Base Scene"
+
+[node name="RandomizedScene" parent="RandomizeWindow/Randomization/VBoxContainer/Scenes/VBoxContainer" instance=ExtResource("5_s17dp")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Randomized Scene"
+type = 1
+
+[node name="Fields" type="MarginContainer" parent="RandomizeWindow/Randomization"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="RandomizeWindow/Randomization/Fields"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7nlll")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RandomizeWindow/Randomization/Fields"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="RandomizeWindow/Randomization/Fields/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/line_spacing = -10
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "
+Randomization
+"
+horizontal_alignment = 1
+
+[node name="FieldContainer" parent="RandomizeWindow/Randomization/Fields/VBoxContainer" instance=ExtResource("19_l42h1")]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_top = 0
+fields_list_id = 25
+
+[node name="MarginContainer" type="MarginContainer" parent="RandomizeWindow/Randomization/Fields/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Randomize" type="Button" parent="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Shortcut: R"
+theme_override_constants/line_spacing = -10
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ii537")
+text = "Randomize"
+
+[node name="RandomizeLayered" type="Button" parent="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Same as randomize, But it takes the already randomized scene and randomizes it further. Shortcut: L"
+theme_override_constants/line_spacing = -10
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ii537")
+text = "Randomize Layered"
+
+[node name="VoxelizeWindow" type="Window" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Voxelization"
+initial_position = 1
+size = Vector2i(900, 850)
+visible = false
+popup_wm_hint = true
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="MarginContainer" type="MarginContainer" parent="VoxelizeWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VoxelizeWindow/MarginContainer"]
+layout_mode = 2
+
+[node name="Viewports" type="HBoxContainer" parent="VoxelizeWindow/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(150, 1.4551915e-11)
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Fractal" type="VBoxContainer" parent="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="FractalViewport" type="TextureRect" parent="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = SubResource("ViewportTexture_37hlw")
+expand_mode = 1
+script = ExtResource("6_6llfj")
+
+[node name="Label" type="Label" parent="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Fractal"
+horizontal_alignment = 1
+
+[node name="Voxelized" type="VBoxContainer" parent="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VoxelViewport" type="TextureRect" parent="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Voxelized"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = SubResource("ViewportTexture_0bhws")
+expand_mode = 4
+script = ExtResource("11_62atk")
+
+[node name="Label" type="Label" parent="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Voxelized"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Voxelized"
+horizontal_alignment = 1
+
+[node name="Fields" parent="VoxelizeWindow/MarginContainer/VBoxContainer" instance=ExtResource("19_l42h1")]
+custom_minimum_size = Vector2(1.4551915e-11, 200)
+layout_mode = 2
+size_flags_vertical = 3
+fields_list_id = 26
+
+[node name="Controls" type="HBoxContainer" parent="VoxelizeWindow/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Voxelize" type="Button" parent="VoxelizeWindow/MarginContainer/VBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gkmcc")
+text = "Voxelize"
+
+[node name="Export" type="Button" parent="VoxelizeWindow/MarginContainer/VBoxContainer/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gkmcc")
+text = "Export"
+
+[node name="VoxelizedMeshWorld" type="SubViewport" parent="."]
+unique_name_in_owner = true
+scaling_3d_mode = 2
+fsr_sharpness = 1.4
+render_target_update_mode = 1
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="VoxelizedMeshWorld"]
+environment = SubResource("Environment_62atk")
+
+[node name="Mesh" type="MeshInstance3D" parent="VoxelizedMeshWorld"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.125, 1.125, -1.125)
+
+[node name="Light" type="DirectionalLight3D" parent="VoxelizedMeshWorld"]
+transform = Transform3D(0.81412566, -0.41060895, 0.41060895, 0, 0.7071068, 0.7071068, -0.5806887, -0.5756738, 0.5756738, 2.2308495, 4.1570325, 2.9040232)
+shadow_enabled = true
+
+[node name="CameraOrigin" type="Node3D" parent="VoxelizedMeshWorld"]
+unique_name_in_owner = true
+
+[node name="VoxelCamera" type="Camera3D" parent="VoxelizedMeshWorld/CameraOrigin"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4551915e-11, 1.4551915e-11, 3)
+fov = 60.0
+
+[node name="SubViewport" type="SubViewport" parent="."]
+unique_name_in_owner = true
+own_world_3d = true
+scaling_3d_mode = 2
+anisotropic_filtering_level = 4
+fsr_sharpness = 0.0
+size = Vector2i(450, 450)
+render_target_clear_mode = 1
+render_target_update_mode = 4
+script = ExtResource("2_2kstx")
+
+[node name="Fractal" type="MeshInstance3D" parent="SubViewport"]
+unique_name_in_owner = true
+material_override = SubResource("ShaderMaterial_ul884")
+mesh = SubResource("BoxMesh_eu6rh")
+
+[node name="Player" type="CharacterBody3D" parent="SubViewport"]
+unique_name_in_owner = true
+transform = Transform3D(0.999998, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 2.3)
+
+[node name="Hitbox" type="CollisionShape3D" parent="SubViewport/Player"]
+shape = SubResource("SphereShape3D_suufn")
+
+[node name="Head" type="Node3D" parent="SubViewport/Player"]
+unique_name_in_owner = true
+
+[node name="Camera" type="Camera3D" parent="SubViewport/Player/Head"]
+unique_name_in_owner = true
+attributes = SubResource("CameraAttributesPractical_aai6c")
+current = true
+size = 35.958
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewport"]
+unique_name_in_owner = true
+environment = SubResource("Environment_4uuy8")
+compositor = SubResource("Compositor_s17dp")
+
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
+[connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/RandomizeButton" to="." method="_on_randomize_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/VoxelizeButton" to="." method="_on_voxelize_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/DifficultyButton" to="." method="_on_difficulty_pressed"]
+[connection signal="value_changed" from="UI/HBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer/Zoom" to="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect" method="_on_zoom_value_changed"]
+[connection signal="mouse_entered" from="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer" to="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer" to="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect" to="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect" to="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/TextureRect" method="_on_mouse_exited"]
+[connection signal="pressed" from="UI/HBoxContainer/TabContainer/Formula/Buttons/AddFormula" to="UI/HBoxContainer/TabContainer" method="_on_add_formula_pressed"]
+[connection signal="pressed" from="UI/HBoxContainer/TabContainer/Formula/Buttons/RemoveFormula" to="UI/HBoxContainer/TabContainer" method="_on_remove_formula_pressed"]
+[connection signal="tab_changed" from="UI/BottomBar" to="UI/BottomBar" method="_on_tab_changed"]
+[connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/SetTimeStartButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_set_time_start_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/PlayingToggleButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_playing_toggle_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/SetTimeEndButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_set_time_end_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/AddKeyframeButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_add_keyframe_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/RenderButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_render_button_pressed"]
+[connection signal="text_changed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/KeyframeLength/LineEdit" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="set_keyframe_length"]
+[connection signal="text_changed" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/FPS/FPSLineEdit" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="set_fps"]
+[connection signal="item_selected" from="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer/Fields/Interpolation/OptionButton" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="set_interpolation"]
+[connection signal="mouse_entered" from="UI/BottomBar/Animation/Animation/CurrentTime" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="UI/BottomBar/Animation/Animation/CurrentTime" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" to="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="UI/BottomBar/Animation/Animation/AnimationTrack" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="UI/BottomBar/Animation/Animation/AnimationTrack" to="UI/BottomBar/Animation/Animation/AnimationTrack" method="_on_mouse_exited"]
+[connection signal="pressed" from="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer/SetScrollStartButton" to="UI/BottomBar/Library" method="_on_set_scroll_start_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer/AddCaptureButton" to="UI/BottomBar/Library" method="_on_add_capture_button_pressed"]
+[connection signal="pressed" from="UI/BottomBar/Library/ControlButtons/VBoxContainer/HBoxContainer/SetScrollEndButton" to="UI/BottomBar/Library" method="_on_set_scroll_end_button_pressed"]
+[connection signal="file_selected" from="FileDialog" to="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar" method="_on_file_dialog_confirmed"]
+[connection signal="confirmed" from="VoxelizationFileDialog" to="." method="_on_voxelization_file_dialog_file_selected"]
+[connection signal="close_requested" from="AboutWindow" to="." method="_on_window_close_requested"]
+[connection signal="pressed" from="AboutWindow/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/CloseButton" to="." method="_on_close_button_pressed"]
+[connection signal="close_requested" from="SettingsWindow" to="." method="_on_settings_window_close_requested"]
+[connection signal="close_requested" from="CrashSaveWindow" to="." method="_on_crash_save_close_requested"]
+[connection signal="pressed" from="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2/RecoverButton" to="." method="_on_recover_button_pressed"]
+[connection signal="pressed" from="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2/CrashSaveCancelButton" to="." method="_on_crash_save_cancel_button_pressed"]
+[connection signal="close_requested" from="AuthorWindow" to="." method="_on_author_window_close_requested"]
+[connection signal="pressed" from="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2/DoneAuthor" to="." method="_on_done_author_pressed"]
+[connection signal="pressed" from="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2/CancelAuthor" to="." method="_on_cancel_author_pressed"]
+[connection signal="close_requested" from="RandomizeWindow" to="." method="_on_randomize_window_close_requested"]
+[connection signal="pressed" from="RandomizeWindow/Randomization/VBoxContainer/PageControl/HBoxContainer/PageLeft" to="RandomizeWindow/Randomization" method="_on_page_left_pressed"]
+[connection signal="pressed" from="RandomizeWindow/Randomization/VBoxContainer/PageControl/HBoxContainer/PageRight" to="RandomizeWindow/Randomization" method="_on_page_right_pressed"]
+[connection signal="pressed" from="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer/VBoxContainer/Randomize" to="RandomizeWindow/Randomization" method="randomization"]
+[connection signal="pressed" from="RandomizeWindow/Randomization/Fields/VBoxContainer/MarginContainer/VBoxContainer/RandomizeLayered" to="RandomizeWindow/Randomization" method="layered_randomization"]
+[connection signal="close_requested" from="VoxelizeWindow" to="." method="_on_voxelize_window_close_requested"]
+[connection signal="mouse_entered" from="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal/FractalViewport" to="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal/FractalViewport" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal/FractalViewport" to="VoxelizeWindow/MarginContainer/VBoxContainer/Viewports/Fractal/FractalViewport" method="_on_mouse_exited"]
+[connection signal="pressed" from="VoxelizeWindow/MarginContainer/VBoxContainer/Controls/Voxelize" to="." method="_on_voxelize_button_pressed"]
+[connection signal="pressed" from="VoxelizeWindow/MarginContainer/VBoxContainer/Controls/Export" to="." method="_on_export_pressed"]

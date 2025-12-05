@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=3 uid="uid://cmc2vesxs1g7q"]
+
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="1_1mvh1"]
+[ext_resource type="Script" uid="uid://qcvqypvcpqdm" path="res://ui/randomization/scene/randomization_scene.gd" id="1_13oqj"]
+[ext_resource type="Script" uid="uid://dkgbpmxsqxgeu" path="res://ui/randomization/scene/texture_rect.gd" id="3_od1gw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_13oqj"]
+bg_color = Color(0.5127158, 0.5127158, 0.5127158, 0.044000003)
+
+[node name="RandomizationScene" type="MarginContainer"]
+anchors_preset = -1
+anchor_right = 0.083000004
+anchor_bottom = 0.112
+offset_right = 0.63998413
+offset_bottom = 0.039993286
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_13oqj")
+
+[node name="PopupMenu" type="PopupMenu" parent="."]
+oversampling_override = 1.0
+size = Vector2i(99, 40)
+content_scale_factor = 1.28
+theme_override_fonts/font = ExtResource("1_1mvh1")
+item_count = 1
+item_0/text = "Update"
+item_0/id = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(160, 90)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="Panel" type="Panel" parent="VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_13oqj")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 3
+stretch_mode = 5
+script = ExtResource("3_od1gw")
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/line_spacing = -18
+theme_override_fonts/font = ExtResource("1_1mvh1")
+text = "
+Scene
+"
+horizontal_alignment = 1
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="focus_exited" from="PopupMenu" to="." method="_on_popup_menu_focus_exited"]
+[connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]

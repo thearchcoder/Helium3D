@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3 uid="uid://c6ykqwdde41of"]
+
+[ext_resource type="PackedScene" uid="uid://xa6av42x8erd" path="res://ui/fields/base field/field.tscn" id="1_dylg4"]
+[ext_resource type="Script" uid="uid://ea0mj75vlgtd" path="res://ui/fields/selection field/selection_field.gd" id="2_xel7h"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="3_xqcdh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6h2g8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q7glo"]
+bg_color = Color(0.0807833, 0.0807834, 0.0807832, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k504r"]
+
+[node name="SelectionField" instance=ExtResource("1_dylg4")]
+anchor_right = 0.338
+anchor_bottom = 0.03
+offset_right = -0.0999756
+offset_bottom = -0.399998
+script = ExtResource("2_xel7h")
+options = Array[String](["Glow", "Shell", "Angle"])
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Left" type="Button" parent="HBoxContainer" index="0"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_xqcdh")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_6h2g8")
+text = " < "
+
+[node name="Label" type="Label" parent="HBoxContainer" index="1"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_fonts/font = ExtResource("3_xqcdh")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_q7glo")
+text = "Selection field"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Right" type="Button" parent="HBoxContainer" index="2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_xqcdh")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_k504r")
+text = " > "
+
+[connection signal="pressed" from="HBoxContainer/Left" to="." method="_on_left_pressed"]
+[connection signal="pressed" from="HBoxContainer/Right" to="." method="_on_right_pressed"]

@@ -13,11 +13,34 @@ var last_randomized_scene_data: Dictionary = {'is_null': true}
 var randomized_history: Array[Dictionary] = []
 var randomized_history_at: int = -1
 
+func get_randomization_data() -> Dictionary:
+	return {
+		'current_data': current_data,
+		'randomized': randomized,
+		'decided_randomization': decided_randomization,
+		'undecided_randomization': undecided_randomization,
+		'last_randomized_scene_data': last_randomized_scene_data,
+		'randomized_history': randomized_history,
+		'randomized_history_at': randomized_history_at
+	}
+
+func load_randomization_data(data: Dictionary) -> void:
+	current_data = data.get('current_data', {})
+	randomized = data.get('randomized', {})
+	decided_randomization = data.get('decided_randomization', {'is_null': true})
+	undecided_randomization = data.get('undecided_randomization', {'is_null': true})
+	last_randomized_scene_data = data.get('last_randomized_scene_data', {'is_null': true})
+	randomized_history = data.get('randomized_history', [])
+	randomized_history_at = data.get('randomized_history_at', -1)
+
+	if randomized_history_at >= 0 and randomized_history.size() > 0:
+		%PageText.text = "Page " + str(randomized_history_at + 1)
+
 func add_to_history(val: Dictionary) -> void:
 	randomized_history_at += 1
 	randomized_history.insert(randomized_history_at, val)
 	randomized_history_at = clamp(randomized_history_at, 0, len(randomized_history) - 1)
-	
+
 	%PageText.text = "Page " + str(randomized_history_at + 1)
 
 func filter_non_randomization_fields(state: Dictionary) -> Dictionary:

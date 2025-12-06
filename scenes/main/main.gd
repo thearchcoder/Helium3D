@@ -295,7 +295,8 @@ func get_app_state(optimize_for_clipboard: bool = false) -> Dictionary:
 	other_data["keyframe_length"] = %AnimationTrack.keyframe_length
 	other_data["author"] = author
 	other_data["library"] = $UI/BottomBar/Library.get_library_data()
-	
+	other_data["randomization"] = %Randomization.get_randomization_data()
+
 	if optimize_for_clipboard:
 		for value_node in Global.value_nodes:
 			if value_node.get_node('../../../../../..').name == 'Buffer':
@@ -523,7 +524,7 @@ func update_fields(new_fields: Dictionary) -> void:
 		
 		%Fractal.material_override.set_shader_parameter(field_name, field_val)
 	
-	%TabContainer.update_field_values(new_fields)
+	%TabContainer.update_fields_ui(new_fields)
 
 func update_app_state(data: Dictionary, full_update: bool = true) -> void:
 	data = data.duplicate(true)
@@ -582,6 +583,7 @@ func update_app_state(data: Dictionary, full_update: bool = true) -> void:
 		%AnimationTrack.keyframe_length = other_data.get('keyframe_length', 1)
 		%AnimationTrack.keyframes = other_data.get('keyframes', [])
 		$UI/BottomBar/Library.load_library_data(other_data.get('library', []))
+		%Randomization.load_randomization_data(other_data.get('randomization', {}))
 		%AnimationTrack.reload_keyframes()
 
 func count_non_zero(numbers: Array) -> int:

@@ -141,7 +141,7 @@ func update_animation_frames_data() -> void:
 func insert_keyframe() -> void:
 	var data: Dictionary = get_tree().current_scene.fields
 	data.merge({'total_visible_formula_pages': %TabContainer.total_visible_formulas, 'player_position': %Player.global_position, 'head_rotation': %Player.get_node('Head').global_rotation_degrees, 'camera_rotation': %Player.get_node('Head/Camera').global_rotation_degrees}, true)
-	var viewport_image: Image = %SubViewport.get_texture().get_image()
+	var viewport_image: Image = %TextureRect.get_texture().get_image()
 	viewport_image.resize(KEYFRAME_TEXTURE_SIZE, KEYFRAME_TEXTURE_SIZE, Image.INTERPOLATE_NEAREST)
 	var keyframe_texture: ImageTexture = ImageTexture.create_from_image(viewport_image)
 	data['keyframe_texture'] = Marshalls.raw_to_base64(keyframe_texture.get_image().get_data())
@@ -210,7 +210,7 @@ func calculate_time_estimate() -> float:
 func process_frame() -> void:
 	%SubViewport.refresh()
 	
-	var image: Image = %SubViewport.get_texture().get_image()
+	var image: Image = %TextureRect.get_texture().get_image()
 	
 	if %Fractal.material_override.get_shader_parameter('tiled') and get_tree().current_scene.last_tiled_render_image:
 		image = get_tree().current_scene.last_tiled_render_image

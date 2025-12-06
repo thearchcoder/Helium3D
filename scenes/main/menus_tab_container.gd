@@ -40,7 +40,6 @@ func _ready() -> void:
 	set_formula('mandelbulb', 1)
 
 func field_changed_non_shader(field_name: String, value: Variant, update_viewport: bool = true) -> void:
-	# A field changed but isn't mean't to be set in the shader
 	get_tree().current_scene.fields[field_name] = value
 	if update_viewport:
 		%SubViewport.refresh()
@@ -97,7 +96,7 @@ func _on_remove_formula_pressed() -> void:
 	set_formula('none', total_visible_formulas)
 	total_visible_formulas -= 1
 
-func update_field_values(new_fields: Dictionary) -> void:
+func update_fields_ui(new_fields: Dictionary) -> void:
 	var value_nodes: Array[Control] = Global.value_nodes
 	
 	for field_name in (new_fields.keys() as Array[String]):
@@ -124,5 +123,7 @@ func update_field_values(new_fields: Dictionary) -> void:
 			if not target_value_node.has_method('i_am_a_selection_field'):
 				if typeof(target_value_node.value) == typeof(field_val):
 					target_value_node.value = field_val
+					target_value_node.emit_signal('value_changed', field_val)
 			else:
 				target_value_node.index = field_val
+				target_value_node.emit_signal('value_changed', target_value_node.options[target_value_node.index])

@@ -117,6 +117,9 @@ func initialize_formula(formula_index: int) -> void:
 		value_node.set_meta("name_node", label)
 
 func _on_value_changed(new_value: Variant, node: Control) -> void:
+	if node.has_method('i_am_a_selection_field'):
+		new_value = node.options.find(new_value)
+	
 	field_changed(node.get_meta("uniform_name"), new_value)
 
 func i_am_a_formula_page() -> void: pass

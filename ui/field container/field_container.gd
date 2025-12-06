@@ -21,6 +21,9 @@ const PALETTE_FIELD_SCENE = preload('res://ui/fields/palette field/palette_field
 
 @onready var world: WorldEnvironment = %WorldEnvironment
 var force_stop_tiled_render: bool = false
+var rendering_tiles: bool = false
+var should_start_tiled_render: bool = false
+var is_computing_tiles_internally: bool = false
 
 func field_changed(field_name: String, to: Variant) -> void: %TabContainer.field_changed(field_name, to)
 func field_changed_non_shader(field_name: String, to: Variant, update_viewport: bool = true) -> void: %TabContainer.field_changed_non_shader(field_name, to, update_viewport)
@@ -43,9 +46,7 @@ func set_bloom_falloff(to: float) -> void:
 
 func stop_tiled_render() -> void:
 	force_stop_tiled_render = true
-	get_tree().current_scene.busy_rendering_tiles = false
-	await get_tree().process_frame
-	force_stop_tiled_render = false
+	should_start_tiled_render = false
 
 func update_tile_bounds() -> void:
 	var tiles_x_node: Node
@@ -83,9 +84,16 @@ func update_tile_bounds() -> void:
 	%Fractal.material_override.set_shader_parameter('tile_bounds', tile_bounds)
 
 func compute_tiled_render() -> void:
+	if get_tree().current_scene.busy_rendering_tiles:
+		should_start_tiled_render = true
+		return
+
+	rendering_tiles = true
 	get_tree().current_scene.busy_rendering_tiles = true
+	should_start_tiled_render = false
+	force_stop_tiled_render = false
 	%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
-	
+
 	var current_tile_node: Node
 	var tiles_x_node: Node
 	var tiles_y_node: Node
@@ -93,8 +101,10 @@ func compute_tiled_render() -> void:
 		if value_node.name == 'CurrentTile': current_tile_node = value_node
 		if value_node.name == 'TilesX': tiles_x_node = value_node
 		if value_node.name == 'TilesY': tiles_y_node = value_node
-	
+
 	if not current_tile_node || not tiles_x_node || not tiles_y_node:
+		rendering_tiles = false
+		get_tree().current_scene.busy_rendering_tiles = false
 		return
 	
 	var tiles_x: int = tiles_x_node.value
@@ -106,18 +116,36 @@ func compute_tiled_render() -> void:
 	
 	var images: Array[Image] = []
 	var tile_paths: Array[String] = []
-	
+
+	is_computing_tiles_internally = true
+
 	for i in total_tiles:
 		current_tile_node.value = i
 		%SubViewport.refresh()
-		
+
+		if force_stop_tiled_render:
+			is_computing_tiles_internally = false
+			rendering_tiles = false
+			get_tree().current_scene.busy_rendering_tiles = false
+			if should_start_tiled_render:
+				compute_tiled_render()
+			return
+
 		if %SubViewport.antialiasing != %SubViewport.AntiAliasing.TAA:
-			if force_stop_tiled_render: return
+			if force_stop_tiled_render:
+				is_computing_tiles_internally = false
+				rendering_tiles = false
+				get_tree().current_scene.busy_rendering_tiles = false
+				return
 			await get_tree().process_frame
 			await get_tree().process_frame
 		else:
 			for j in (get_tree().current_scene.taa_samples as int):
-				if force_stop_tiled_render: return
+				if force_stop_tiled_render:
+					is_computing_tiles_internally = false
+					rendering_tiles = false
+					get_tree().current_scene.busy_rendering_tiles = false
+					return
 				await get_tree().process_frame
 		
 		var texture: Texture = %SubViewport.get_texture()
@@ -155,18 +183,28 @@ func compute_tiled_render() -> void:
 				var dst_pos: Vector2i = Vector2i(start_x, start_y)
 				
 				final_image.blit_rect(images[idx], src_rect, dst_pos)
-				if force_stop_tiled_render: return
-	
+				if force_stop_tiled_render:
+					is_computing_tiles_internally = false
+					rendering_tiles = false
+					get_tree().current_scene.busy_rendering_tiles = false
+					return
+
+	is_computing_tiles_internally = false
+
 	var dir := DirAccess.open(get_tree().current_scene.HELIUM3D_PATH)
 	for path in tile_paths:
 		if dir.file_exists(path):
 			dir.remove(path)
-	
+
 	get_tree().current_scene.last_tiled_render_image = final_image
-	
+
 	%PostDisplay.material.set_shader_parameter('display_tiled_render', true)
 	%PostDisplay.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
+	rendering_tiles = false
 	get_tree().current_scene.busy_rendering_tiles = false
+
+	if should_start_tiled_render:
+		compute_tiled_render()
 
 func _ready() -> void:
 	var l: String = str(light_id)

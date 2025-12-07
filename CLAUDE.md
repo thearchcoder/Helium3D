@@ -1,2 +1,0 @@
-- no comments please.
-- i dont like comments in code. they should only be used to define different sections of code, never for explaining the code itself.

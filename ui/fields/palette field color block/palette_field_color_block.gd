@@ -57,7 +57,7 @@ func _process(_delta: float) -> void:
 		is_dragging = true
 		drag_start_x = get_global_mouse_position().x
 		original_position_x = position.x
-	
+		
 	if Input.is_action_just_released("mouse click"):
 		is_dragging = false
 		$Circle/ColorPickerButton.visible = true
@@ -65,9 +65,11 @@ func _process(_delta: float) -> void:
 	if is_dragging and int(get_global_mouse_position().x) - int(drag_start_x) != 0:
 		$Circle/ColorPickerButton.visible = false
 		var mouse_delta := get_global_mouse_position().x - drag_start_x
+		var previous_x := position.x
 		position.x = clamp(original_position_x + mouse_delta, -5, length)
 		offset = position.x / length
-		$"../../..".changed_gradient()
+		if abs(previous_x - position.x) > 0.001:
+			$"../../..".changed_gradient()
 
 func _on_circle_mouse_entered() -> void:
 	is_mouse_inside = true

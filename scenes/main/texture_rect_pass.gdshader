@@ -26,6 +26,8 @@ void fragment() {
 	uv = centered_uv + 0.5;
 
 	COLOR = texture(TEXTURE, uv);
+	
+	if (length(COLOR.rgb) < 0.0045) COLOR.a = 0.0;
 
 	if (display_tiled_render) {
 		COLOR = texture(tiled_render, uv);

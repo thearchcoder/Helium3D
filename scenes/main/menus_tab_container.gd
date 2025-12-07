@@ -88,7 +88,9 @@ func set_formula(formula_name: String, for_page: int) -> void:
 	
 	get_tree().current_scene.update_fractal_code(current_formulas)
 
-func _on_add_formula_pressed() -> void: total_visible_formulas += 1
+func _on_add_formula_pressed() -> void: 
+	total_visible_formulas += 1
+
 func _on_remove_formula_pressed() -> void:
 	%TabContainer.get_node('Formula/TabContainer').get_formula_page(total_visible_formulas).set_formula('None')
 	%TabContainer.get_node('Formula/TabContainer').current_tab -= 1
@@ -127,3 +129,9 @@ func update_fields_ui(new_fields: Dictionary) -> void:
 			else:
 				target_value_node.index = field_val
 				target_value_node.emit_signal('value_changed', target_value_node.options[target_value_node.index])
+
+func _on_remove_light_pressed() -> void:
+	pass # Replace with function body.
+
+func _on_add_light_pressed() -> void:
+	pass # Replace with function body.

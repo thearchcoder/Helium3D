@@ -153,18 +153,30 @@ func compute_tiled_render() -> void:
 	current_tile_node.value = center_tile
 	await get_tree().process_frame
 
-	var images: Array[Image] = []
-	var tile_paths: Array[String] = []
 	var spiral_order: Array[int] = get_spiral_tile_order(tiles_x, tiles_y)
 
 	is_computing_tiles_internally = true
+
+	var first_texture: Texture = %SubViewport.get_texture()
+	var first_image: Image = first_texture.get_image()
+	var img_width: int = first_image.get_width()
+	var img_height: int = first_image.get_height()
+	var img_format: Image.Format = first_image.get_format()
+
+	var final_image: Image = Image.create(img_width, img_height, false, img_format)
+	final_image.fill(Color(0, 0, 0, 1))
+
+	%PostDisplay.material.set_shader_parameter('display_tiled_render', true)
+	%PostDisplay.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
 
 	var i := 0
 	while i < total_tiles:
 		if restart_tile_loop:
 			current_tile_node.value = center_tile
-			images = []
 			spiral_order = get_spiral_tile_order(tiles_x, tiles_y)
+			final_image = Image.create(img_width, img_height, false, img_format)
+			final_image.fill(Color(0, 0, 0, 1))
+			%PostDisplay.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
 			restart_tile_loop = false
 			i = 0
 
@@ -176,6 +188,7 @@ func compute_tiled_render() -> void:
 			is_computing_tiles_internally = false
 			rendering_tiles = false
 			get_tree().current_scene.busy_rendering_tiles = false
+			%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
 			if should_start_tiled_render:
 				compute_tiled_render()
 			return
@@ -185,6 +198,7 @@ func compute_tiled_render() -> void:
 				is_computing_tiles_internally = false
 				rendering_tiles = false
 				get_tree().current_scene.busy_rendering_tiles = false
+				%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
 				return
 			await get_tree().process_frame
 			await get_tree().process_frame
@@ -194,66 +208,40 @@ func compute_tiled_render() -> void:
 					is_computing_tiles_internally = false
 					rendering_tiles = false
 					get_tree().current_scene.busy_rendering_tiles = false
+					%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
 					return
 				await get_tree().process_frame
-		
-		var texture: Texture = %SubViewport.get_texture()
-		var target_dir := DirAccess.open(get_tree().current_scene.HELIUM3D_PATH)
-		if not target_dir.dir_exists("tilerender"):
-			target_dir.make_dir("tilerender")
-		var image: Image = texture.get_image()
-		var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/tilerender/tile_") + str(tile_index) + ".png"
-		image.save_png(path)
 
-		while images.size() <= tile_index:
-			images.append(null)
-		while tile_paths.size() <= tile_index:
-			tile_paths.append("")
+		var tile_texture: Texture = %SubViewport.get_texture()
+		var tile_image: Image = tile_texture.get_image()
 
-		images[tile_index] = image
-		tile_paths[tile_index] = path
-		
-		i += 1
+		var tile_x_pos: int = tile_index % tiles_x
+		@warning_ignore("integer_division")
+		var tile_y_pos: int = tile_index / tiles_x
 
-	var img_width: int = images[0].get_width()
-	var img_height: int = images[0].get_height()
-	
-	var final_image: Image = images[0].duplicate()
-	
-	for y in tiles_y:
-		for x in tiles_x:
-			var idx: int = y * tiles_x + x
-			if idx < images.size():
-				@warning_ignore('integer_division')
-				var start_x: int = (x * img_width) / tiles_x
-				@warning_ignore('integer_division')
-				var end_x: int = ((x + 1) * img_width) / tiles_x
-				@warning_ignore('integer_division')
-				var start_y: int = (y * img_height) / tiles_y
-				@warning_ignore('integer_division')
-				var end_y: int = ((y + 1) * img_height) / tiles_y
-				
-				var tile_width: int = end_x - start_x
-				var tile_height: int = end_y - start_y
-				
-				var src_rect: Rect2i = Rect2i(start_x, start_y, tile_width, tile_height)
-				var dst_pos: Vector2i = Vector2i(start_x, start_y)
+		@warning_ignore('integer_division')
+		var start_x: int = (tile_x_pos * img_width) / tiles_x
+		@warning_ignore('integer_division')
+		var end_x: int = ((tile_x_pos + 1) * img_width) / tiles_x
+		@warning_ignore('integer_division')
+		var start_y: int = (tile_y_pos * img_height) / tiles_y
+		@warning_ignore('integer_division')
+		var end_y: int = ((tile_y_pos + 1) * img_height) / tiles_y
 
-				final_image.blit_rect(images[idx], src_rect, dst_pos)
-				if force_stop_tiled_render:
-					is_computing_tiles_internally = false
-					rendering_tiles = false
-					get_tree().current_scene.busy_rendering_tiles = false
-					return
+		var tile_width: int = end_x - start_x
+		var tile_height: int = end_y - start_y
+
+		var src_rect: Rect2i = Rect2i(start_x, start_y, tile_width, tile_height)
+		var dst_pos: Vector2i = Vector2i(start_x, start_y)
+
+		final_image.blit_rect(tile_image, src_rect, dst_pos)
+
+		var display_texture := ImageTexture.create_from_image(final_image)
+		%PostDisplay.material.set_shader_parameter('tiled_render', display_texture)
 
 		i += 1
 
 	is_computing_tiles_internally = false
-
-	var dir := DirAccess.open(get_tree().current_scene.HELIUM3D_PATH)
-	for path in tile_paths:
-		if dir.file_exists(path):
-			dir.remove(path)
 
 	get_tree().current_scene.last_tiled_render_image = final_image
 

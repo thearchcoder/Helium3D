@@ -50,13 +50,21 @@ func stop_tiled_render() -> void:
 	should_start_tiled_render = false
 
 	var current_tile_node: Node
+	var tiles_x_node: Node
+	var tiles_y_node: Node
 	for value_node in (Global.value_nodes as Array[Node]):
 		if value_node.name == 'CurrentTile':
 			current_tile_node = value_node
-			break
+		if value_node.name == 'TilesX':
+			tiles_x_node = value_node
+		if value_node.name == 'TilesY':
+			tiles_y_node = value_node
 
-	if current_tile_node:
-		current_tile_node.value = 0
+	if current_tile_node and tiles_x_node and tiles_y_node:
+		var tiles_x: int = tiles_x_node.value
+		var tiles_y: int = tiles_y_node.value
+		var center_tile: int = (tiles_y / 2) * tiles_x + (tiles_x / 2)
+		current_tile_node.value = center_tile
 
 func update_tile_bounds() -> void:
 	var tiles_x_node: Node
@@ -95,38 +103,21 @@ func update_tile_bounds() -> void:
 
 func get_spiral_tile_order(tiles_x: int, tiles_y: int) -> Array[int]:
 	var order: Array[int] = []
-	var center_x: int = tiles_x / 2
-	var center_y: int = tiles_y / 2
+	var center_x: float = (tiles_x - 1) / 2.0
+	var center_y: float = (tiles_y - 1) / 2.0
 
-	order.append(center_y * tiles_x + center_x)
+	var tiles: Array[Dictionary] = []
+	for y in tiles_y:
+		for x in tiles_x:
+			var dx: float = float(x) - center_x
+			var dy: float = float(y) - center_y
+			var distance: float = dx * dx + dy * dy
+			tiles.append({"index": y * tiles_x + x, "distance": distance})
 
-	var x := center_x
-	var y := center_y
-	var dx := 1
-	var dy := 0
-	var segment_length := 1
-	var segment_passed := 0
-	var direction_changes := 0
+	tiles.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.distance < b.distance)
 
-	while order.size() < tiles_x * tiles_y:
-		x += dx
-		y += dy
-		segment_passed += 1
-
-		if x >= 0 and x < tiles_x and y >= 0 and y < tiles_y:
-			var tile_index: int = y * tiles_x + x
-			if not order.has(tile_index):
-				order.append(tile_index)
-
-		if segment_passed == segment_length:
-			segment_passed = 0
-			var temp := dx
-			dx = -dy
-			dy = temp
-			direction_changes += 1
-
-			if direction_changes % 2 == 0:
-				segment_length += 1
+	for tile in tiles:
+		order.append(tile.index)
 
 	return order
 
@@ -158,7 +149,8 @@ func compute_tiled_render() -> void:
 	var tiles_y: int = tiles_y_node.value
 	var total_tiles: int = tiles_x * tiles_y
 
-	current_tile_node.value = 0
+	var center_tile: int = (tiles_y / 2) * tiles_x + (tiles_x / 2)
+	current_tile_node.value = center_tile
 	await get_tree().process_frame
 
 	var images: Array[Image] = []
@@ -170,7 +162,7 @@ func compute_tiled_render() -> void:
 	var i := 0
 	while i < total_tiles:
 		if restart_tile_loop:
-			current_tile_node.value = 0
+			current_tile_node.value = center_tile
 			images = []
 			spiral_order = get_spiral_tile_order(tiles_x, tiles_y)
 			restart_tile_loop = false

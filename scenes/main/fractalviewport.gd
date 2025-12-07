@@ -61,7 +61,7 @@ func _process(delta: float) -> void:
 	since_last_dynamic_update_frame += 1
 	previous_update_mode = render_target_update_mode
 
-func refresh() -> void:
+func refresh(from_tiling: bool = false) -> void:
 	since_last_dynamic_update = 0.0
 	since_last_dynamic_update_frame = 0
 	
@@ -74,9 +74,8 @@ func refresh() -> void:
 		await get_tree().process_frame
 		scaling_3d_scale = old_scaling_3d_scale
 
-	if %Fractal.material_override.get_shader_parameter('tiled'):
-		if %Rendering.rendering_tiles and not %Rendering.is_computing_tiles_internally:
-			%Rendering.stop_tiled_render()
-			%Rendering.should_start_tiled_render = true
+	if %Fractal.material_override.get_shader_parameter('tiled') and not from_tiling:
+		if %Rendering.rendering_tiles and %Rendering.is_computing_tiles_internally:
+			%Rendering.restart_tile_loop = true
 		elif not %Rendering.rendering_tiles:
 			%Rendering.compute_tiled_render()

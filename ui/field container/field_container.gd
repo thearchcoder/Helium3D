@@ -24,6 +24,7 @@ var force_stop_tiled_render: bool = false
 var rendering_tiles: bool = false
 var should_start_tiled_render: bool = false
 var is_computing_tiles_internally: bool = false
+var restart_tile_loop: bool = false
 
 func field_changed(field_name: String, to: Variant) -> void: %TabContainer.field_changed(field_name, to)
 func field_changed_non_shader(field_name: String, to: Variant, update_viewport: bool = true) -> void: %TabContainer.field_changed_non_shader(field_name, to, update_viewport)
@@ -47,6 +48,15 @@ func set_bloom_falloff(to: float) -> void:
 func stop_tiled_render() -> void:
 	force_stop_tiled_render = true
 	should_start_tiled_render = false
+
+	var current_tile_node: Node
+	for value_node in (Global.value_nodes as Array[Node]):
+		if value_node.name == 'CurrentTile':
+			current_tile_node = value_node
+			break
+
+	if current_tile_node:
+		current_tile_node.value = 0
 
 func update_tile_bounds() -> void:
 	var tiles_x_node: Node
@@ -83,6 +93,43 @@ func update_tile_bounds() -> void:
 	var tile_bounds: Vector4 = Vector4(tile_min.x, tile_min.y, tile_max.x, tile_max.y)
 	%Fractal.material_override.set_shader_parameter('tile_bounds', tile_bounds)
 
+func get_spiral_tile_order(tiles_x: int, tiles_y: int) -> Array[int]:
+	var order: Array[int] = []
+	var center_x: int = tiles_x / 2
+	var center_y: int = tiles_y / 2
+
+	order.append(center_y * tiles_x + center_x)
+
+	var x := center_x
+	var y := center_y
+	var dx := 1
+	var dy := 0
+	var segment_length := 1
+	var segment_passed := 0
+	var direction_changes := 0
+
+	while order.size() < tiles_x * tiles_y:
+		x += dx
+		y += dy
+		segment_passed += 1
+
+		if x >= 0 and x < tiles_x and y >= 0 and y < tiles_y:
+			var tile_index: int = y * tiles_x + x
+			if not order.has(tile_index):
+				order.append(tile_index)
+
+		if segment_passed == segment_length:
+			segment_passed = 0
+			var temp := dx
+			dx = -dy
+			dy = temp
+			direction_changes += 1
+
+			if direction_changes % 2 == 0:
+				segment_length += 1
+
+	return order
+
 func compute_tiled_render() -> void:
 	if get_tree().current_scene.busy_rendering_tiles:
 		should_start_tiled_render = true
@@ -106,22 +153,32 @@ func compute_tiled_render() -> void:
 		rendering_tiles = false
 		get_tree().current_scene.busy_rendering_tiles = false
 		return
-	
+
 	var tiles_x: int = tiles_x_node.value
 	var tiles_y: int = tiles_y_node.value
 	var total_tiles: int = tiles_x * tiles_y
-	
+
 	current_tile_node.value = 0
 	await get_tree().process_frame
-	
+
 	var images: Array[Image] = []
 	var tile_paths: Array[String] = []
+	var spiral_order: Array[int] = get_spiral_tile_order(tiles_x, tiles_y)
 
 	is_computing_tiles_internally = true
 
-	for i in total_tiles:
-		current_tile_node.value = i
-		%SubViewport.refresh()
+	var i := 0
+	while i < total_tiles:
+		if restart_tile_loop:
+			current_tile_node.value = 0
+			images = []
+			spiral_order = get_spiral_tile_order(tiles_x, tiles_y)
+			restart_tile_loop = false
+			i = 0
+
+		var tile_index: int = spiral_order[i]
+		current_tile_node.value = tile_index
+		%SubViewport.refresh(true)
 
 		if force_stop_tiled_render:
 			is_computing_tiles_internally = false
@@ -153,11 +210,19 @@ func compute_tiled_render() -> void:
 		if not target_dir.dir_exists("tilerender"):
 			target_dir.make_dir("tilerender")
 		var image: Image = texture.get_image()
-		var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/tilerender/tile_") + str(i) + ".png"
+		var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/tilerender/tile_") + str(tile_index) + ".png"
 		image.save_png(path)
-		images.append(image)
-		tile_paths.append(path)
-	
+
+		while images.size() <= tile_index:
+			images.append(null)
+		while tile_paths.size() <= tile_index:
+			tile_paths.append("")
+
+		images[tile_index] = image
+		tile_paths[tile_index] = path
+		
+		i += 1
+
 	var img_width: int = images[0].get_width()
 	var img_height: int = images[0].get_height()
 	
@@ -181,13 +246,15 @@ func compute_tiled_render() -> void:
 				
 				var src_rect: Rect2i = Rect2i(start_x, start_y, tile_width, tile_height)
 				var dst_pos: Vector2i = Vector2i(start_x, start_y)
-				
+
 				final_image.blit_rect(images[idx], src_rect, dst_pos)
 				if force_stop_tiled_render:
 					is_computing_tiles_internally = false
 					rendering_tiles = false
 					get_tree().current_scene.busy_rendering_tiles = false
 					return
+
+		i += 1
 
 	is_computing_tiles_internally = false
 

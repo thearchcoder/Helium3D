@@ -3,6 +3,7 @@ extends TextureRect
 var speed := 100.0
 var zoom := 1.0:
 	set(value):
+		value = max(value, 0.0)
 		zoom = value
 		%Zoom.value = value
 const FRICTION := 0.0

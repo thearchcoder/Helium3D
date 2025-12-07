@@ -1,5 +1,7 @@
 shader_type canvas_item;
 
+uniform bool transparent_bg;
+
 void fragment() {
-	if (length(COLOR.rgb) < 0.0045) COLOR *= 0.0;
+	if (transparent_bg && length(COLOR.rgb) < 0.0045) COLOR *= 0.0;
 }

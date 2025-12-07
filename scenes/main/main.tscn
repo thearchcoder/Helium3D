@@ -74,6 +74,7 @@ bg_color = Color(0.10748, 0.10748, 0.10748, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ii537"]
 shader = ExtResource("10_7nlll")
+shader_parameter/transparent_bg = false
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_s17dp"]
 viewport_path = NodePath("UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/PostViewport")

@@ -245,6 +245,7 @@ func _ready() -> void:
 			{'name': 'bg_image', 'type': 'image', 'default_value': null},
 			{'name': 'transparent_bg', 'advanced_only': true, 'type': 'bool', 'default_value': false, 'onchange_override': func(value: bool) -> void: 
 				%SubViewport.transparent_bg = value
+				%TextureRect.material.set_shader_parameter('transparent_bg', value);
 				field_changed('transparent_bg', value)
 				},
 		],

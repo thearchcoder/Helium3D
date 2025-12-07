@@ -146,6 +146,7 @@ func load_project_data(path: String, load_field_filter: String, is_buffer: bool 
 		%SubViewport.refresh()
 		file.close()
 
+
 func save_image(path: String) -> void:
 	if path.ends_with('.hlm'):
 		path = path.trim_suffix('.hlm') + '.png'
@@ -157,6 +158,14 @@ func save_image(path: String) -> void:
 	
 	if %Fractal.material_override.get_shader_parameter('tiled') and get_tree().current_scene.last_tiled_render_image:
 		image = get_tree().current_scene.last_tiled_render_image
+	
+	if path.ends_with(".png") and %Fractal.material_override.get_shader_parameter('transparent_bg'):
+		image.convert(Image.FORMAT_RGBA8)
+		for x in range(image.get_width()):
+			for y in range(image.get_height()):
+				var pixel: Color = image.get_pixel(x, y)
+				if pixel.r == 0.0 and pixel.g == 0.0 and pixel.b == 0.0:
+					image.set_pixel(x, y, Color(0, 0, 0, 0))
 	
 	if path.ends_with(".jpg") or path.ends_with(".jpeg"):
 		image.save_jpg(path)

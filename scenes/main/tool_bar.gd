@@ -153,7 +153,7 @@ func save_image(path: String) -> void:
 	if not path.ends_with('.png') and not path.ends_with('.jpg') and not path.ends_with('.jpeg') and not path.ends_with('.webp'):
 		path += '.png'
 	
-	var image: Image = %PostDisplay.texture.get_image()
+	var image: Image = %TextureRect.texture.get_image()
 	
 	if %Fractal.material_override.get_shader_parameter('tiled') and get_tree().current_scene.last_tiled_render_image:
 		image = get_tree().current_scene.last_tiled_render_image

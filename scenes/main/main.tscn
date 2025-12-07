@@ -1,4 +1,4 @@
-[gd_scene load_steps=80 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=82 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
@@ -16,6 +16,7 @@
 [ext_resource type="Material" uid="uid://dggmsfkvwvli5" path="res://scenes/main/texture_rect_material.tres" id="8_6lqo5"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="8_rhsly"]
 [ext_resource type="Script" uid="uid://bll313qxnpxar" path="res://scenes/main/menus_tab_container.gd" id="9_7154d"]
+[ext_resource type="Shader" uid="uid://bbw1govn4w1v6" path="res://scenes/main/transparency_texture_pass.gdshader" id="10_7nlll"]
 [ext_resource type="PackedScene" uid="uid://btv7ewx22x217" path="res://ui/fields/float field/float_field.tscn" id="11_37hlw"]
 [ext_resource type="Script" uid="uid://dy6nqliruge83" path="res://scenes/main/voxel_viewport.gd" id="11_62atk"]
 [ext_resource type="Script" uid="uid://77ccf8ixmtdl" path="res://scenes/main/formula_tab_container.gd" id="16_dmyle"]
@@ -70,6 +71,9 @@ bg_color = Color(0.10748, 0.10748, 0.10748, 1)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s17dp"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i7in8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ii537"]
+shader = ExtResource("10_7nlll")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_s17dp"]
 viewport_path = NodePath("UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/PostViewport")
@@ -602,6 +606,7 @@ offset_bottom = 455.0
 
 [node name="TextureRect" type="TextureRect" parent="UI/HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
+material = SubResource("ShaderMaterial_ii537")
 layout_mode = 2
 size_flags_horizontal = 6
 texture = SubResource("ViewportTexture_s17dp")
@@ -1769,7 +1774,7 @@ fov = 60.0
 unique_name_in_owner = true
 own_world_3d = true
 scaling_3d_mode = 2
-anisotropic_filtering_level = 4
+anisotropic_filtering_level = 0
 fsr_sharpness = 0.0
 size = Vector2i(450, 450)
 render_target_clear_mode = 1

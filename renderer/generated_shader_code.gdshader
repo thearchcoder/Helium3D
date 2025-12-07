@@ -4647,7 +4647,7 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 	vec3 ro = (inverse(MODEL_MATRIX) * vec4(CAMERA_POSITION_WORLD, 1.0)).xyz; \
 	vec3 rd = get_ray_direction(SCREEN_UV, VIEW_MATRIX, ro); \
 	ALBEDO = max(calculate_albedo(ro, rd, SCREEN_UV, FRAGCOORD.xy, VIEWPORT_SIZE, PROJECTION_MATRIX, VIEW_MATRIX, discard_color), vec3(0.0)) + 0.004; \
-	if (discard_color) discard;
+	if (discard_color) ALBEDO = vec3(0);
 
 void fragment() {
 	if (texture(pixels_to_render, UV).r < 0.5) discard;

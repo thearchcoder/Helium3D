@@ -9,7 +9,7 @@ signal value_changed(option: String)
 		if value < 0: value = len(options) - 1
 		if value > len(options) - 1: value = 0
 		index = value
-		$HBoxContainer/Label.text = label_overrides[index].split(' Dupe')[0]
+		$HBoxContainer/Label.text = Global.dupe_to_num(label_overrides[index])
 		value_changed.emit(options[index])
 		Global.action_occurred()
 
@@ -22,7 +22,7 @@ func _process(_delta: float) -> void:
 
 func _ready() -> void:
 	Global.value_nodes.append(self)
-	$HBoxContainer/Label.text = label_overrides[index].split(' Dupe')[0]
+	$HBoxContainer/Label.text = Global.dupe_to_num(label_overrides[index])
 	value_changed.emit(options[index])
 	
 	#for option in options:
@@ -38,7 +38,7 @@ func _on_left_pressed() -> void:
 	if index < 0:
 		index = len(options) - 1
 	
-	$HBoxContainer/Label.text = label_overrides[index].split(' Dupe')[0]
+	$HBoxContainer/Label.text = Global.dupe_to_num(label_overrides[index])
 	value_changed.emit(options[index])
 
 func _on_right_pressed() -> void:
@@ -47,7 +47,7 @@ func _on_right_pressed() -> void:
 	if index > len(options) - 1:
 		index = 0
 	
-	$HBoxContainer/Label.text = label_overrides[index].split(' Dupe')[0]
+	$HBoxContainer/Label.text = Global.dupe_to_num(label_overrides[index])
 	value_changed.emit(options[index])
 
 func _on_label_pressed() -> void: $Popup.visible = true

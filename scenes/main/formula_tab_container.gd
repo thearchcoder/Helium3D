@@ -4,12 +4,6 @@ func initialize_formula(formula_index: int, page_index: int) -> void:
 	var formula_page: Control = get_formula_page(page_index)
 	formula_page.initialize_formula(formula_index)
 
-func dupe_to_num(formatted_id: String) -> String:
-	if formatted_id.contains('Dupe'):
-		var parts: PackedStringArray = formatted_id.split('Dupe ')
-		return parts[0] + '#' + str((ord(parts[1].to_upper()) - ord('A')) + 2)
-	return formatted_id
-
 func update_tab_names() -> void:
 	var active_pages: Array[Node] = get_active_formula_pages()
 	for i in range(len(active_pages)):
@@ -20,7 +14,7 @@ func update_tab_names() -> void:
 			set_tab_title(i, 'None')
 		else:
 			var formatted_id: String = get_tree().current_scene.get_formula_data_from_index(formula_dropdown.index)['formatted_id']
-			set_tab_title(i, dupe_to_num(formatted_id))
+			set_tab_title(i, Global.dupe_to_num(formatted_id))
 
 func _process(_delta: float) -> void:
 	%Fractal.material_override.set_shader_parameter('number_of_active_formulas', len(get_active_formula_pages()))

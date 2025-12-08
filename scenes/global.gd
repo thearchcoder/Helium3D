@@ -2,6 +2,12 @@ extends Node
 
 var value_nodes: Array[Control] = []
 
+func dupe_to_num(formatted_id: String) -> String:
+	if formatted_id.contains('Dupe'):
+		var parts: PackedStringArray = formatted_id.split('Dupe ')
+		return parts[0] + '#' + str((ord(parts[1].to_upper()) - ord('A')) + 2)
+	return formatted_id
+
 func add_spaces(text: String) -> String:
 	var result := ""
 	for i in range(text.length()):

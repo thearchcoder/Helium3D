@@ -151,15 +151,15 @@ uniform int voxel_resolution;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
-//uniform bool famazingsurf_is_julia; // -@1
-//uniform vec3 famazingsurf_julia_c; // -@1
-//uniform vec3 famazingsurf_rotation; // -@1
-//uniform vec3 famazingsurf_fold; // -@1
-//uniform bool famazingsurf_fold_z; // -@1
-//uniform float famazingsurf_min_radius; // -@1
-//uniform vec3 famazingsurf_offset; // -@1
-//uniform float famazingsurf_scale; // -@1
-//uniform vec2 famazingsurf_fold2; // -@1
+uniform bool famazingsurf_is_julia; // -@1
+uniform vec3 famazingsurf_julia_c; // -@1
+uniform vec3 famazingsurf_rotation; // -@1
+uniform vec3 famazingsurf_fold; // -@1
+uniform bool famazingsurf_fold_z; // -@1
+uniform float famazingsurf_min_radius; // -@1
+uniform vec3 famazingsurf_offset; // -@1
+uniform float famazingsurf_scale; // -@1
+uniform vec2 famazingsurf_fold2; // -@1
 //uniform bool famazingsurfdupea_is_julia; // -@2
 //uniform vec3 famazingsurfdupea_julia_c; // -@2
 //uniform vec3 famazingsurfdupea_rotation; // -@2
@@ -2582,10 +2582,10 @@ uniform int fmandelbulb_quaternion_mode; // -@276
 //uniform int fsphairahedrondupej_cube_type; // -@495
 //uniform float fsphairahedrondupej_zc; // -@495
 //uniform float fsphairahedrondupej_zb; // -@495
-//uniform vec3 fsphere_position; // -@496
-//uniform float fsphere_radius; // -@496
-//uniform bool fsphere_hollow; // -@496
-//uniform float fsphere_hollow_edge; // -@496
+uniform vec3 fsphere_position; // -@496
+uniform float fsphere_radius; // -@496
+uniform bool fsphere_hollow; // -@496
+uniform float fsphere_hollow_edge; // -@496
 //uniform vec3 fspheredupea_position; // -@497
 //uniform float fspheredupea_radius; // -@497
 //uniform bool fspheredupea_hollow; // -@497
@@ -2946,7 +2946,7 @@ uniform int fmandelbulb_quaternion_mode; // -@276
 //uniform vec4 fwobbletransformdupej_step; // -@572
 //uniform vec2 fwobbletransformdupej_range; // -@572
 
-//#include "res://formulas/amazingsurf.gdshaderinc" // -@1
+#include "res://formulas/amazingsurf.gdshaderinc" // -@1
 //#include "res://formulas/amazingsurfdupea.gdshaderinc" // -@2
 //#include "res://formulas/amazingsurfdupeb.gdshaderinc" // -@3
 //#include "res://formulas/amazingsurfdupec.gdshaderinc" // -@4
@@ -3441,7 +3441,7 @@ uniform int fmandelbulb_quaternion_mode; // -@276
 //#include "res://formulas/sphairahedrondupeh.gdshaderinc" // -@493
 //#include "res://formulas/sphairahedrondupei.gdshaderinc" // -@494
 //#include "res://formulas/sphairahedrondupej.gdshaderinc" // -@495
-//#include "res://formulas/sphere.gdshaderinc" // -@496
+#include "res://formulas/sphere.gdshaderinc" // -@496
 //#include "res://formulas/spheredupea.gdshaderinc" // -@497
 //#include "res://formulas/spheredupeb.gdshaderinc" // -@498
 //#include "res://formulas/spheredupec.gdshaderinc" // -@499
@@ -3557,7 +3557,7 @@ vec2 scene_sdf(vec3 p) {
 	for (int i = 0; i < iterations * int(number_of_active_formulas); i++) {
 		bool escaped = false;
 		int current_formula = formulas[int(mod(float(i), number_of_active_formulas))];
-//if (current_formula == 1) amazingsurf_iter(z, dz, original_z, orbit, i); //-@1
+if (current_formula == 1) amazingsurf_iter(z, dz, original_z, orbit, i); //-@1
 //if (current_formula == 2) amazingsurfdupea_iter(z, dz, original_z, orbit, i); //-@2
 //if (current_formula == 3) amazingsurfdupeb_iter(z, dz, original_z, orbit, i); //-@3
 //if (current_formula == 4) amazingsurfdupec_iter(z, dz, original_z, orbit, i); //-@4
@@ -4118,7 +4118,7 @@ vec2 sdf_result;
 //sdf_result = sphairahedrondupeh_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@493
 //sdf_result = sphairahedrondupei_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@494
 //sdf_result = sphairahedrondupej_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@495
-//sdf_result = sphere_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@496
+sdf_result = sphere_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@496
 //sdf_result = spheredupea_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@497
 //sdf_result = spheredupeb_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@498
 //sdf_result = spheredupec_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@499
@@ -4308,7 +4308,7 @@ vec2 sdf_result;
 //sdf_result = spheretreedupeh_sdf(original_z); de = max(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@515
 //sdf_result = spheretreedupei_sdf(original_z); de = max(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@516
 //sdf_result = spheretreedupej_sdf(original_z); de = max(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@517
-//sdf_result = sphere_sdf(original_z); de = min(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@496
+sdf_result = sphere_sdf(original_z); de = min(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@496
 //sdf_result = spheredupea_sdf(original_z); de = min(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@497
 //sdf_result = spheredupeb_sdf(original_z); de = min(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@498
 //sdf_result = spheredupec_sdf(original_z); de = min(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@499

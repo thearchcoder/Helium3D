@@ -10,7 +10,7 @@ var decided_randomization: Dictionary = {'is_null': true}
 var undecided_randomization: Dictionary = {'is_null': true}
 
 var last_randomized_scene_data: Dictionary = {'is_null': true}
-var randomized_history: Array[Dictionary] = []
+var randomized_history: Array = []
 var randomized_history_at: int = -1
 
 func get_randomization_data() -> Dictionary:

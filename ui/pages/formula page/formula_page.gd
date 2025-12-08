@@ -167,3 +167,14 @@ func _ready() -> void:
 	if page_number == 1:
 		set_formula('mandelbulb')
 		$Fields/HBoxContainer/Values/Formulas.index = $Fields/HBoxContainer/Values/Formulas.options.find('mandelbulb')
+	
+	var formulas_dropdown: Control = get_node("Fields/HBoxContainer/Values/Formulas")
+	if formulas_dropdown and not formulas_dropdown.value_changed.is_connected(_on_formula_changed):
+		formulas_dropdown.value_changed.connect(_on_formula_changed)
+	
+	if get_parent() is TabContainer:
+		get_parent().update_tab_names()
+
+func _on_formula_changed(_value: Variant) -> void:
+	if get_parent() is TabContainer:
+		get_parent().update_tab_names()

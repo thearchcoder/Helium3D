@@ -637,13 +637,12 @@ theme_override_constants/side_margin = 0
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/panel = SubResource("StyleBoxFlat_p8abn")
 theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_0eucc")
-current_tab = 2
+current_tab = 0
 drag_to_rearrange_enabled = true
 tabs_rearrange_group = 1
 script = ExtResource("9_7154d")
 
 [node name="Formula" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_left = 10
@@ -657,7 +656,6 @@ layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_s17dp")
 theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_dmava")
 current_tab = 0
-drag_to_rearrange_enabled = true
 tabs_rearrange_group = 2
 script = ExtResource("16_dmyle")
 
@@ -766,6 +764,7 @@ fields_list_id = 2
 metadata/_tab_index = 1
 
 [node name="Lighting" type="MarginContainer" parent="UI/HBoxContainer/TabContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10

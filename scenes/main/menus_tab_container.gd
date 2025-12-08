@@ -34,6 +34,8 @@ var total_visible_formulas: int = 1:
 		else:
 			$Formula/Buttons/AddFormula.disabled = false
 			$Formula/Buttons/RemoveFormula.disabled = false
+		
+		$Formula/TabContainer.update_tab_names()
 
 func _ready() -> void:
 	await get_tree().process_frame
@@ -90,6 +92,7 @@ func set_formula(formula_name: String, for_page: int) -> void:
 
 func _on_add_formula_pressed() -> void: 
 	total_visible_formulas += 1
+	$Formula/TabContainer.get_active_formula_pages()[-1].visible = true
 
 func _on_remove_formula_pressed() -> void:
 	%TabContainer.get_node('Formula/TabContainer').get_formula_page(total_visible_formulas).set_formula('None')

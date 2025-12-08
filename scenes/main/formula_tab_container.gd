@@ -4,20 +4,23 @@ func initialize_formula(formula_index: int, page_index: int) -> void:
 	var formula_page: Control = get_formula_page(page_index)
 	formula_page.initialize_formula(formula_index)
 
-func to_num(c: String) -> String:
-	return str((ord(c.to_upper()) - ord('A')) + 2)
+func dupe_to_num(formatted_id: String) -> String:
+	if formatted_id.contains('Dupe'):
+		var parts: PackedStringArray = formatted_id.split('Dupe ')
+		return parts[0] + '#' + str((ord(parts[1].to_upper()) - ord('A')) + 2)
+	return formatted_id
 
 func update_tab_names() -> void:
 	var active_pages: Array[Node] = get_active_formula_pages()
 	for i in range(len(active_pages)):
 		var formula_page: Control = active_pages[i]
 		var formula_dropdown: Control = formula_page.get_node("Fields/HBoxContainer/Values/Formulas")
-		var tab_name: String = formula_dropdown.options[formula_dropdown.index].capitalize()
 		
-		if tab_name.contains('dupe'):
-			tab_name = tab_name.split('dupe')[0] + ' #' + to_num(tab_name.split('dupe')[1])
-		
-		set_tab_title(i, tab_name.capitalize())
+		if formula_dropdown.index <= 0:
+			set_tab_title(i, 'None')
+		else:
+			var formatted_id: String = get_tree().current_scene.get_formula_data_from_index(formula_dropdown.index)['formatted_id']
+			set_tab_title(i, dupe_to_num(formatted_id))
 
 func _process(_delta: float) -> void:
 	%Fractal.material_override.set_shader_parameter('number_of_active_formulas', len(get_active_formula_pages()))

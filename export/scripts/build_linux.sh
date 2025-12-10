@@ -89,4 +89,19 @@ else
     echo "dpkg-deb not found, skipping DEB"
 fi
 
+echo "Building Flatpak..."
+if command -v flatpak-builder &> /dev/null; then
+    if flatpak list --runtime | grep -q "org.freedesktop.Platform.*24.08"; then
+        cd "$EXPORT_DIR"
+        flatpak-builder --force-clean "$BUILD_DIR/flatpak/build" "$SCRIPT_DIR/flatpak.json"
+        flatpak build-export "$BUILD_DIR/flatpak/repo" "$BUILD_DIR/flatpak/build"
+        flatpak build-bundle "$BUILD_DIR/flatpak/repo" "$BUILD_DIR/flatpak/$APP_NAME-$VERSION.flatpak" com.helium3d.Helium3D
+    else
+        echo "Flatpak runtime not installed. Install with:"
+        echo "  flatpak install flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08"
+    fi
+else
+    echo "flatpak-builder not found, skipping Flatpak"
+fi
+
 echo "Done. Packages in export/build/"

@@ -1,12 +1,13 @@
 {
   "app-id": "com.helium3d.Helium3D",
   "runtime": "org.freedesktop.Platform",
-  "runtime-version": "23.08",
+  "runtime-version": "24.08",
   "sdk": "org.freedesktop.Sdk",
   "command": "Helium3D",
   "finish-args": [
     "--share=ipc",
     "--socket=x11",
+    "--socket=wayland",
     "--socket=pulseaudio",
     "--device=dri",
     "--share=network"
@@ -16,15 +17,17 @@
       "name": "helium3d",
       "buildsystem": "simple",
       "build-commands": [
-        "install -D Helium3D.bin /app/bin/Helium3D.bin",
-        "install -D Helium3D.pck /app/bin/Helium3D.pck",
-        "cp -r formulas /app/bin/",
-        "install -D helium3d.desktop /app/share/applications/com.helium3d.Helium3D.desktop"
+        "install -Dm755 Helium3D.x86_64 /app/bin/Helium3D",
+        "install -Dm644 Helium3D.pck /app/share/helium3d/Helium3D.pck",
+        "cp -r formulas /app/share/helium3d/",
+        "cp -r data_Helium3D_linuxbsd_x86_64 /app/share/helium3d/",
+        "install -Dm644 icon.png /app/share/icons/hicolor/256x256/apps/com.helium3d.Helium3D.png",
+        "install -Dm644 app.desktop /app/share/applications/com.helium3d.Helium3D.desktop"
       ],
       "sources": [
         {
           "type": "dir",
-          "path": "../godot-export/linux"
+          "path": "../../"
         }
       ]
     }

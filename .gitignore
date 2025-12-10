@@ -1,6 +1,7 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+resources/fractal previews/
 videos/
 export/
 layers/

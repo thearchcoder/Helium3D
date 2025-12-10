@@ -7,14 +7,14 @@
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4o5ok"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7y4ma"]
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_20hyn"]
 bg_color = Color(0.0807833, 0.0807834, 0.0807832, 1)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7y4ma"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wa5cg"]
 
@@ -43,8 +43,8 @@ size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_788kb")
 theme_override_font_sizes/font_size = 18
-theme_override_styles/focus = SubResource("StyleBoxEmpty_7y4ma")
 theme_override_styles/normal = SubResource("StyleBoxFlat_20hyn")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_7y4ma")
 text = "Selection field"
 
 [node name="Right" type="Button" parent="HBoxContainer" index="2"]
@@ -55,6 +55,7 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_wa5cg")
 text = " > "
 
 [node name="Popup" parent="." index="2" instance=ExtResource("4_7tgqj")]
+oversampling_override = 1.0
 
 [node name="Label" type="Label" parent="." index="3"]
 visible = false

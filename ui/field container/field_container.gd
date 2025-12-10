@@ -25,6 +25,25 @@ var rendering_tiles: bool = false
 var should_start_tiled_render: bool = false
 var is_computing_tiles_internally: bool = false
 var restart_tile_loop: bool = false
+var performance_tracking: Dictionary = {}
+
+func start_timer(label: String) -> float:
+	var start_time: float = Time.get_ticks_usec() / 1000000.0
+	performance_tracking[label] = start_time
+	return start_time
+
+func end_timer(label: String) -> float:
+	if not performance_tracking.has(label):
+		push_error("Timer '%s' was never started" % label)
+		return 0.0
+	
+	var start_time: float = performance_tracking[label]
+	var end_time: float = Time.get_ticks_usec() / 1000000.0
+	var elapsed: float = end_time - start_time
+	
+	print("[PERF] %s: %.3f ms" % [label, elapsed * 1000.0])
+	performance_tracking.erase(label)
+	return elapsed
 
 func field_changed(field_name: String, to: Variant) -> void: %TabContainer.field_changed(field_name, to)
 func field_changed_non_shader(field_name: String, to: Variant, update_viewport: bool = true) -> void: %TabContainer.field_changed_non_shader(field_name, to, update_viewport)
@@ -122,6 +141,8 @@ func get_spiral_tile_order(tiles_x: int, tiles_y: int) -> Array[int]:
 	return order
 
 func compute_tiled_render() -> void:
+	start_timer("compute_tiled_render_total")
+	
 	if get_tree().current_scene.busy_rendering_tiles:
 		should_start_tiled_render = true
 		return
@@ -143,6 +164,7 @@ func compute_tiled_render() -> void:
 	if not current_tile_node || not tiles_x_node || not tiles_y_node:
 		rendering_tiles = false
 		get_tree().current_scene.busy_rendering_tiles = false
+		end_timer("compute_tiled_render_total")
 		return
 
 	var tiles_x: int = tiles_x_node.value
@@ -153,10 +175,13 @@ func compute_tiled_render() -> void:
 	current_tile_node.value = center_tile
 	await get_tree().process_frame
 
+	start_timer("get_spiral_order")
 	var spiral_order: Array[int] = get_spiral_tile_order(tiles_x, tiles_y)
+	end_timer("get_spiral_order")
 
 	is_computing_tiles_internally = true
 
+	start_timer("create_initial_image")
 	var first_texture: Texture = %SubViewport.get_texture()
 	var first_image: Image = first_texture.get_image()
 	var img_width: int = first_image.get_width()
@@ -165,13 +190,17 @@ func compute_tiled_render() -> void:
 
 	var final_image: Image = Image.create(img_width, img_height, false, img_format)
 	final_image.fill(Color(0, 0, 0, 1))
+	end_timer("create_initial_image")
 
 	%PostDisplay.material.set_shader_parameter('display_tiled_render', true)
 	%PostDisplay.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
 
 	var i := 0
 	while i < total_tiles:
+		start_timer("tile_%d" % i)
+		
 		if restart_tile_loop:
+			start_timer("restart_loop")
 			current_tile_node.value = center_tile
 			spiral_order = get_spiral_tile_order(tiles_x, tiles_y)
 			final_image = Image.create(img_width, img_height, false, img_format)
@@ -179,26 +208,36 @@ func compute_tiled_render() -> void:
 			%PostDisplay.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
 			restart_tile_loop = false
 			i = 0
+			end_timer("restart_loop")
 
 		var tile_index: int = spiral_order[i]
 		current_tile_node.value = tile_index
+		
+		start_timer("tile_%d_viewport_refresh" % i)
 		%SubViewport.refresh(true)
+		end_timer("tile_%d_viewport_refresh" % i)
 
 		if force_stop_tiled_render:
 			is_computing_tiles_internally = false
 			rendering_tiles = false
 			get_tree().current_scene.busy_rendering_tiles = false
 			%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
+			end_timer("tile_%d" % i)
+			end_timer("compute_tiled_render_total")
 			if should_start_tiled_render:
 				compute_tiled_render()
 			return
 
+		start_timer("tile_%d_wait_frames" % i)
 		if %SubViewport.antialiasing != %SubViewport.AntiAliasing.TAA:
 			if force_stop_tiled_render:
 				is_computing_tiles_internally = false
 				rendering_tiles = false
 				get_tree().current_scene.busy_rendering_tiles = false
 				%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
+				end_timer("tile_%d_wait_frames" % i)
+				end_timer("tile_%d" % i)
+				end_timer("compute_tiled_render_total")
 				return
 			await get_tree().process_frame
 			await get_tree().process_frame
@@ -209,9 +248,14 @@ func compute_tiled_render() -> void:
 					rendering_tiles = false
 					get_tree().current_scene.busy_rendering_tiles = false
 					%PostDisplay.material.set_shader_parameter('display_tiled_render', false)
+					end_timer("tile_%d_wait_frames" % i)
+					end_timer("tile_%d" % i)
+					end_timer("compute_tiled_render_total")
 					return
 				await get_tree().process_frame
+		end_timer("tile_%d_wait_frames" % i)
 
+		start_timer("tile_%d_image_operations" % i)
 		var tile_texture: Texture = %SubViewport.get_texture()
 		var tile_image: Image = tile_texture.get_image()
 
@@ -235,10 +279,14 @@ func compute_tiled_render() -> void:
 		var dst_pos: Vector2i = Vector2i(start_x, start_y)
 
 		final_image.blit_rect(tile_image, src_rect, dst_pos)
+		end_timer("tile_%d_image_operations" % i)
 
+		start_timer("tile_%d_texture_update" % i)
 		var display_texture := ImageTexture.create_from_image(final_image)
 		%PostDisplay.material.set_shader_parameter('tiled_render', display_texture)
+		end_timer("tile_%d_texture_update" % i)
 
+		end_timer("tile_%d" % i)
 		i += 1
 
 	is_computing_tiles_internally = false
@@ -249,6 +297,8 @@ func compute_tiled_render() -> void:
 	%PostDisplay.material.set_shader_parameter('tiled_render', ImageTexture.create_from_image(final_image))
 	rendering_tiles = false
 	get_tree().current_scene.busy_rendering_tiles = false
+
+	end_timer("compute_tiled_render_total")
 
 	if should_start_tiled_render:
 		compute_tiled_render()

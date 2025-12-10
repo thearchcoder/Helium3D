@@ -5,7 +5,6 @@
 [ext_resource type="Script" uid="uid://b2eesw5c0v22p" path="res://scenes/main/attractor_init.gd" id="2_7nlll"]
 [ext_resource type="Shader" uid="uid://cbqmyudn47iy" path="res://scenes/main/loading_icon.gdshader" id="2_r1bmu"]
 [ext_resource type="Script" uid="uid://bvym81l6vx3qt" path="res://scenes/main/Voxelization.cs" id="2_rofvo"]
-[ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="3_4yvvm"]
 [ext_resource type="Script" uid="uid://4ttph603ay0x" path="res://scenes/main/CellularInit.cs" id="3_ii537"]
 [ext_resource type="Script" uid="uid://csen5k2ba045b" path="res://scenes/main/randomization.gd" id="4_s17dp"]
 [ext_resource type="Script" uid="uid://bj6ithljpyig5" path="res://scenes/main/tool_bar.gd" id="5_og0rs"]
@@ -31,6 +30,7 @@
 [ext_resource type="Texture2D" uid="uid://dmkbei7asjjvr" path="res://resources/icons/circle.svg" id="22_an3xl"]
 [ext_resource type="Script" uid="uid://b0xu3c1kn7vkv" path="res://scenes/main/current_time.gd" id="22_s3o3g"]
 [ext_resource type="Script" uid="uid://dke5j7p0y4xgi" path="res://scenes/main/library.gd" id="25_tbnf8"]
+[ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="31_7nlll"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6w6mm"]
 shader = ExtResource("2_r1bmu")
@@ -200,7 +200,7 @@ adjustment_enabled = true
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ul884"]
 render_priority = 0
-shader = ExtResource("3_4yvvm")
+shader = ExtResource("31_7nlll")
 shader_parameter/camera_type = 0
 shader_parameter/dof_enabled = false
 shader_parameter/dof_samples = 0

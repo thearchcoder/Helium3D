@@ -1,5 +1,6 @@
 extends Node
 
+#var formulas_path: String = OS.get_executable_path().get_base_dir() + "/formulas/"
 var value_nodes: Array[Control] = []
 
 func dupe_to_num(formatted_id: String) -> String:
@@ -7,6 +8,9 @@ func dupe_to_num(formatted_id: String) -> String:
 		var parts: PackedStringArray = formatted_id.split('Dupe ')
 		return parts[0] + '#' + str((ord(parts[1].to_upper()) - ord('A')) + 2)
 	return formatted_id
+
+func in_editor() -> bool:
+	return OS.has_feature("editor")
 
 func add_spaces(text: String) -> String:
 	var result := ""

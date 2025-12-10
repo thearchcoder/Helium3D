@@ -4,9 +4,9 @@
 // [KIFS]
 // [VARS]
 // advanced bool is_julia[false, true] = true
-// vec3 julia_c[(-2, -2, -2), (2, 2, 2)] = (-1, -2, 0)
+// vec3 julia_c[(-2, -2, -2), (2, 2, 2)] = (-0.693, -1.540, 0.227)
 // vec3 rotation[(-2, -2, -2), (2, 2, 2)] = (2, -2, 1.6)
-// advanced vec3 fold[(-1, -1, -1), (1, 1, 1)] = (1, 1, 1)
+// advanced vec3 fold[(-1, -1, -1), (1, 1, 1)] = (0.504, 1, 1)
 // advanced bool fold_z[false, true] = false
 // float min_radius[0.0, 1.0] = 0.25
 // vec3 offset[(-2, -2, -2), (2, 2, 2)] = (0, 0, -0.5)

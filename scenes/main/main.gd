@@ -261,10 +261,13 @@ func get_formulas_forloop_code() -> Array:
 
 func get_formulas_import_code() -> Array:
 	var formulas_import_code := []
-	
+
 	for formula in formulas:
 		var import_check: String = ' // -@' + str(formula['index']) if LAZY_IMPORTING else ''
+		#if OS.has_feature("editor"):
 		formulas_import_code.append('#include "res://formulas/' + formula['id'] + '.gdshaderinc"' + import_check)
+		#else:
+		#formulas_import_code.append('//' + formula['full_code'].replace('\n', '\n//') + import_check)
 	
 	return formulas_import_code
 
@@ -334,59 +337,125 @@ func create_duplicate(formula_name: String, original_content: String, path_to_fo
 
 func initialize_formulas(path_to_formulas: String) -> void:
 	if formulas != []:
+		print("Formulas already initialized, skipping")
 		return
 	
-	var paths: PackedStringArray = DirAccess.get_files_at(path_to_formulas)
+	print("Starting formula initialization from: ", path_to_formulas)
+	var paths: PackedStringArray
+	
+	if OS.has_feature("editor"):
+		print("Running in editor mode")
+		paths = DirAccess.get_files_at(path_to_formulas)
+		print("Found %d files in directory" % paths.size())
+		
+		var all_formulas: PackedStringArray = []
+		for formula_file_path in paths:
+			if formula_file_path.ends_with('.gdshaderinc'):
+				all_formulas.append(formula_file_path.get_basename())
+		
+		print("Filtered to %d formulas (including dupes)" % all_formulas.size())
+		
+		var list_file: FileAccess = FileAccess.open("res://formula_list.txt", FileAccess.WRITE)
+		list_file.store_string("\n".join(all_formulas))
+		list_file.close()
+		print("Wrote formula list to formula_list.txt")
+	else:
+		print("Running in exported build")
+		var formula_list_file: FileAccess = FileAccess.open("res://formula_list.txt", FileAccess.READ)
+		if not formula_list_file:
+			print("ERROR: Could not open formula_list.txt")
+			return
+		
+		var all_formulas: PackedStringArray = formula_list_file.get_as_text().split("\n")
+		formula_list_file.close()
+		print("Read %d formulas from formula_list.txt" % all_formulas.size())
+		
+		paths = []
+		for base in all_formulas:
+			if base.strip_edges() != "":
+				paths.append(base + ".gdshaderinc")
+		
+		print("Total paths: %d" % paths.size())
+	
 	var skipped_formulas: int = 0
-	
-	# Create dupes for all formulas
+	var processed: int = 0
+	var current_index: int = 1
+
 	for formula_file_path in paths:
 		if formula_file_path.get_file().get_extension().ends_with('uid'):
 			continue
-		
+
 		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
-		var formula_file_contents: String = formula_file.get_as_text()
-		
-		formula_file_contents = expand_templates(formula_file_contents)
-		@warning_ignore("integer_division")
-		var data: Dictionary = parse_data(formula_file_contents, (paths.find(formula_file_path) / 2) + 1 - skipped_formulas)
-		
-		# Create duplicate for each formula (excluding already duplicated ones)
-		if not formula_file_path.contains('dupe'):
-			for i in DUPES:
-				create_duplicate(data['id'], formula_file_contents, path_to_formulas, "abcdefghijklmnopqrstuvwxyz".split("")[i])
-	
-	for formula_file_path in paths:
-		if formula_file_path.get_file().get_extension().ends_with('uid'):
+		if not formula_file:
+			print("WARNING: Could not open file: ", formula_file_path)
 			continue
-		
-		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
+
 		var formula_file_contents: String = formula_file.get_as_text()
-		
 		formula_file_contents = expand_templates(formula_file_contents)
-		@warning_ignore("integer_division")
-		var data: Dictionary = parse_data(formula_file_contents, (paths.find(formula_file_path) / 2) + 1 - skipped_formulas)
-		
-		if data['disabled']:
+
+		var is_dupe: bool = formula_file_path.contains('dupe')
+		var index: int = current_index
+
+		print(formula_file_path.get_file().split('.')[0], ' | index: ', index)
+		var data: Dictionary = parse_data(formula_file_contents, index)
+
+		if not data.has('index'):
+			print("ERROR: Formula missing index: ", formula_file_path)
 			skipped_formulas += 1
 			continue
-		
+
+		if not is_dupe and OS.has_feature("editor"):
+			for i in DUPES:
+				create_duplicate(data['id'], formula_file_contents, path_to_formulas, "abcdefghijklmnopqrstuvwxyz".split("")[i])
+
+		if data.get('disabled', false):
+			skipped_formulas += 1
+			continue
+
 		formulas.append(data)
+		processed += 1
+		current_index += 1
+		
+		if processed % 100 == 0:
+			print("Processed %d formulas..." % processed)
+	
+	print("Formulas loaded: %d (skipped: %d)" % [processed, skipped_formulas])
+	
+	var extra_formulas_file: FileAccess = FileAccess.open("user://extra_formulas.txt", FileAccess.READ)
+	if extra_formulas_file:
+		print("Loading extra formulas from user://extra_formulas.txt")
+		var extra_paths: PackedStringArray = extra_formulas_file.get_as_text().split("\n")
+		extra_formulas_file.close()
+		
+		var extra_loaded: int = 0
+		for extra_path in extra_paths:
+			extra_path = extra_path.strip_edges()
+			if extra_path == "" or not FileAccess.file_exists(extra_path):
+				continue
+			
+			var extra_file: FileAccess = FileAccess.open(extra_path, FileAccess.READ)
+			if not extra_file:
+				print("WARNING: Could not open extra formula: ", extra_path)
+				continue
+			
+			var extra_contents: String = extra_file.get_as_text()
+			extra_contents = expand_templates(extra_contents)
+			var extra_data: Dictionary = parse_data(extra_contents, formulas.size() + 1)
+			
+			if not extra_data.get('disabled', false):
+				formulas.append(extra_data)
+				extra_loaded += 1
+		
+		print("Loaded %d extra formulas" % extra_loaded)
 	
 	formulas.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["index"] < b["index"])
+	print("Formula initialization complete. Total formulas: %d" % formulas.size())
 
-func parse_data(data: String, index_override: int = -1) -> Dictionary:
+func parse_data(data: String, index: int = -1) -> Dictionary:
 	var result := {}
-	var index_regex := RegEx.new()
 	
-	result['full_code'] = data
-	
-	index_regex.compile(r"\/\/\s+\[INDEX\]\n\/\/\s+(\d+)")
-	var index_match := index_regex.search(data)
-	if index_match:
-		result["index"] = int(index_match.get_string(1))
-	elif index_override != -1:
-		result["index"] = index_override
+	result["full_code"] = data
+	result["index"] = index
 	
 	var id_regex := RegEx.new()
 	id_regex.compile("// \\[ID\\]\\s*(.+)")
@@ -764,22 +833,30 @@ func update_fractal_code(current_formulas: Array[int]) -> void:
 	else:
 		if not modified_lines[6].begins_with('//'): modified_lines[6] = '//' + (modified_lines[6] as String)
 	
-	# Remove all comments to reduce shader compilation times
+	## Remove all comments to reduce shader compilation times
 	#var i: int = 0
 	#for line in (modified_lines as Array[String]):
+		#if line.begins_with('#include'):
+			#continue
+		#
 		#var comment_pos := line.find("//")
 		#
 		#if comment_pos != -1:
 			#line = line.substr(0, comment_pos)
 		#
-		#modified_lines[i] = line.rstrip(" \t")
+		#if line.rstrip(" \t") == "":
+			#modified_lines.remove_at(i)
+		#else:
+			#modified_lines[i] = line.rstrip(" \t")
 		#i += 1
 
 	shader.code = "\n".join(modified_lines)
 	
-	var file: FileAccess = FileAccess.open('res://renderer/generated_shader_code.gdshader', FileAccess.WRITE)
-	file.store_string(shader.code)
-	file.close()
+	if OS.has_feature("editor"):
+		var file: FileAccess = FileAccess.open('res://renderer/generated_shader_code.gdshader', FileAccess.WRITE)
+		if file:
+			file.store_string("\n".join(modified_lines))
+			file.close()
 	#print('---------------------------------')
 
 func _on_difficulty_pressed() -> void:

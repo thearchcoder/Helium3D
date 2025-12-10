@@ -68,16 +68,13 @@ func generate_offspring(data: Dictionary) -> Dictionary:
 	var current_formulas: Array[int] = %TabContainer.current_formulas
 	
 	var mutated := false
-	var mutations_done := 0
 	
 	if randf() * 100.0 < chance:
 		offspring["rotation"] = _mutate_vector3(offspring["rotation"], -180.0, 180.0)
 		mutated = true
-		mutations_done += 1
 	if randf() * 100.0 < chance:
 		offspring["kalaidoscope"] = _mutate_vector3(offspring["kalaidoscope"], 1.0, 8.0)
 		mutated = true
-		mutations_done += 1
 	
 	for formula_index in current_formulas:
 		if formula_index <= 0:
@@ -118,7 +115,6 @@ func generate_offspring(data: Dictionary) -> Dictionary:
 					offspring[uniform_name] = values[randi() % values.size()]
 			
 			mutated = true
-			mutations_done += 1
 	
 	if not mutated:
 		offspring["rotation"] = _mutate_vector3(offspring["rotation"], -180.0, 180.0)

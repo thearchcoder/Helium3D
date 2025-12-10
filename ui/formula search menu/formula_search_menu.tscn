@@ -7,6 +7,7 @@
 
 [node name="Popup" type="Window"]
 auto_translate_mode = 1
+oversampling_override = 1.0
 title = "Search Formula"
 initial_position = 1
 size = Vector2i(690, 250)
@@ -46,6 +47,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("1_hhs3y")
 flat = true
+allow_reselect = true
 
 [node name="Filter" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

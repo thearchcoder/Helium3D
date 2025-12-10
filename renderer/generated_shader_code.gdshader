@@ -151,24 +151,24 @@ uniform int voxel_resolution;
 
 #include "math.gdshaderinc"
 #include "tonemapping.gdshaderinc"
-uniform bool famazingsurf_is_julia; // -@1
-uniform vec3 famazingsurf_julia_c; // -@1
-uniform vec3 famazingsurf_rotation; // -@1
-uniform vec3 famazingsurf_fold; // -@1
-uniform bool famazingsurf_fold_z; // -@1
-uniform float famazingsurf_min_radius; // -@1
-uniform vec3 famazingsurf_offset; // -@1
-uniform float famazingsurf_scale; // -@1
-uniform vec2 famazingsurf_fold2; // -@1
-uniform bool famazingsurfdupea_is_julia; // -@2
-uniform vec3 famazingsurfdupea_julia_c; // -@2
-uniform vec3 famazingsurfdupea_rotation; // -@2
-uniform vec3 famazingsurfdupea_fold; // -@2
-uniform bool famazingsurfdupea_fold_z; // -@2
-uniform float famazingsurfdupea_min_radius; // -@2
-uniform vec3 famazingsurfdupea_offset; // -@2
-uniform float famazingsurfdupea_scale; // -@2
-uniform vec2 famazingsurfdupea_fold2; // -@2
+//uniform bool famazingsurf_is_julia; // -@1
+//uniform vec3 famazingsurf_julia_c; // -@1
+//uniform vec3 famazingsurf_rotation; // -@1
+//uniform vec3 famazingsurf_fold; // -@1
+//uniform bool famazingsurf_fold_z; // -@1
+//uniform float famazingsurf_min_radius; // -@1
+//uniform vec3 famazingsurf_offset; // -@1
+//uniform float famazingsurf_scale; // -@1
+//uniform vec2 famazingsurf_fold2; // -@1
+//uniform bool famazingsurfdupea_is_julia; // -@2
+//uniform vec3 famazingsurfdupea_julia_c; // -@2
+//uniform vec3 famazingsurfdupea_rotation; // -@2
+//uniform vec3 famazingsurfdupea_fold; // -@2
+//uniform bool famazingsurfdupea_fold_z; // -@2
+//uniform float famazingsurfdupea_min_radius; // -@2
+//uniform vec3 famazingsurfdupea_offset; // -@2
+//uniform float famazingsurfdupea_scale; // -@2
+//uniform vec2 famazingsurfdupea_fold2; // -@2
 //uniform bool famazingsurfdupeb_is_julia; // -@3
 //uniform vec3 famazingsurfdupeb_julia_c; // -@3
 //uniform vec3 famazingsurfdupeb_rotation; // -@3
@@ -2946,8 +2946,8 @@ uniform int fmandelbulb_quaternion_mode; // -@276
 //uniform vec4 fwobbletransformdupej_step; // -@572
 //uniform vec2 fwobbletransformdupej_range; // -@572
 
-#include "res://formulas/amazingsurf.gdshaderinc" // -@1
-#include "res://formulas/amazingsurfdupea.gdshaderinc" // -@2
+//#include "res://formulas/amazingsurf.gdshaderinc" // -@1
+//#include "res://formulas/amazingsurfdupea.gdshaderinc" // -@2
 //#include "res://formulas/amazingsurfdupeb.gdshaderinc" // -@3
 //#include "res://formulas/amazingsurfdupec.gdshaderinc" // -@4
 //#include "res://formulas/amazingsurfduped.gdshaderinc" // -@5
@@ -3557,8 +3557,8 @@ vec2 scene_sdf(vec3 p) {
 	for (int i = 0; i < iterations * int(number_of_active_formulas); i++) {
 		bool escaped = false;
 		int current_formula = formulas[int(mod(float(i), number_of_active_formulas))];
-if (current_formula == 1) amazingsurf_iter(z, dz, original_z, orbit, i); //-@1
-if (current_formula == 2) amazingsurfdupea_iter(z, dz, original_z, orbit, i); //-@2
+//if (current_formula == 1) amazingsurf_iter(z, dz, original_z, orbit, i); //-@1
+//if (current_formula == 2) amazingsurfdupea_iter(z, dz, original_z, orbit, i); //-@2
 //if (current_formula == 3) amazingsurfdupeb_iter(z, dz, original_z, orbit, i); //-@3
 //if (current_formula == 4) amazingsurfdupec_iter(z, dz, original_z, orbit, i); //-@4
 //if (current_formula == 5) amazingsurfduped_iter(z, dz, original_z, orbit, i); //-@5

@@ -49,6 +49,7 @@ project/assembly_name="Helium3D"
 [editor]
 
 movie_writer/movie_file="/home/thearchcoder/Documents/Godot/Helium3D/videos/trash/vid.avi"
+export/convert_text_resources_to_binary=false
 
 [input]
 

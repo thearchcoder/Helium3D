@@ -337,48 +337,34 @@ func create_duplicate(formula_name: String, original_content: String, path_to_fo
 
 func initialize_formulas(path_to_formulas: String) -> void:
 	if formulas != []:
-		print("Formulas already initialized, skipping")
 		return
 	
-	print("Starting formula initialization from: ", path_to_formulas)
 	var paths: PackedStringArray
 	
 	if OS.has_feature("editor"):
-		print("Running in editor mode")
 		paths = DirAccess.get_files_at(path_to_formulas)
-		print("Found %d files in directory" % paths.size())
 		
 		var all_formulas: PackedStringArray = []
 		for formula_file_path in paths:
 			if formula_file_path.ends_with('.gdshaderinc'):
 				all_formulas.append(formula_file_path.get_basename())
 		
-		print("Filtered to %d formulas (including dupes)" % all_formulas.size())
-		
 		var list_file: FileAccess = FileAccess.open("res://formula_list.txt", FileAccess.WRITE)
 		list_file.store_string("\n".join(all_formulas))
 		list_file.close()
-		print("Wrote formula list to formula_list.txt")
 	else:
-		print("Running in exported build")
 		var formula_list_file: FileAccess = FileAccess.open("res://formula_list.txt", FileAccess.READ)
 		if not formula_list_file:
-			print("ERROR: Could not open formula_list.txt")
 			return
 		
 		var all_formulas: PackedStringArray = formula_list_file.get_as_text().split("\n")
 		formula_list_file.close()
-		print("Read %d formulas from formula_list.txt" % all_formulas.size())
 		
 		paths = []
 		for base in all_formulas:
 			if base.strip_edges() != "":
 				paths.append(base + ".gdshaderinc")
-		
-		print("Total paths: %d" % paths.size())
 	
-	var skipped_formulas: int = 0
-	var processed: int = 0
 	var current_index: int = 1
 
 	for formula_file_path in paths:
@@ -387,7 +373,6 @@ func initialize_formulas(path_to_formulas: String) -> void:
 
 		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
 		if not formula_file:
-			print("WARNING: Could not open file: ", formula_file_path)
 			continue
 
 		var formula_file_contents: String = formula_file.get_as_text()
@@ -396,12 +381,9 @@ func initialize_formulas(path_to_formulas: String) -> void:
 		var is_dupe: bool = formula_file_path.contains('dupe')
 		var index: int = current_index
 
-		print(formula_file_path.get_file().split('.')[0], ' | index: ', index)
 		var data: Dictionary = parse_data(formula_file_contents, index)
 
 		if not data.has('index'):
-			print("ERROR: Formula missing index: ", formula_file_path)
-			skipped_formulas += 1
 			continue
 
 		if not is_dupe and OS.has_feature("editor"):
@@ -409,25 +391,16 @@ func initialize_formulas(path_to_formulas: String) -> void:
 				create_duplicate(data['id'], formula_file_contents, path_to_formulas, "abcdefghijklmnopqrstuvwxyz".split("")[i])
 
 		if data.get('disabled', false):
-			skipped_formulas += 1
 			continue
 
 		formulas.append(data)
-		processed += 1
 		current_index += 1
-		
-		if processed % 100 == 0:
-			print("Processed %d formulas..." % processed)
-	
-	print("Formulas loaded: %d (skipped: %d)" % [processed, skipped_formulas])
 	
 	var extra_formulas_file: FileAccess = FileAccess.open("user://extra_formulas.txt", FileAccess.READ)
 	if extra_formulas_file:
-		print("Loading extra formulas from user://extra_formulas.txt")
 		var extra_paths: PackedStringArray = extra_formulas_file.get_as_text().split("\n")
 		extra_formulas_file.close()
 		
-		var extra_loaded: int = 0
 		for extra_path in extra_paths:
 			extra_path = extra_path.strip_edges()
 			if extra_path == "" or not FileAccess.file_exists(extra_path):
@@ -435,7 +408,6 @@ func initialize_formulas(path_to_formulas: String) -> void:
 			
 			var extra_file: FileAccess = FileAccess.open(extra_path, FileAccess.READ)
 			if not extra_file:
-				print("WARNING: Could not open extra formula: ", extra_path)
 				continue
 			
 			var extra_contents: String = extra_file.get_as_text()
@@ -444,12 +416,9 @@ func initialize_formulas(path_to_formulas: String) -> void:
 			
 			if not extra_data.get('disabled', false):
 				formulas.append(extra_data)
-				extra_loaded += 1
-		
-		print("Loaded %d extra formulas" % extra_loaded)
 	
 	formulas.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["index"] < b["index"])
-	print("Formula initialization complete. Total formulas: %d" % formulas.size())
+	print("Formulas initialized, total: %d" % formulas.size())
 
 func parse_data(data: String, index: int = -1) -> Dictionary:
 	var result := {}

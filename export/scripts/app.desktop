@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Helium3D
+Comment=3D Fractal Explorer
+Exec=Helium3D
+Icon=helium3d
+Type=Application
+Categories=Graphics;3DGraphics;
+Terminal=false

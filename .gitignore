@@ -3,6 +3,10 @@
 /android/
 resources/fractal previews/
 videos/
-export/
 layers/
 CLAUDE.md
+
+export/godot-export/*
+!export/godot-export/.gitkeep
+export/build/*
+!export/build/.gitkeep

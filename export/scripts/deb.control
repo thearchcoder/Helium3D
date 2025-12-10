@@ -1,0 +1,8 @@
+Package: helium3d
+Version: 0.9.1-beta
+Section: graphics
+Priority: standard
+Architecture: amd64
+Maintainer: TheArchCoder
+Description: Helium3D - 3D Fractal Explorer
+ A powerful 3D fractal visualization tool

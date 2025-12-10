@@ -366,33 +366,33 @@ func initialize_formulas(path_to_formulas: String) -> void:
 				paths.append(base + ".gdshaderinc")
 	
 	var current_index: int = 1
-
+	
 	for formula_file_path in paths:
 		if formula_file_path.get_file().get_extension().ends_with('uid'):
 			continue
-
+		
 		var formula_file: FileAccess = FileAccess.open(path_to_formulas + formula_file_path, FileAccess.READ)
 		if not formula_file:
 			continue
-
+		
 		var formula_file_contents: String = formula_file.get_as_text()
 		formula_file_contents = expand_templates(formula_file_contents)
-
+		
 		var is_dupe: bool = formula_file_path.contains('dupe')
 		var index: int = current_index
-
+		
 		var data: Dictionary = parse_data(formula_file_contents, index)
-
+		
 		if not data.has('index'):
 			continue
-
+		
 		if not is_dupe and OS.has_feature("editor"):
 			for i in DUPES:
 				create_duplicate(data['id'], formula_file_contents, path_to_formulas, "abcdefghijklmnopqrstuvwxyz".split("")[i])
-
+		
 		if data.get('disabled', false):
 			continue
-
+		
 		formulas.append(data)
 		current_index += 1
 	

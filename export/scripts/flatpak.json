@@ -26,8 +26,30 @@
       ],
       "sources": [
         {
-          "type": "dir",
-          "path": "../../"
+          "type": "file",
+          "path": "Helium3D.x86_64"
+        },
+        {
+          "type": "file",
+          "path": "Helium3D.pck"
+        },
+        {
+          "type": "file",
+          "path": "icon.png"
+        },
+        {
+          "type": "file",
+          "path": "app.desktop"
+        },
+        {
+          "type": "archive",
+          "path": "formulas.tar.gz",
+          "strip-components": 0
+        },
+        {
+          "type": "archive",
+          "path": "data.tar.gz",
+          "strip-components": 0
         }
       ]
     }

@@ -11,9 +11,15 @@ VERSION="0.9.1-beta"
 
 echo "Building Helium3D for Linux"
 
+echo "Cleaning export directory..."
+rm -r "$EXPORT_DIR"/* 2>/dev/null || true
+rm -r "$BUILD_DIR"/appimage/* 2>/dev/null || true
+rm -r "$BUILD_DIR"/deb/* 2>/dev/null || true
+rm -r "$BUILD_DIR"/flatpak/* 2>/dev/null || true
+
 echo "Exporting with Godot..."
 cd "$PROJECT_DIR"
-/home/thearchcoder/Documents/Godot/Godot_v4.5-stable_mono_linux_x86_64/Godot_v4.5-stable_mono_linux.x86_64 --headless --export-release "Linux" "$EXPORT_DIR/$APP_NAME.x86_64"
+/home/thearchcoder/Documents/Godot/Godot_v4.5-stable_mono_linux_x86_64/Godot_v4.5-stable_mono_linux.x86_64 --headless --verbose --export-release "Linux" "$EXPORT_DIR/$APP_NAME.x86_64"
 
 echo "Copying formulas..."
 mkdir -p "$EXPORT_DIR/formulas"
@@ -92,8 +98,18 @@ fi
 echo "Building Flatpak..."
 if command -v flatpak-builder &> /dev/null; then
     if flatpak list --runtime | grep -q "org.freedesktop.Platform.*24.08"; then
-        cd "$EXPORT_DIR"
-        flatpak-builder --force-clean "$BUILD_DIR/flatpak/build" "$SCRIPT_DIR/flatpak.json"
+        mkdir -p "$BUILD_DIR/flatpak/source"
+        cp "$EXPORT_DIR/$APP_NAME.x86_64" "$BUILD_DIR/flatpak/source/"
+        cp "$EXPORT_DIR/$APP_NAME.pck" "$BUILD_DIR/flatpak/source/"
+        cp "$PROJECT_DIR/icon.png" "$BUILD_DIR/flatpak/source/"
+        cp "$SCRIPT_DIR/app.desktop" "$BUILD_DIR/flatpak/source/"
+
+        cd "$BUILD_DIR/flatpak/source"
+        tar czf formulas.tar.gz -C "$EXPORT_DIR" formulas
+        tar czf data.tar.gz -C "$EXPORT_DIR" data_Helium3D_linuxbsd_x86_64
+
+        cp "$SCRIPT_DIR/flatpak.json" .
+        flatpak-builder --force-clean "$BUILD_DIR/flatpak/build" flatpak.json
         flatpak build-export "$BUILD_DIR/flatpak/repo" "$BUILD_DIR/flatpak/build"
         flatpak build-bundle "$BUILD_DIR/flatpak/repo" "$BUILD_DIR/flatpak/$APP_NAME-$VERSION.flatpak" com.helium3d.Helium3D
     else

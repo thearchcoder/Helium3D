@@ -53,17 +53,17 @@ func _process(_delta: float) -> void:
 		call('free')
 		return
 	
-	if is_mouse_inside and Input.is_action_just_pressed("mouse click"):
+	if is_mouse_inside and Input.is_action_just_pressed("mouse click") and not $Circle/ColorPickerButton.get_popup().visible:
 		is_dragging = true
 		drag_start_x = get_global_mouse_position().x
 		original_position_x = position.x
 		
-	if Input.is_action_just_released("mouse click"):
+	if Input.is_action_just_released("mouse click") and is_dragging:
 		is_dragging = false
-		$Circle/ColorPickerButton.visible = true
+		if int(get_global_mouse_position().x) - int(drag_start_x) != 0:
+			$Circle/ColorPickerButton.get_popup().visible = false
 	
 	if is_dragging and int(get_global_mouse_position().x) - int(drag_start_x) != 0:
-		$Circle/ColorPickerButton.visible = false
 		var mouse_delta := get_global_mouse_position().x - drag_start_x
 		var previous_x := position.x
 		position.x = clamp(original_position_x + mouse_delta, -5, length)

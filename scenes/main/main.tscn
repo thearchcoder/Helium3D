@@ -463,25 +463,27 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
 text = " General "
-item_count = 9
-popup/item_0/text = "Recover"
-popup/item_0/id = 8
-popup/item_1/text = "About"
-popup/item_1/id = 0
+item_count = 10
+popup/item_0/text = "About"
+popup/item_0/id = 0
+popup/item_1/text = "Recover"
+popup/item_1/id = 8
 popup/item_2/text = "Author"
 popup/item_2/id = 1
-popup/item_3/id = 7
-popup/item_3/separator = true
-popup/item_4/text = "Undo"
-popup/item_4/id = 2
-popup/item_5/text = "Redo"
-popup/item_5/id = 3
-popup/item_6/id = 6
-popup/item_6/separator = true
-popup/item_7/text = "Examples"
-popup/item_7/id = 4
-popup/item_8/text = "Website"
-popup/item_8/id = 5
+popup/item_3/text = "Reset to Default"
+popup/item_3/id = 9
+popup/item_4/id = 7
+popup/item_4/separator = true
+popup/item_5/text = "Undo"
+popup/item_5/id = 2
+popup/item_6/text = "Redo"
+popup/item_6/id = 3
+popup/item_7/id = 6
+popup/item_7/separator = true
+popup/item_8/text = "Examples"
+popup/item_8/id = 4
+popup/item_9/text = "Website"
+popup/item_9/id = 5
 
 [node name="RandomizeButton" type="Button" parent="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar"]
 unique_name_in_owner = true
@@ -1454,6 +1456,68 @@ layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
 text = " No thanks. "
 
+[node name="ResetDefaultWindow" type="Window" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Reset to default"
+initial_position = 1
+size = Vector2i(500, 183)
+visible = false
+force_native = true
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="HBoxContainer" type="VBoxContainer" parent="ResetDefaultWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="ResetDefaultWindow/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ResetDefaultWindow/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="ResetDefaultWindow/HBoxContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/line_spacing = 4
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Are you sure that you want to switch to 
+the default project template? You will
+lose your progress if you dont save."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="ResetDefaultWindow/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer2" type="HBoxContainer" parent="ResetDefaultWindow/HBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ResetConfirmButton" type="Button" parent="ResetDefaultWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Confirm "
+
+[node name="ResetCancelButton" type="Button" parent="ResetDefaultWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Cancel "
+
 [node name="AuthorWindow" type="Window" parent="."]
 unique_name_in_owner = true
 oversampling_override = 1.0
@@ -1847,6 +1911,9 @@ compositor = SubResource("Compositor_s17dp")
 [connection signal="close_requested" from="CrashSaveWindow" to="." method="_on_crash_save_close_requested"]
 [connection signal="pressed" from="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2/RecoverButton" to="." method="_on_recover_button_pressed"]
 [connection signal="pressed" from="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2/CrashSaveCancelButton" to="." method="_on_crash_save_cancel_button_pressed"]
+[connection signal="close_requested" from="ResetDefaultWindow" to="." method="_on_crash_save_close_requested"]
+[connection signal="pressed" from="ResetDefaultWindow/HBoxContainer/MarginContainer/VBoxContainer2/ResetConfirmButton" to="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar" method="_on_reset_confirm_button_pressed"]
+[connection signal="pressed" from="ResetDefaultWindow/HBoxContainer/MarginContainer/VBoxContainer2/ResetCancelButton" to="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar" method="_on_reset_cancel_button_pressed"]
 [connection signal="close_requested" from="AuthorWindow" to="." method="_on_author_window_close_requested"]
 [connection signal="pressed" from="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2/DoneAuthor" to="." method="_on_done_author_pressed"]
 [connection signal="pressed" from="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2/CancelAuthor" to="." method="_on_cancel_author_pressed"]

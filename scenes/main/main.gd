@@ -35,6 +35,7 @@ var using_reflections: bool = false
 var busy_rendering_tiles: bool = false
 var last_tiled_render_image: Image
 var difficulty: String = 'simple'
+var default_app_state: Dictionary = {}
 
 var made_changes := false
 var history: Array[Dictionary] = []
@@ -73,6 +74,11 @@ func _ready() -> void:
 	
 	%PostDisplay.material.set_shader_parameter('previous_frame', previous_frame_texture)
 	%Fractal.material_override.set_shader_parameter('previous_frame', previous_frame_texture)
+	default_app_state = get_app_state()
+
+func reset_to_default() -> void:
+	if default_app_state != {}:
+		update_app_state(default_app_state)
 
 func action_occurred(add_to_history: bool = true) -> void:
 	if is_applying_history:

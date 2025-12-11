@@ -59,6 +59,8 @@ func _ready() -> void:
 			get_tree().current_scene.redo()
 		if id == 8:
 			recover()
+		if id == 9:
+			show_reset_default_popup()
 		if id == 4:
 			# TODO: Make a website. (examples page)
 			pass
@@ -66,6 +68,9 @@ func _ready() -> void:
 			# TODO: Make a website.
 			pass
 		)
+
+func show_reset_default_popup() -> void:
+	%ResetDefaultWindow.visible = true
 
 func set_autosave_interval(value: float) -> void:
 	autosave_interval = value
@@ -274,4 +279,18 @@ func _on_save_to_clipboard_pressed() -> void:
 func _on_quality_value_changed(option: String) -> void:
 	%SubViewport.set_quality(option.to_lower())
 	%SubViewport.refresh()
+	%DummyFocusButton.grab_focus()
+
+func _on_reset_cancel_button_pressed() -> void:
+	%ResetDefaultWindow.visible = false
+	%DummyFocusButton.grab_focus()
+
+func _on_reset_confirm_button_pressed() -> void:
+	DisplayServer.window_set_title("Helium3D")
+	field_filter = "project"
+	has_saved_before = false
+	saved_path = ""
+	get_tree().current_scene.reset_to_default()
+
+	%ResetDefaultWindow.visible = false
 	%DummyFocusButton.grab_focus()

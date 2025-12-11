@@ -1,9 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dv5u2gutb4uqn"]
 
 [ext_resource type="Script" uid="uid://dj4y17t2ma0ei" path="res://ui/fields/palette field color block/palette_field_color_block.gd" id="1_skj65"]
-[ext_resource type="Texture2D" uid="uid://em4me5v5s48x" path="res://resources/icons/circle.svg" id="2_74ubm"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c12m0"]
+[ext_resource type="Texture2D" uid="uid://dmkbei7asjjvr" path="res://resources/icons/circle.svg" id="2_74ubm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0fo1k"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -11,12 +9,14 @@ border_width_left = 10
 border_width_right = 10
 border_color = Color(0.8, 0.8, 0.8, 0.00392157)
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c12m0"]
+
 [node name="PaletteFieldColorBlock" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -1911.0
-offset_bottom = -1018.0
+offset_right = -1910.0
+offset_bottom = -1080.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 1
@@ -27,8 +27,9 @@ script = ExtResource("1_skj65")
 layout_mode = 2
 
 [node name="CircleOutline2" type="TextureRect" parent="Circle"]
+visible = false
 self_modulate = Color(0.454524, 0.454524, 0.454524, 1)
-layout_mode = 2
+layout_mode = 0
 offset_left = -1.0
 offset_top = -6.0
 offset_right = 11.0
@@ -38,7 +39,8 @@ pivot_offset = Vector2(6, 6)
 texture = ExtResource("2_74ubm")
 
 [node name="CircleOutline" type="TextureRect" parent="Circle"]
-layout_mode = 2
+visible = false
+layout_mode = 0
 offset_left = -1.0
 offset_top = -6.0
 offset_right = 11.0
@@ -47,17 +49,34 @@ scale = Vector2(1.33, 1.33)
 pivot_offset = Vector2(6, 6)
 texture = ExtResource("2_74ubm")
 
+[node name="ColorRectOutline" type="ColorRect" parent="Circle"]
+layout_mode = 0
+offset_left = -4.0
+offset_top = -9.0
+offset_right = 14.0
+offset_bottom = 9.0
+color = Color(0.43134022, 0.43134025, 0.43134025, 1)
+
+[node name="ColorRect" type="ColorRect" parent="Circle"]
+layout_mode = 0
+offset_left = -2.0
+offset_top = -7.0
+offset_right = 12.0
+offset_bottom = 7.0
+
 [node name="ColorPickerButton" type="ColorPickerButton" parent="Circle"]
-layout_mode = 2
+layout_mode = 0
 offset_left = -5.0
 offset_top = -10.0
 offset_right = 15.0
 offset_bottom = 10.0
-theme_override_styles/focus = SubResource("StyleBoxEmpty_c12m0")
-theme_override_styles/hover = SubResource("StyleBoxFlat_0fo1k")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0fo1k")
 theme_override_styles/normal = SubResource("StyleBoxFlat_0fo1k")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0fo1k")
+theme_override_styles/hover = SubResource("StyleBoxFlat_0fo1k")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_c12m0")
 
+[connection signal="mouse_entered" from="Circle" to="." method="_on_circle_mouse_entered"]
+[connection signal="mouse_exited" from="Circle" to="." method="_on_circle_mouse_exited"]
 [connection signal="color_changed" from="Circle/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
 [connection signal="mouse_entered" from="Circle/ColorPickerButton" to="." method="_on_circle_mouse_entered"]
 [connection signal="mouse_exited" from="Circle/ColorPickerButton" to="." method="_on_circle_mouse_exited"]

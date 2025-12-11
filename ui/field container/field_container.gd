@@ -41,7 +41,7 @@ func end_timer(label: String) -> float:
 	var end_time: float = Time.get_ticks_usec() / 1000000.0
 	var elapsed: float = end_time - start_time
 	
-	print("[PERF] %s: %.3f ms" % [label, elapsed * 1000.0])
+	#print("[PERF] %s: %.3f ms" % [label, elapsed * 1000.0])
 	performance_tracking.erase(label)
 	return elapsed
 
@@ -289,8 +289,8 @@ func compute_tiled_render() -> void:
 		end_timer("tile_%d" % i)
 		i += 1
 
+	await get_tree().process_frame
 	is_computing_tiles_internally = false
-
 	get_tree().current_scene.last_tiled_render_image = final_image
 
 	%PostDisplay.material.set_shader_parameter('display_tiled_render', true)

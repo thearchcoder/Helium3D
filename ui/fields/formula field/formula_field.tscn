@@ -55,11 +55,10 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_wa5cg")
 text = " > "
 
 [node name="Popup" parent="." index="2" instance=ExtResource("4_7tgqj")]
+visible = true
 
 [node name="Label" type="Label" parent="." index="3"]
-visible = false
 layout_mode = 2
-text = "idea formula field, use selection field. but if we the button it opens a tree like structure to pick the formula, just like godots node adding menu."
 
 [connection signal="pressed" from="HBoxContainer/Left" to="." method="_on_left_pressed"]
 [connection signal="pressed" from="HBoxContainer/Label" to="." method="_on_label_pressed"]

@@ -2,7 +2,7 @@ extends HBoxContainer
 
 var options: Array = []
 var filter: String = ''
-var type: String = 'any'
+var type: String = 'all'
 
 func add_option(option_name: String) -> void:
 	options.append(option_name)
@@ -23,7 +23,7 @@ func reload_popup() -> void:
 			if not matches_filter(option, filter):
 				should_add = false
 		
-		if type != 'any':
+		if type != 'all':
 			var formula_data: Dictionary = get_formula_data_from_name(option)
 			if formula_data.has('type'):
 				if formula_data['type'] != type and formula_data['type'] != 'unknown':
@@ -101,7 +101,19 @@ func _process(_delta: float) -> void:
 		$"../SearchCloseButton".emit_signal('pressed')
 
 func update_selected_item(_value: String) -> void:
-	$OptionButton.selected = $"../../../..".index
+	var current_index: int = $"../../../..".index
+	if current_index == 0 or current_index == -1:
+		return
+	
+	var formula_data: Dictionary = get_tree().current_scene.get_formula_data_from_index(current_index)
+	var formula_name: String = formula_data['formatted_id']
+	
+	for i in ($OptionButton.item_count as int):
+		if $OptionButton.get_item_text(i) == formula_name:
+			$OptionButton.selected = i
+			return
+	
+	$OptionButton.selected = 0
 
 func _ready() -> void:
 	$"../../../..".connect('value_changed', update_selected_item)
@@ -109,23 +121,24 @@ func _ready() -> void:
 	var formulas := get_tree().current_scene.formulas as Array[Dictionary]
 	options.clear()
 	for formula in formulas:
-		if formula['formatted_id'].to_lower().contains(' dupe '):
-			options.append(null)
-		else:
+		if not formula['formatted_id'].to_lower().contains(' dupe '):
 			options.append(formula['formatted_id'])
 	reload_popup()
-
 
 func _on_option_button_item_selected(index: int) -> void:
 	if index == 0 or index == -1:
 		return
 	
-	var ind: int = get_formula_data_from_name($OptionButton.get_item_text(index))['index']
+	var data: Dictionary = get_formula_data_from_name($OptionButton.get_item_text(index))
+	var ind: int = data['index']
+	
+	print(index, ' | ', data['index'])
+	print(options, ' | ', $"../../../..".options)
 	
 	for i in (get_tree().current_scene.MAX_ACTIVE_FORMULAS as int):
 		if ind in get_tree().current_scene.get_node('%TabContainer').current_formulas:
 			ind += 1
-
+	
 	$"../../../..".index = ind
 
 func _on_search_close_button_pressed() -> void:

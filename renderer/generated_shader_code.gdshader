@@ -250,10 +250,10 @@ uniform int voxel_resolution;
 //uniform vec3 famazingsurfdupej_offset; // -@11
 //uniform float famazingsurfdupej_scale; // -@11
 //uniform vec2 famazingsurfdupej_fold2; // -@11
-uniform float fbairddelta_angle; // -@12
-uniform vec3 fbairddelta_rotation1; // -@12
-uniform vec3 fbairddelta_rotation2; // -@12
-uniform float fbairddelta_scale; // -@12
+//uniform float fbairddelta_angle; // -@12
+//uniform vec3 fbairddelta_rotation1; // -@12
+//uniform vec3 fbairddelta_rotation2; // -@12
+//uniform float fbairddelta_scale; // -@12
 //uniform float fbairddeltadupea_angle; // -@13
 //uniform vec3 fbairddeltadupea_rotation1; // -@13
 //uniform vec3 fbairddeltadupea_rotation2; // -@13
@@ -382,11 +382,11 @@ uniform float fbairddelta_scale; // -@12
 //uniform bool fbristorbrotdupej_is_julia; // -@55
 //uniform vec3 fbristorbrotdupej_julia_c; // -@55
 //uniform vec3 fbristorbrotdupej_multiply; // -@55
-//uniform float fcircuit_scale; // -@56
-//uniform vec4 fcircuit_abs1; // -@56
-//uniform vec4 fcircuit_abs2; // -@56
-//uniform vec2 fcircuit_box_fold; // -@56
-//uniform vec4 fcircuit_box_minus; // -@56
+uniform float fcircuit_scale; // -@56
+uniform vec4 fcircuit_abs1; // -@56
+uniform vec4 fcircuit_abs2; // -@56
+uniform vec2 fcircuit_box_fold; // -@56
+uniform vec4 fcircuit_box_minus; // -@56
 //uniform float fcircuitdupea_scale; // -@57
 //uniform vec4 fcircuitdupea_abs1; // -@57
 //uniform vec4 fcircuitdupea_abs2; // -@57
@@ -2957,7 +2957,7 @@ uniform float fbairddelta_scale; // -@12
 //#include "res://formulas/amazingsurfdupeh.gdshaderinc" // -@9
 //#include "res://formulas/amazingsurfdupei.gdshaderinc" // -@10
 //#include "res://formulas/amazingsurfdupej.gdshaderinc" // -@11
-#include "res://formulas/bairddelta.gdshaderinc" // -@12
+//#include "res://formulas/bairddelta.gdshaderinc" // -@12
 //#include "res://formulas/bairddeltadupea.gdshaderinc" // -@13
 //#include "res://formulas/bairddeltadupeb.gdshaderinc" // -@14
 //#include "res://formulas/bairddeltadupec.gdshaderinc" // -@15
@@ -3001,7 +3001,7 @@ uniform float fbairddelta_scale; // -@12
 //#include "res://formulas/bristorbrotdupeh.gdshaderinc" // -@53
 //#include "res://formulas/bristorbrotdupei.gdshaderinc" // -@54
 //#include "res://formulas/bristorbrotdupej.gdshaderinc" // -@55
-//#include "res://formulas/circuit.gdshaderinc" // -@56
+#include "res://formulas/circuit.gdshaderinc" // -@56
 //#include "res://formulas/circuitdupea.gdshaderinc" // -@57
 //#include "res://formulas/circuitdupeb.gdshaderinc" // -@58
 //#include "res://formulas/circuitdupec.gdshaderinc" // -@59
@@ -3568,7 +3568,7 @@ vec2 scene_sdf(vec3 p) {
 //if (current_formula == 9) amazingsurfdupeh_iter(z, dz, original_z, orbit, i); //-@9
 //if (current_formula == 10) amazingsurfdupei_iter(z, dz, original_z, orbit, i); //-@10
 //if (current_formula == 11) amazingsurfdupej_iter(z, dz, original_z, orbit, i); //-@11
-if (current_formula == 12) bairddelta_iter(z, dz, original_z, orbit, i); //-@12
+//if (current_formula == 12) bairddelta_iter(z, dz, original_z, orbit, i); //-@12
 //if (current_formula == 13) bairddeltadupea_iter(z, dz, original_z, orbit, i); //-@13
 //if (current_formula == 14) bairddeltadupeb_iter(z, dz, original_z, orbit, i); //-@14
 //if (current_formula == 15) bairddeltadupec_iter(z, dz, original_z, orbit, i); //-@15
@@ -3975,7 +3975,7 @@ if (current_formula == 12) bairddelta_iter(z, dz, original_z, orbit, i); //-@12
 
 if (single_formula) {
 vec2 sdf_result;
-//sdf_result = circuit_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@56
+sdf_result = circuit_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@56
 //sdf_result = circuitdupea_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@57
 //sdf_result = circuitdupeb_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@58
 //sdf_result = circuitdupec_sdf(original_z); de = sdf_result.x; orbit = sdf_result.y; // -@59
@@ -4154,7 +4154,7 @@ vec2 sdf_result;
 
 } else {
 vec2 sdf_result;
-//sdf_result = circuit_sdf(original_z); de = max(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@56
+sdf_result = circuit_sdf(original_z); de = max(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@56
 //sdf_result = circuitdupea_sdf(original_z); de = max(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@57
 //sdf_result = circuitdupeb_sdf(original_z); de = max(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@58
 //sdf_result = circuitdupec_sdf(original_z); de = max(de, sdf_result.x); orbit = min(orbit, sdf_result.y); // -@59

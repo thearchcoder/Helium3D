@@ -1,9 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://caa5e0qf2jkom"]
+[gd_scene load_steps=8 format=3 uid="uid://caa5e0qf2jkom"]
 
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="1_hhs3y"]
 [ext_resource type="Script" uid="uid://60uhj6ud7guv" path="res://ui/fields/formula field/search_menu.gd" id="2_b44c0"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_sjmv3"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_f0bnj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ifq4i"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x5nan"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_g28fr"]
 
 [node name="Popup" type="Window"]
 auto_translate_mode = 1
@@ -46,6 +54,7 @@ text = "Formula: "
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("1_hhs3y")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_sjmv3")
 flat = true
 allow_reselect = true
 
@@ -61,6 +70,7 @@ text = "Filter: "
 [node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/Filter"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/focus = SubResource("StyleBoxEmpty_f0bnj")
 placeholder_text = "No filter"
 
 [node name="Type" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
@@ -77,21 +87,24 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("1_hhs3y")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ifq4i")
 flat = true
 selected = 0
-item_count = 6
-popup/item_0/text = "Escape"
-popup/item_0/id = 1
-popup/item_1/text = "IFS"
-popup/item_1/id = 2
-popup/item_2/text = "KIFS"
-popup/item_2/id = 3
-popup/item_3/text = "DIFS"
-popup/item_3/id = 4
-popup/item_4/text = "Transform"
-popup/item_4/id = 5
-popup/item_5/text = "Primitive"
-popup/item_5/id = 6
+item_count = 7
+popup/item_0/text = "All"
+popup/item_0/id = 0
+popup/item_1/text = "Escape"
+popup/item_1/id = 1
+popup/item_2/text = "IFS"
+popup/item_2/id = 2
+popup/item_3/text = "KIFS"
+popup/item_3/id = 3
+popup/item_4/text = "DIFS"
+popup/item_4/id = 4
+popup/item_5/text = "Transform"
+popup/item_5/id = 5
+popup/item_6/text = "Primitive"
+popup/item_6/id = 6
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -102,6 +115,7 @@ theme_override_styles/separator = SubResource("StyleBoxEmpty_x5nan")
 layout_mode = 2
 theme_override_fonts/font = ExtResource("1_hhs3y")
 theme_override_font_sizes/font_size = 18
+theme_override_styles/focus = SubResource("StyleBoxEmpty_g28fr")
 text = "Close"
 
 [connection signal="close_requested" from="." to="MarginContainer/VBoxContainer/SearchMenu" method="_on_popup_close_requested"]

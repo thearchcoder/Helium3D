@@ -42,14 +42,12 @@ func reload_popup() -> void:
 	
 	$OptionButton.selected = 1 if filtered_options.size() > 0 else 0
 
-func _physics_process(delta: float) -> void:
-	var ee: PopupMenu = $OptionButton.get_popup()
-	var old_position: int = ee.position.y
-	ee.min_size.y = 0
-	ee.max_size.y = 500
-	ee.size.y = min(ee.size.y, 500)
-	ee.position.y = $OptionButton.global_position.y
-	
+func _physics_process(_delta: float) -> void:
+	var popup: PopupMenu = $OptionButton.get_popup()
+	popup.min_size.y = 0
+	popup.max_size.y = 500
+	popup.size.y = min(popup.size.y, 500)
+	popup.position.y = $OptionButton.get_screen_position().y + $OptionButton.size.y + 8
 
 func matches_filter(text: String, search_term: String) -> bool:
 	var text_lower := text.to_lower()
@@ -108,10 +106,15 @@ func update_selected_item(_value: String) -> void:
 func _ready() -> void:
 	$"../../../..".connect('value_changed', update_selected_item)
 	await get_tree().process_frame
-	for formula in (get_tree().current_scene.formulas as Array[Dictionary]):
-		if not formula['formatted_id'].to_lower().contains(' dupe '):
-			add_option(formula['formatted_id'])
+	var formulas := get_tree().current_scene.formulas as Array[Dictionary]
+	options.clear()
+	for formula in formulas:
+		if formula['formatted_id'].to_lower().contains(' dupe '):
+			options.append(null)
+		else:
+			options.append(formula['formatted_id'])
 	reload_popup()
+
 
 func _on_option_button_item_selected(index: int) -> void:
 	if index == 0 or index == -1:

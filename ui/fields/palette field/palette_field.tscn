@@ -81,6 +81,7 @@ size_flags_horizontal = 3
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ptrqr")
+action_mode = 0
 flat = true
 
 [node name="Blocks" type="Control" parent="MarginContainer" index="3"]

@@ -64,6 +64,7 @@ func update_animation_frames_data() -> void:
 				all_field_names.append(field_name)
 
 	var field_interpolation_data: Dictionary = {}
+	var fields_to_interpolate: Array[String] = []
 
 	for field_name in all_field_names:
 		var field_values: Array[Variant] = []
@@ -74,7 +75,7 @@ func update_animation_frames_data() -> void:
 				field_values.append(keyframes[i][field_name])
 				field_indices.append(i)
 
-		var all_same := true
+		var all_same: bool = true
 		if field_values.size() >= 2:
 			var first_value: Variant = field_values[0]
 			for i in range(1, field_values.size()):
@@ -85,15 +86,44 @@ func update_animation_frames_data() -> void:
 			if not all_same or field_name in required_fields:
 				field_interpolation_data[field_name] = {
 					"values": field_values,
-					"indices": field_indices
+					"indices": field_indices,
+					"interpolated": null
 				}
+				fields_to_interpolate.append(field_name)
 
-	var total_frames := int((keyframes.size() - 1) * fps)
+	var threads: Array[Thread] = []
+	var thread_results: Array[Dictionary] = []
+	thread_results.resize(fields_to_interpolate.size())
+	
+	for i in range(fields_to_interpolate.size()):
+		var field_name: String = fields_to_interpolate[i]
+		var field_info: Dictionary = field_interpolation_data[field_name]
+		var thread: Thread = Thread.new()
+		
+		var thread_data: Dictionary = {
+			"field_name": field_name,
+			"values": field_info["values"],
+			"index": i
+		}
+		
+		thread.start(_interpolate_field_thread.bind(thread_data, interpolation, fps))
+		threads.append(thread)
+
+	for i in range(threads.size()):
+		var result: Variant = threads[i].wait_to_finish()
+		if result is Dictionary:
+			thread_results[result["index"]] = result
+
+	for result_data in thread_results:
+		if result_data.has("field_name"):
+			field_interpolation_data[result_data["field_name"]]["interpolated"] = result_data["interpolated_values"]
+
+	var total_frames: int = int((keyframes.size() - 1) * fps)
 	for frame in range(total_frames + 1):
 		var current_position: float = frame / float(fps)
 		var frame_data: Dictionary = {}
 
-		var base_keyframe_idx := int(current_position)
+		var base_keyframe_idx: int = int(current_position)
 		if base_keyframe_idx >= keyframes.size():
 			base_keyframe_idx = keyframes.size() - 1
 
@@ -105,22 +135,11 @@ func update_animation_frames_data() -> void:
 
 		for field_name in (field_interpolation_data.keys() as Array[String]):
 			var field_info: Dictionary = field_interpolation_data[field_name]
-			var indices: Array[int] = field_info["indices"]
+			var interpolated_values: Array = field_info["interpolated"]
 
-			var start_idx := 0
-			for i in range(indices.size()):
-				if indices[i] <= current_position:
-					start_idx = i
-
-			if start_idx >= indices.size() - 1:
-				continue
-
-			var keyframe_values: Array[Variant] = field_info["values"]
-
-			var interpolated_values := Interpolation.interpolate(keyframe_values, interpolation, fps)
-
-			if interpolated_values.size() == 0:
-				var closest_idx := 0
+			if interpolated_values == null or interpolated_values.size() == 0:
+				var indices: Array[int] = field_info["indices"]
+				var closest_idx: int = 0
 				for i in range(indices.size()):
 					if indices[i] <= current_position:
 						closest_idx = indices[i]
@@ -129,7 +148,7 @@ func update_animation_frames_data() -> void:
 					frame_data[field_name] = keyframes[closest_idx][field_name]
 			else:
 				var total_t: float = current_position / float(keyframes.size() - 1)
-				var interpolated_idx := int(total_t * (interpolated_values.size() - 1))
+				var interpolated_idx: int = int(total_t * (interpolated_values.size() - 1))
 				interpolated_idx = clamp(interpolated_idx, 0, interpolated_values.size() - 1)
 
 				frame_data[field_name] = interpolated_values[interpolated_idx]
@@ -137,6 +156,14 @@ func update_animation_frames_data() -> void:
 		animation_frames_data.append(frame_data)
 
 	animation_frames_data.append(keyframes[keyframes.size() - 1].duplicate(true))
+
+func _interpolate_field_thread(thread_data: Dictionary, interp_mode: int, fps_val: int) -> Dictionary:
+	var interpolated: Array = Interpolation.interpolate(thread_data["values"], interp_mode, fps_val)
+	return {
+		"field_name": thread_data["field_name"],
+		"interpolated_values": interpolated,
+		"index": thread_data["index"]
+	}
 
 func insert_keyframe() -> void:
 	var data: Dictionary = get_tree().current_scene.fields

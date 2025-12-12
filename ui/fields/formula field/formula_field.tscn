@@ -55,7 +55,6 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_wa5cg")
 text = " > "
 
 [node name="Popup" parent="." index="2" instance=ExtResource("4_7tgqj")]
-oversampling_override = 1.0
 
 [node name="Label" type="Label" parent="." index="3"]
 visible = false

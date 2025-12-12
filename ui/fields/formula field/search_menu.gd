@@ -42,6 +42,15 @@ func reload_popup() -> void:
 	
 	$OptionButton.selected = 1 if filtered_options.size() > 0 else 0
 
+func _physics_process(delta: float) -> void:
+	var ee: PopupMenu = $OptionButton.get_popup()
+	var old_position: int = ee.position.y
+	ee.min_size.y = 0
+	ee.max_size.y = 500
+	ee.size.y = min(ee.size.y, 500)
+	ee.position.y = $OptionButton.global_position.y
+	
+
 func matches_filter(text: String, search_term: String) -> bool:
 	var text_lower := text.to_lower()
 	var search_lower := search_term.to_lower()

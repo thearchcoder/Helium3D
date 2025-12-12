@@ -79,7 +79,13 @@ func _on_button_button_down() -> void:
 	block.position = Vector2(0, size.y - 23)
 	
 	block.is_dragging = true
-	block.prevent_opening_colorpicker = true
+	block.focused = true
+	for other_block in %Blocks.get_children():
+		other_block.set_selected(false)
+	block.set_selected(true)
+	#block.color = [
+		#Color("#C85A6E"), Color("#5A8EC8"), Color("#6EC85A"), Color("#C8A05A"), Color("#8E5AC8"), Color("#5AC8A0"), Color("#C8705A"), Color("#5AC870"), Color("#A05AC8"), Color("#5A70C8"), Color("#C85AA0"),
+	#].pick_random()
 	block.drag_start_x = get_global_mouse_position().x - 1
 	block.original_position_x = get_global_mouse_position().x - block.global_position.x - 6
 	block.offset = block.position.x / $MarginContainer.size.x

@@ -1,15 +1,20 @@
-[gd_scene load_steps=5 format=3 uid="uid://dv5u2gutb4uqn"]
+[gd_scene load_steps=4 format=3 uid="uid://dv5u2gutb4uqn"]
 
 [ext_resource type="Script" uid="uid://dj4y17t2ma0ei" path="res://ui/fields/palette field color block/palette_field_color_block.gd" id="1_skj65"]
-[ext_resource type="Texture2D" uid="uid://dmkbei7asjjvr" path="res://resources/icons/circle.svg" id="2_74ubm"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0fo1k"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
-border_width_left = 10
-border_width_right = 10
-border_color = Color(0.8, 0.8, 0.8, 0.00392157)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m84id"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c12m0"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1afcn"]
+bg_color = Color(0.41981313, 0.41981313, 0.41981304, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="PaletteFieldColorBlock" type="VBoxContainer"]
 anchors_preset = 15
@@ -23,60 +28,62 @@ theme_override_constants/separation = 1
 alignment = 1
 script = ExtResource("1_skj65")
 
+[node name="VisibleOnScreen" type="VisibleOnScreenEnabler2D" parent="."]
+position = Vector2(5, 0)
+
 [node name="Circle" type="Control" parent="."]
 layout_mode = 2
 
-[node name="CircleOutline2" type="TextureRect" parent="Circle"]
-visible = false
-self_modulate = Color(0.454524, 0.454524, 0.454524, 1)
-layout_mode = 0
-offset_left = -1.0
-offset_top = -6.0
-offset_right = 11.0
-offset_bottom = 6.0
-scale = Vector2(1.72145, 1.72145)
-pivot_offset = Vector2(6, 6)
-texture = ExtResource("2_74ubm")
-
-[node name="CircleOutline" type="TextureRect" parent="Circle"]
-visible = false
-layout_mode = 0
-offset_left = -1.0
-offset_top = -6.0
-offset_right = 11.0
-offset_bottom = 6.0
-scale = Vector2(1.33, 1.33)
-pivot_offset = Vector2(6, 6)
-texture = ExtResource("2_74ubm")
-
-[node name="ColorRectOutline" type="ColorRect" parent="Circle"]
-layout_mode = 0
-offset_left = -4.0
-offset_top = -9.0
-offset_right = 14.0
-offset_bottom = 9.0
-color = Color(0.43134022, 0.43134025, 0.43134025, 1)
-
-[node name="ColorRect" type="ColorRect" parent="Circle"]
+[node name="ColorRect" type="Panel" parent="Circle"]
+z_index = 1
 layout_mode = 0
 offset_left = -2.0
 offset_top = -7.0
 offset_right = 12.0
 offset_bottom = 7.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_m84id")
 
-[node name="ColorPickerButton" type="ColorPickerButton" parent="Circle"]
+[node name="ColorRectOutline" type="Panel" parent="Circle"]
+layout_mode = 1
+offset_left = -4.0
+offset_top = -9.0
+offset_right = 14.0
+offset_bottom = 9.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1afcn")
+
+[node name="PickerCloser" type="Button" parent="Circle"]
+visible = false
 layout_mode = 0
-offset_left = -5.0
-offset_top = -10.0
-offset_right = 15.0
-offset_bottom = 10.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_0fo1k")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0fo1k")
-theme_override_styles/hover = SubResource("StyleBoxFlat_0fo1k")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_c12m0")
+offset_left = -11628.0
+offset_top = -8021.0
+offset_right = 13596.0
+offset_bottom = 9451.0
+flat = true
 
+[node name="PopupPanel" type="PopupPanel" parent="Circle"]
+oversampling_override = 1.0
+size = Vector2i(316, 625)
+
+[node name="ColorPicker" type="ColorPicker" parent="Circle/PopupPanel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin = 9
+can_add_swatches = false
+
+[connection signal="focus_exited" from="." to="." method="_on_focus_exited"]
 [connection signal="mouse_entered" from="Circle" to="." method="_on_circle_mouse_entered"]
 [connection signal="mouse_exited" from="Circle" to="." method="_on_circle_mouse_exited"]
-[connection signal="color_changed" from="Circle/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
-[connection signal="mouse_entered" from="Circle/ColorPickerButton" to="." method="_on_circle_mouse_entered"]
-[connection signal="mouse_exited" from="Circle/ColorPickerButton" to="." method="_on_circle_mouse_exited"]
+[connection signal="mouse_entered" from="Circle/ColorRectOutline" to="." method="_on_color_rect_outline_mouse_entered"]
+[connection signal="mouse_exited" from="Circle/ColorRectOutline" to="." method="_on_color_rect_outline_mouse_exited"]
+[connection signal="pressed" from="Circle/PickerCloser" to="." method="_on_picker_closer_pressed"]
+[connection signal="visibility_changed" from="Circle/PopupPanel" to="." method="_on_popup_panel_visibility_changed"]
+[connection signal="color_changed" from="Circle/PopupPanel/ColorPicker" to="." method="_on_color_picker_color_changed"]

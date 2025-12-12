@@ -2,15 +2,14 @@ extends Node
 
 enum InterpolationModes { LINEAR, BEZIER, CATMULLROM }
 
-var _cache: Dictionary = {}
-var _cache_size: int = 0
-const MAX_CACHE_SIZE: int = 100 * 1024 * 1024
-const MIN_POINTS_FOR_THREADING: int = 4
+var cache: Dictionary = {}
+var cache_size: int = 0
+const MAX_CACHE_SIZE: int = 200 * 1024 * 1024
 
-func _estimate_result_size(values: Array, steps: int) -> int:
-	if values.is_empty():
+func estimate_result_size(result: Array) -> int:
+	if result.is_empty():
 		return 0
-	var first_value: Variant = values[0]
+	var first_value: Variant = result[0]
 	var base_size: int = 16
 	if first_value is Vector2:
 		base_size = 8
@@ -24,26 +23,51 @@ func _estimate_result_size(values: Array, steps: int) -> int:
 		base_size = 8
 	elif first_value is bool:
 		base_size = 1
-	return (values.size() - 1) * steps * base_size
+	return result.size() * base_size + 32
 
-func _generate_cache_key(values: Array, mode: InterpolationModes, steps: int) -> String:
-	return str(values.hash()) + "_" + str(mode) + "_" + str(steps)
+func serialize_value(value: Variant) -> String:
+	if value is Vector2:
+		return "v2_%.6f_%.6f" % [value.x, value.y]
+	elif value is Vector3:
+		return "v3_%.6f_%.6f_%.6f" % [value.x, value.y, value.z]
+	elif value is Vector4:
+		return "v4_%.6f_%.6f_%.6f_%.6f" % [value.x, value.y, value.z, value.w]
+	elif value is float:
+		return "f_%.6f" % value
+	elif value is int:
+		return "i_%d" % value
+	elif value is bool:
+		return "b_%d" % (1 if value else 0)
+	return str(value)
 
-func _add_to_cache(key: String, result: Array) -> void:
-	var estimated_size: int = result.size() * 16
-	if _cache_size + estimated_size > MAX_CACHE_SIZE:
-		_cache.clear()
-		_cache_size = 0
-	_cache[key] = result
-	_cache_size += estimated_size
+func generate_cache_key(values: Array, mode: InterpolationModes, steps: int) -> String:
+	var key_parts: Array[String] = []
+	key_parts.append(str(mode))
+	key_parts.append(str(steps))
+	for i in values.size():
+		var val: Variant = values[i]
+		key_parts.append(serialize_value(val))
+	return "_".join(key_parts)
+
+func add_to_cache(key: String, result: Array) -> void:
+	var estimated_size: int = estimate_result_size(result)
+	
+	while cache_size + estimated_size > MAX_CACHE_SIZE and not cache.is_empty():
+		var first_key: String = cache.keys()[0]
+		var removed_result: Array = cache[first_key]
+		cache_size -= estimate_result_size(removed_result)
+		cache.erase(first_key)
+	
+	cache[key] = result
+	cache_size += estimated_size
 
 func interpolate(values: Array[Variant], interpolation_mode: InterpolationModes, fps: int) -> Array[Variant]:
 	if values.is_empty():
 		return []
 	
-	var cache_key: String = _generate_cache_key(values, interpolation_mode, fps)
-	if cache_key in _cache:
-		return _cache[cache_key]
+	var cache_key: String = generate_cache_key(values, interpolation_mode, fps)
+	if cache_key in cache:
+		return cache[cache_key]
 	
 	var first_value: Variant = values[0]
 	var catmull_rom_tension: float = 1.0
@@ -93,9 +117,19 @@ func interpolate(values: Array[Variant], interpolation_mode: InterpolationModes,
 		result = linear_bool_chain(values, fps)
 	
 	if not result.is_empty():
-		_add_to_cache(cache_key, result)
+		add_to_cache(cache_key, result)
 	
 	return result
+
+func clear_cache() -> void:
+	cache.clear()
+	cache_size = 0
+
+func get_cache_size() -> int:
+	return cache_size
+
+func get_cache_count() -> int:
+	return cache.size()
 
 func linear_vector2_chain(target_points: Array, steps: int) -> Array[Vector2]:
 	var total_size: int = (target_points.size() - 1) * steps

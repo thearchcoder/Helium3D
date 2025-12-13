@@ -71,9 +71,14 @@ func deselect() -> void:
 	update_panel()
 
 func _physics_process(_delta: float) -> void:
-	if is_mouse_hovering and Input.is_action_just_pressed("mouse right click"):
+	if is_selected and Input.is_action_just_pressed("delete"):
 		get_animation_track().remove_keyframe(data)
-
+	
+	if is_mouse_hovering and Input.is_action_just_pressed("mouse right click"):
+		$PopupMenu.grab_focus()
+		$PopupMenu.position = DisplayServer.mouse_get_position()
+		$PopupMenu.popup()
+	
 	if is_mouse_hovering and Input.is_action_just_pressed("mouse click"):
 		select()
 		is_holding = true

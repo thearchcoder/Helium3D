@@ -5,6 +5,7 @@ resources/fractal previews/
 videos/
 layers/
 CLAUDE.md
+formulas/*dupe*
 
 export/godot-export/*
 !export/godot-export/.gitkeep

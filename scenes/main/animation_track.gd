@@ -205,6 +205,27 @@ func remove_keyframe(target_keyframe_data: Dictionary) -> void:
 
 	reload_keyframes()
 
+func reorder_keyframe(from_index: int, to_index: int, select_target: bool = false) -> void:
+	stop()
+
+	if from_index < 0 or from_index >= keyframes.size():
+		return
+	if to_index < 0 or to_index >= keyframes.size():
+		return
+	if from_index == to_index:
+		return
+
+	var keyframe_data: Dictionary = keyframes[from_index]
+	keyframes.remove_at(from_index)
+	keyframes.insert(to_index, keyframe_data)
+
+	reload_keyframes()
+
+	if select_target:
+		var target_keyframe: Node = %Keyframes.get_child(to_index)
+		if target_keyframe.has_method("select"):
+			target_keyframe.select()
+
 func reload_keyframes() -> void:
 	for child in %Keyframes.get_children():
 		%Keyframes.remove_child(child)

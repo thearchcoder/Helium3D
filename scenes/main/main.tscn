@@ -1146,7 +1146,7 @@ region_enabled = true
 region_rect = Rect2(0, 6, 12, 6)
 
 [node name="ColorRect" type="ColorRect" parent="UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer/Time"]
-z_index = 1
+z_index = 10
 offset_left = -1.0
 offset_right = 1.0
 offset_bottom = 144.0

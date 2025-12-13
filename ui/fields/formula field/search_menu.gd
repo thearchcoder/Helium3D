@@ -132,9 +132,6 @@ func _on_option_button_item_selected(index: int) -> void:
 	var data: Dictionary = get_formula_data_from_name($OptionButton.get_item_text(index))
 	var ind: int = data['index']
 	
-	print(index, ' | ', data['index'])
-	print(options, ' | ', $"../../../..".options)
-	
 	for i in (get_tree().current_scene.MAX_ACTIVE_FORMULAS as int):
 		if ind in get_tree().current_scene.get_node('%TabContainer').current_formulas:
 			ind += 1

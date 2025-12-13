@@ -19,8 +19,8 @@ func _process(_delta: float) -> void:
 	elif Input.is_action_just_released("mouse click"):
 		is_holding = false
 
-	#if is_holding:
-		#position.x = get_global_mouse_position().x - drag_offset.x
+	if is_holding:
+		position.x = get_global_mouse_position().x - drag_offset.x
 
 func _on_mouse_entered() -> void: is_mouse_hovering = true
 func _on_mouse_exited() -> void: is_mouse_hovering = false

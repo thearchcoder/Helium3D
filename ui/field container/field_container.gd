@@ -561,11 +561,11 @@ func _ready() -> void:
 			update_tile_bounds()
 			},
 			{'name': 'compute_tiled_render', 'bool_button': true, 'type': 'bool', 'default_value': false, 'onchange_override': func(_val: bool) -> void:
-				if not %Fractal.material_override.get_shader_parameter('tiled'):
-					Global.error('Cant compute tiled render. Please check "Tiled" first.')
-					return
-				
 				if Engine.get_frames_drawn() != 0:
+					if not %Fractal.material_override.get_shader_parameter('tiled'):
+						Global.error('Cant compute tiled render. Please check "Tiled" first.')
+						return
+					
 					%Rendering.compute_tiled_render()
 				},
 		]

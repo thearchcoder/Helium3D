@@ -1,6 +1,5 @@
 extends Node
 
-#var formulas_path: String = OS.get_executable_path().get_base_dir() + "/formulas/"
 var value_nodes: Array[Control] = []
 
 func dupe_to_num(formatted_id: String) -> String:
@@ -21,9 +20,10 @@ func add_spaces(text: String) -> String:
 		result += character
 	return result
 
-func error(_msg: String) -> void:
-	# TODO
-	pass
+func error(msg: String) -> void:
+	var error_window := get_tree().current_scene.get_node("ErrorWindow")
+	error_window.text = msg
+	error_window.visible = true
 
 func get_shader_field(field_name: String) -> Variant:
 	return %Fractal.material_override.get_shader_parameter(field_name)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=82 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=83 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
@@ -30,6 +30,7 @@
 [ext_resource type="Texture2D" uid="uid://dmkbei7asjjvr" path="res://resources/icons/circle.svg" id="22_an3xl"]
 [ext_resource type="Script" uid="uid://b0xu3c1kn7vkv" path="res://scenes/main/current_time.gd" id="22_s3o3g"]
 [ext_resource type="Script" uid="uid://dke5j7p0y4xgi" path="res://scenes/main/library.gd" id="25_tbnf8"]
+[ext_resource type="Script" uid="uid://f0cc6w25tiy2" path="res://scenes/main/error_window.gd" id="26_ii537"]
 [ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="31_7nlll"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6w6mm"]
@@ -1518,6 +1519,66 @@ layout_mode = 2
 theme_override_fonts/font = ExtResource("8_rhsly")
 text = " Cancel "
 
+[node name="ErrorWindow" type="Window" parent="."]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Error"
+initial_position = 1
+size = Vector2i(500, 183)
+visible = false
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+script = ExtResource("26_ii537")
+
+[node name="HBoxContainer" type="VBoxContainer" parent="ErrorWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="ErrorWindow/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ErrorWindow/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="ErrorWindow/HBoxContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/line_spacing = 4
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = "Some error. Whatever it is."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="ErrorWindow/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer2" type="HBoxContainer" parent="ErrorWindow/HBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ForumsButton" type="Button" parent="ErrorWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Forums "
+
+[node name="OkayButton" type="Button" parent="ErrorWindow/HBoxContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_rhsly")
+text = " Okay "
+
 [node name="AuthorWindow" type="Window" parent="."]
 unique_name_in_owner = true
 oversampling_override = 1.0
@@ -1914,6 +1975,9 @@ compositor = SubResource("Compositor_s17dp")
 [connection signal="close_requested" from="ResetDefaultWindow" to="." method="_on_crash_save_close_requested"]
 [connection signal="pressed" from="ResetDefaultWindow/HBoxContainer/MarginContainer/VBoxContainer2/ResetConfirmButton" to="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar" method="_on_reset_confirm_button_pressed"]
 [connection signal="pressed" from="ResetDefaultWindow/HBoxContainer/MarginContainer/VBoxContainer2/ResetCancelButton" to="UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar" method="_on_reset_cancel_button_pressed"]
+[connection signal="close_requested" from="ErrorWindow" to="." method="_on_crash_save_close_requested"]
+[connection signal="pressed" from="ErrorWindow/HBoxContainer/MarginContainer/VBoxContainer2/ForumsButton" to="." method="_on_forums_button_pressed"]
+[connection signal="pressed" from="ErrorWindow/HBoxContainer/MarginContainer/VBoxContainer2/OkayButton" to="." method="_on_okay_button_pressed"]
 [connection signal="close_requested" from="AuthorWindow" to="." method="_on_author_window_close_requested"]
 [connection signal="pressed" from="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2/DoneAuthor" to="." method="_on_done_author_pressed"]
 [connection signal="pressed" from="AuthorWindow/HBoxContainer/MarginContainer/VBoxContainer2/CancelAuthor" to="." method="_on_cancel_author_pressed"]

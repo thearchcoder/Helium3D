@@ -109,6 +109,9 @@ func load_project_data(path: String, load_field_filter: String, is_buffer: bool 
 	if file:
 		var fields: Dictionary = file.get_var()
 		
+		if not fields:
+			Global.error('Failed to get clipboard data. (buffer load error)')
+		
 		if load_field_filter != "" and load_field_filter != "project":
 			var filtered_fields: Dictionary = {}
 			
@@ -150,7 +153,6 @@ func load_project_data(path: String, load_field_filter: String, is_buffer: bool 
 		get_tree().current_scene.update_app_state(fields, true)
 		%SubViewport.refresh()
 		file.close()
-
 
 func save_image(path: String) -> void:
 	if path.ends_with('.hlm'):
@@ -243,9 +245,10 @@ func _on_antialiasing_value_changed(option: String) -> void:
 
 func _on_load_from_clipboard_pressed() -> void:
 	var data: String = DisplayServer.clipboard_get()
-	data = data.lstrip(' ')
+	data = data.replace(' ', '')
 	
 	if not data.begins_with('Helium3D['):
+		Global.error('Invalid data format. A proper Helium3D clipboard file should look something like "Helium3D[a bunch of cryptic text]".')
 		return
 	
 	data = data.trim_prefix('Helium3D[')
@@ -253,10 +256,15 @@ func _on_load_from_clipboard_pressed() -> void:
 		data = data.trim_suffix(']')
 	
 	var decoded_data: PackedByteArray = Marshalls.base64_to_raw(data)
+	if decoded_data.is_empty():
+		Global.error('Clipboard data is corrupted (invalid base64).')
+		return
+	
 	var decompressed_data: PackedByteArray = decoded_data.decompress_dynamic(-1, FileAccess.COMPRESSION_GZIP)
 	
 	var file: FileAccess = FileAccess.open(get_tree().current_scene.HELIUM3D_PATH + Global.path('/clipboard_load_buffer.hlm'), FileAccess.WRITE)
 	if file == null:
+		Global.error('Failed to load clipboard. (buffer save error)')
 		return
 	
 	file.store_buffer(decompressed_data)

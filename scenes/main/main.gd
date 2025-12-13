@@ -47,7 +47,15 @@ var has_opened_randomization_menu: bool = false
 
 var previous_frame_texture: ImageTexture
 
+var is_resizing_bottom_bar: bool = false
+var is_resizing_animation_panel: bool = false
+var is_resizing_tab_container: bool = false
+var resize_start_pos: Vector2 = Vector2.ZERO
+var resize_start_size: float = 0.0
+const RESIZE_GRAB_DISTANCE: float = 10.0
+
 func _ready() -> void:
+	$UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/Control/Panel.size.x = DisplayServer.window_get_size().x * 2
 	$AboutWindow/HBoxContainer/VBoxContainer2/RichTextLabel.text = $AboutWindow/HBoxContainer/VBoxContainer2/RichTextLabel.text.replace('{version}', VERSION)
 	
 	var dir := DirAccess.open("res://")
@@ -75,6 +83,8 @@ func _ready() -> void:
 	%PostDisplay.material.set_shader_parameter('previous_frame', previous_frame_texture)
 	%Fractal.material_override.set_shader_parameter('previous_frame', previous_frame_texture)
 	default_app_state = get_app_state()
+
+	setup_resize_handlers()
 
 func reset_to_default() -> void:
 	if default_app_state != {}:
@@ -203,6 +213,8 @@ func _process(_delta: float) -> void:
 	%Fractal.material_override.set_shader_parameter('voxelization', $VoxelizeWindow.visible)
 	%TextureRect.is_menu_rendered = %RandomizeWindow.visible or %VoxelizeWindow.visible
 	%Export.disabled = $VoxelizedMeshWorld/Mesh.mesh == null
+	
+	$UI/HBoxContainer/VBoxContainer/HBoxContainer/ToolBar/Control/Panel.size.x = DisplayServer.window_get_size().x * 2
 
 func _input(_event: InputEvent) -> void:
 	if %TextureRect.is_holding:
@@ -1002,3 +1014,96 @@ func _on_export_pressed() -> void:
 
 func _on_voxelization_file_dialog_file_selected() -> void:
 	$Voxelization.SaveMesh($VoxelizedMeshWorld/Mesh.mesh, %VoxelizationFileDialog.current_path)
+
+func setup_resize_handlers() -> void:
+	var bottom_bar: TabContainer = $UI/BottomBar
+	var animation_panel: HBoxContainer = $UI/BottomBar/Animation
+	var library_panel: Control = $UI/BottomBar/Library
+	var tab_container: TabContainer = $UI/HBoxContainer/TabContainer
+
+	bottom_bar.mouse_filter = Control.MOUSE_FILTER_PASS
+	animation_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+	library_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+	tab_container.mouse_filter = Control.MOUSE_FILTER_PASS
+
+	animation_panel.gui_input.connect(_on_bottom_panel_gui_input)
+	library_panel.gui_input.connect(_on_bottom_panel_gui_input)
+	tab_container.gui_input.connect(_on_tab_container_gui_input)
+
+func _on_bottom_panel_gui_input(event: InputEvent) -> void:
+	var bottom_bar: TabContainer = $UI/BottomBar
+	var current_panel: Control = bottom_bar.get_current_tab_control()
+	
+	if event is InputEventMouseMotion:
+		var mouse_event: InputEventMouseMotion = event as InputEventMouseMotion
+		
+		if is_resizing_animation_panel:
+			var viewport_mouse: Vector2 = get_viewport().get_mouse_position()
+			var parent_local: Vector2 = current_panel.get_parent().get_global_transform().affine_inverse() * viewport_mouse
+			var new_height: float = (current_panel.position.y + current_panel.size.y) - parent_local.y
+			new_height = clampf(new_height, 100.0, 600.0)
+			current_panel.custom_minimum_size.y = new_height
+			$UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer/Time/ColorRect.size.y = max(new_height - 67, 144)
+		else:
+			var local_pos: Vector2 = mouse_event.position
+			if local_pos.y <= RESIZE_GRAB_DISTANCE and not is_resizing_tab_container:
+				Input.set_default_cursor_shape(Input.CURSOR_VSIZE)
+				#print('vsize')
+			elif not is_resizing_tab_container:
+				Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+				#print('arrow')
+	elif event is InputEventMouseButton:
+		var mouse_button: InputEventMouseButton = event as InputEventMouseButton
+		if mouse_button.button_index == MOUSE_BUTTON_LEFT:
+			var local_pos: Vector2 = mouse_button.position
+			if mouse_button.pressed and local_pos.y <= RESIZE_GRAB_DISTANCE:
+				is_resizing_animation_panel = true
+				Input.set_default_cursor_shape(Input.CURSOR_VSIZE)
+				#print('vsize')
+			elif not mouse_button.pressed and is_resizing_animation_panel:
+				is_resizing_animation_panel = false
+				Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+				#print('arrow')
+
+func _on_tab_container_gui_input(event: InputEvent) -> void:
+	var tab_container: TabContainer = $UI/HBoxContainer/TabContainer
+
+	if event is InputEventMouseMotion:
+		var mouse_event: InputEventMouseMotion = event as InputEventMouseMotion
+		var local_pos: Vector2 = mouse_event.position
+
+		if is_resizing_tab_container:
+			var delta: float = (resize_start_pos.x - local_pos.x)
+			var new_ratio: float = resize_start_size + (delta / get_viewport().get_visible_rect().size.x)
+			tab_container.size_flags_stretch_ratio = new_ratio
+		elif local_pos.x <= RESIZE_GRAB_DISTANCE and not is_resizing_animation_panel:
+			Input.set_default_cursor_shape(Input.CURSOR_HSIZE)
+			#print('hsize')
+		else:
+			if not is_resizing_animation_panel:
+				Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+				#print('arrow')
+	elif event is InputEventMouseButton:
+		var mouse_button: InputEventMouseButton = event as InputEventMouseButton
+
+		if mouse_button.button_index == MOUSE_BUTTON_LEFT:
+			var local_pos: Vector2 = mouse_button.position
+
+			if mouse_button.pressed and local_pos.x <= RESIZE_GRAB_DISTANCE:
+				is_resizing_tab_container = true
+				resize_start_pos = local_pos
+				resize_start_size = tab_container.size_flags_stretch_ratio
+				Input.set_default_cursor_shape(Input.CURSOR_HSIZE)
+				#print('hsize')
+			elif not mouse_button.pressed and is_resizing_tab_container:
+				is_resizing_tab_container = false
+				Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+				#print('arrow')
+
+func _on_okay_button_pressed() -> void:
+	$ErrorWindow.visible = false
+
+func _on_forums_button_pressed() -> void:
+	$ErrorWindow.visible = false
+	pass
+	# No forums yet.

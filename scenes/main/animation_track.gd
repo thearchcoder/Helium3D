@@ -9,8 +9,9 @@ var is_rendering: bool = false
 var animation_frames_data: Array[Dictionary] = []
 var currently_at_frame: float = 0:
 	set(value):
+		value = min(value, ((len(keyframes) - 1) * fps) + 2)
 		currently_at_frame = value
-		%Time.position.x = (value / fps * 133.0) + 60
+		update_current_time_position()
 
 var fps: int = 60:
 	set(value):
@@ -29,6 +30,12 @@ var waiting_for_taa: bool = false
 var rendering_tiles: bool = false
 var render_start_time: float
 var time_estimate: float = 0.0
+
+func update_current_time_position() -> void:
+	if keyframes != []:
+		%Time.position.x = (currently_at_frame / fps * $ScrollContainer/VBoxContainer/Keyframes.size.y) + (($ScrollContainer/VBoxContainer/Keyframes.size.y / 2) - 3)
+	else:
+		%Time.position.x = 14
 
 func update_tiling_variables() -> void:
 	rendering_tiles = get_tree().current_scene.busy_rendering_tiles
@@ -185,6 +192,45 @@ func insert_keyframe() -> void:
 	data.erase('anti_aliasing')
 
 	keyframes.append(data.duplicate(true))
+	
+	if len(keyframes) == 1:
+		currently_at_frame = 1
+	
+	reload_keyframes()
+
+func duplicate_keyframe(keyframe_data: Dictionary) -> void:
+	stop()
+
+	for i in range(keyframes.size()):
+		if keyframes[i] == keyframe_data:
+			var duplicated_data: Dictionary = keyframe_data.duplicate(true)
+			keyframes.insert(i + 1, duplicated_data)
+			break
+
+	reload_keyframes()
+
+func insert_keyframe_at_index(index: int) -> void:
+	stop()
+
+	var data: Dictionary = get_tree().current_scene.fields
+	data.merge({'total_visible_formula_pages': %TabContainer.total_visible_formulas, 'player_position': %Player.global_position, 'head_rotation': %Player.get_node('Head').global_rotation_degrees, 'camera_rotation': %Player.get_node('Head/Camera').global_rotation_degrees}, true)
+	var viewport_image: Image = %TextureRect.get_texture().get_image()
+	viewport_image.resize(KEYFRAME_TEXTURE_SIZE, KEYFRAME_TEXTURE_SIZE, Image.INTERPOLATE_NEAREST)
+	var keyframe_texture: ImageTexture = ImageTexture.create_from_image(viewport_image)
+	data['keyframe_texture'] = Marshalls.raw_to_base64(keyframe_texture.get_image().get_data())
+
+	data.erase('animation_fps')
+	data.erase('tiles_x')
+	data.erase('tiles_y')
+	data.erase('taa_samples')
+	data.erase('fps')
+	data.erase('interpolation')
+	data.erase('keyframe_length')
+	data.erase('camera_type')
+	data.erase('resolution')
+	data.erase('anti_aliasing')
+
+	keyframes.insert(index, data.duplicate(true))
 	reload_keyframes()
 
 func stop() -> void:
@@ -204,6 +250,9 @@ func remove_keyframe(target_keyframe_data: Dictionary) -> void:
 			break
 
 	reload_keyframes()
+
+	if currently_at_frame >= (len(keyframes) - 1) * fps:
+		currently_at_frame = (len(keyframes) - 1) * fps
 
 func reorder_keyframe(from_index: int, to_index: int, select_target: bool = false) -> void:
 	stop()
@@ -238,6 +287,8 @@ func reload_keyframes() -> void:
 
 		keyframe.data = keyframe_data
 		%Keyframes.add_child(keyframe)
+
+	update_current_time_position()
 
 func calculate_time_estimate() -> float:
 	if not is_playing or len(animation_frames_data) == 0:
@@ -315,7 +366,7 @@ func _process(_delta: float) -> void:
 		wait = waiting_for_taa
 	
 	if is_playing and not wait:
-		if round(currently_at_frame) >= len(animation_frames_data):
+		if round(currently_at_frame) >= len(animation_frames_data) or round(currently_at_frame) < 0 or animation_frames_data == null:
 			stop()
 			return
 		

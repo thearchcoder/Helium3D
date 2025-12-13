@@ -1,4 +1,4 @@
-[gd_scene load_steps=83 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=85 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
@@ -134,6 +134,26 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gubch"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rofvo"]
+content_margin_left = 4.0
+content_margin_right = 4.0
+bg_color = Color(0, 0, 0, 0.6)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ii537"]
+content_margin_left = 4.0
+content_margin_right = 4.0
+bg_color = Color(0.225, 0.225, 0.225, 0.6)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_p8abn"]
 
@@ -1007,8 +1027,11 @@ layout_mode = 2
 theme_override_constants/icon_max_width = 23
 theme_override_fonts/font = ExtResource("8_rhsly")
 theme_override_styles/normal = SubResource("StyleBoxFlat_62atk")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rofvo")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ii537")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gubch")
 icon = ExtResource("17_s17dp")
+expand_icon = true
 
 [node name="SetTimeEndButton" type="Button" parent="UI/BottomBar/Animation/Animation/ControlButtons/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true

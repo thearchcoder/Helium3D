@@ -1043,7 +1043,7 @@ func _on_bottom_panel_gui_input(event: InputEvent) -> void:
 			var new_height: float = (current_panel.position.y + current_panel.size.y) - parent_local.y
 			new_height = clampf(new_height, 100.0, 600.0)
 			current_panel.custom_minimum_size.y = new_height
-			$UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer/Time/ColorRect.size.y = max(new_height - 67, 144)
+			$UI/BottomBar/Animation/Animation/CurrentTime/HBoxContainer/Time/ColorRect.size.y = max(new_height - 67, 133)
 		else:
 			var local_pos: Vector2 = mouse_event.position
 			if local_pos.y <= RESIZE_GRAB_DISTANCE and not is_resizing_tab_container:

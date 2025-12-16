@@ -83,7 +83,7 @@ func _ready() -> void:
 	%PostDisplay.material.set_shader_parameter('previous_frame', previous_frame_texture)
 	%Fractal.material_override.set_shader_parameter('previous_frame', previous_frame_texture)
 	default_app_state = get_app_state()
-
+	
 	setup_resize_handlers()
 
 func reset_to_default() -> void:
@@ -131,7 +131,7 @@ func get_state_changes(old_state: Dictionary, new_state: Dictionary) -> Dictiona
 	var changes: Dictionary = {}
 	
 	for key: String in (new_state.keys() as Array[String]):
-		if not old_state.has(key) or old_state[key] != new_state[key]:
+		if not old_state.has(key) or not is_same(old_state[key], new_state[key]):
 			changes[key] = new_state[key]
 	
 	for key: String in (old_state.keys() as Array[String]):
@@ -851,10 +851,12 @@ func _on_difficulty_pressed() -> void:
 		difficulty = 'advanced'
 		%DifficultyButton.text = 'Advanced Mode'
 		reload_difficulty()
+		%ToolBar.set_global_setting('difficulty', difficulty)
 	elif difficulty == 'advanced':
 		difficulty = 'simple'
 		%DifficultyButton.text = 'Simple Mode'
 		reload_difficulty()
+		%ToolBar.set_global_setting('difficulty', difficulty)
 
 func reload_difficulty() -> void:
 	set_ui_difficulty(difficulty == 'simple')
@@ -906,16 +908,14 @@ func _on_randomize_pressed() -> void:
 	%Randomization.undecided_randomization = get_app_state()
 	_on_voxelize_window_close_requested()
 	
+	if %Randomization.last_randomized_scene_data.get('is_null', false) != true:
+		update_app_state(%Randomization.last_randomized_scene_data)
+	
 	if not has_opened_randomization_menu:
 		has_opened_randomization_menu = true
 		%Randomization.update_base_scene()
-		await get_tree().process_frame
 		%Randomization.add_to_history(get_app_state())
-
 		%Randomization.randomization()
-	
-	if %Randomization.last_randomized_scene_data.get('is_null', false) != true:
-		update_app_state(%Randomization.last_randomized_scene_data)
 
 func _on_voxelize_window_close_requested() -> void: 
 	$VoxelizeWindow.visible = false
@@ -1063,6 +1063,7 @@ func _on_bottom_panel_gui_input(event: InputEvent) -> void:
 			elif not mouse_button.pressed and is_resizing_animation_panel:
 				is_resizing_animation_panel = false
 				Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+				%ToolBar.set_global_setting("bottom_bar_height", current_panel.custom_minimum_size.y)
 				#print('arrow')
 
 func _on_tab_container_gui_input(event: InputEvent) -> void:
@@ -1098,6 +1099,7 @@ func _on_tab_container_gui_input(event: InputEvent) -> void:
 			elif not mouse_button.pressed and is_resizing_tab_container:
 				is_resizing_tab_container = false
 				Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+				%ToolBar.set_global_setting("tab_container_ratio", tab_container.size_flags_stretch_ratio)
 				#print('arrow')
 
 func _on_okay_button_pressed() -> void:

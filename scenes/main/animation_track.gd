@@ -277,7 +277,7 @@ func reorder_keyframe(from_index: int, to_index: int, select_target: bool = fals
 
 func reload_keyframes() -> void:
 	for child in %Keyframes.get_children():
-		%Keyframes.remove_child(child)
+		child.queue_free()
 
 	for i in range(keyframes.size()):
 		var keyframe_data: Dictionary = keyframes[i]

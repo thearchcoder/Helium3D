@@ -19,7 +19,8 @@ script = ExtResource("1_13oqj")
 
 [node name="PopupMenu" type="PopupMenu" parent="."]
 oversampling_override = 1.0
-size = Vector2i(99, 40)
+size = Vector2i(109, 44)
+content_scale_factor = 1.4
 theme_override_fonts/font = ExtResource("1_1mvh1")
 item_count = 1
 item_0/text = "Update"

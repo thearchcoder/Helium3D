@@ -442,6 +442,7 @@ func _ready() -> void:
 				elif val == 'Nearest':
 					%TextureRect.texture_filter = TEXTURE_FILTER_NEAREST
 				field_changed_non_shader('texture_filter', val)
+				%ToolBar.set_global_setting('texture_filter', 0 if val == 'Linear' else 1)
 				},
 			
 			# Progressive rendering strength
@@ -451,6 +452,7 @@ func _ready() -> void:
 				val = clamp(val, 0.25, 1.0)
 				%SubViewport.low_scaling = val
 				field_changed_non_shader('low_scaling', val)
+				%ToolBar.set_global_setting('low_scaling', val)
 				},
 		],
 		# Settings / Fractal

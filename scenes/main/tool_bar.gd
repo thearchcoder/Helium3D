@@ -6,11 +6,23 @@ var field_filter: String = 'project'
 var has_saved_before: bool = false
 var saved_path: String = ""
 
+var global_settings: Dictionary = {
+	"difficulty": "simple",
+	"texture_filter": "Linear",
+	"low_scaling": 0.4,
+	"bottom_bar_height": 200.0,
+	"tab_container_ratio": 1.0
+}
+@onready var HELIUM3D_PATH: String = (OS.get_environment("USERPROFILE") if OS.get_name() == "Windows" else OS.get_environment("HOME")) + Global.path("/.hlm")
+@onready var global_settings_path: String = HELIUM3D_PATH + Global.path('/global_settings.hlm')
+
 func recover() -> void:
 	%ToolBar.load_project_data(get_tree().current_scene.HELIUM3D_PATH + Global.path('/autosave.hlm'), 'project', true)
 	%SubViewport.refresh()
 
 func _ready() -> void:
+	load_global_settings()
+
 	autosave_timer = Timer.new()
 	autosave_timer.wait_time = autosave_interval
 	autosave_timer.timeout.connect(_on_autosave_timer_timeout)
@@ -91,6 +103,7 @@ func save_project_data(path: String, is_buffer: bool = false, exclude: Array[Str
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	if file:
 		var data: Dictionary = get_tree().current_scene.get_app_state(optimize_for_clipboard)
+		#print(data)
 		
 		for item in exclude:
 			if data['other'].has(item):
@@ -302,3 +315,59 @@ func _on_reset_confirm_button_pressed() -> void:
 
 	%ResetDefaultWindow.visible = false
 	%DummyFocusButton.grab_focus()
+
+func load_global_settings() -> void:
+	if not FileAccess.file_exists(global_settings_path):
+		save_global_settings()
+		return
+
+	var file: FileAccess = FileAccess.open(global_settings_path, FileAccess.READ)
+	if file:
+		var loaded_settings: Variant = file.get_var()
+		file.close()
+
+		if loaded_settings is Dictionary:
+			for key: String in (loaded_settings.keys() as Array[String]):
+				global_settings[key] = loaded_settings[key]
+
+	apply_global_settings()
+
+func save_global_settings() -> void:
+	var file: FileAccess = FileAccess.open(global_settings_path, FileAccess.WRITE)
+	if file:
+		file.store_var(global_settings)
+		file.close()
+
+func set_global_setting(key: String, value: Variant) -> void:
+	if Engine.get_frames_drawn() <= 1:
+		return
+
+	global_settings[key] = value
+	save_global_settings()
+
+func get_global_setting(key: String, default_value: Variant = null) -> Variant:
+	return global_settings.get(key, default_value)
+
+func apply_global_settings() -> void:
+	var main: Node3D = get_tree().current_scene
+
+	if global_settings.has("difficulty"):
+		main.difficulty = global_settings["difficulty"]
+		%DifficultyButton.text = 'Advanced Mode' if main.difficulty == 'advanced' else 'Simple Mode'
+		main.reload_difficulty()
+
+	if global_settings.has("texture_filter"):
+		get_tree().current_scene.update_app_state({"texture_filter": global_settings["texture_filter"]})
+
+	if global_settings.has("low_scaling"):
+		get_tree().current_scene.update_app_state({"low_scaling": global_settings["low_scaling"]})
+
+	if global_settings.has("bottom_bar_height"):
+		var bottom_bar: TabContainer = main.get_node("UI/BottomBar")
+		var current_panel: Control = bottom_bar.get_current_tab_control()
+		#if current_panel:
+			#current_panel.custom_minimum_size.y = global_settings["bottom_bar_height"]
+
+	if global_settings.has("tab_container_ratio"):
+		var tab_container: TabContainer = main.get_node("UI/HBoxContainer/TabContainer")
+		#tab_container.size_flags_stretch_ratio = global_settings["tab_container_ratio"]

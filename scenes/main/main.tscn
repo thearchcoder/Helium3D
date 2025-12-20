@@ -1678,6 +1678,7 @@ oversampling_override = 1.0
 title = "Randomize"
 initial_position = 1
 size = Vector2i(1720, 660)
+visible = false
 content_scale_mode = 1
 content_scale_factor = 1.4
 theme_override_fonts/title_font = ExtResource("8_rhsly")

@@ -320,33 +320,38 @@ vec3 get_ray_direction(vec2 screen_uv, mat4 view_matrix, vec3 ro) {
 
 vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_matrix, mat4 view_matrix, inout bool discard_color, vec2 resolution) {
 	vec3 final_color;
+	//if (!building_mesh) {
+	//return vec4(1.0, 0.0, 1.0, 1.0); // Bright magenta
+	//} else {
+	//return vec4(1.0, 0.6, 0.2, 1.0); // Orangish
+	//}
+	
+	//if (building_mesh) {
+	vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));
+	vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
+	vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
 
-	if (building_mesh) {
-		vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));
-		vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
-		vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
+	vec2 centered_uv = screen_uv;
+	vec2 resolution_scale = voxel_screen_resolution / 450.0;
+	vec3 sample_offset = camera_right * centered_uv.x * sample_scale / resolution_scale.x + camera_up * centered_uv.y * sample_scale / resolution_scale.y;
+	vec3 sample_pos = ray_origin + sample_offset;
 
-		vec2 centered_uv = screen_uv;
-		vec2 resolution_scale = voxel_screen_resolution / 450.0;
-		vec3 sample_offset = camera_right * centered_uv.x * sample_scale / resolution_scale.x + camera_up * centered_uv.y * sample_scale / resolution_scale.y;
-		vec3 sample_pos = ray_origin + sample_offset;
+	vec2 uv = screen_uv;
+	uv *= max(float(voxel_resolution) / 450.0, 1.0);
+	uv -= 0.5;
 
-		vec2 uv = screen_uv;
-		uv *= max(float(voxel_resolution) / 450.0, 1.0);
-		uv -= 0.5;
+	vec3 pos = vec3(uv * 2.5, ray_origin.z);
+	vec2 sdf_data = scene_sdf(pos);
+	float distance_to_surface = sdf_data.y;
 
-		vec3 pos = vec3(uv * 2.5, ray_origin.z);
-		vec2 sdf_data = scene_sdf(pos);
-		float distance_to_surface = sdf_data.y;
-
-		if (distance_to_surface < voxel_epsilon) {
-			final_color = vec3(1.0);
-		} else {
-			final_color = vec3(0.0);
-		}
-
-		return vec4(final_color, 1.0);
+	if (abs(distance_to_surface) < voxel_epsilon) {
+		final_color = vec3(1.0);
+	} else {
+		final_color = vec3(0.1);
 	}
+
+	return vec4(final_color, 1.0);
+	//}
 
 	vec3 overridden_color;
 	bool override_color = false;

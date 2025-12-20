@@ -972,6 +972,10 @@ func _on_voxelize_button_pressed() -> void:
 	%Camera.rotation = Vector3.ZERO
 	%Camera.projection = Camera3D.ProjectionType.PROJECTION_ORTHOGONAL
 	
+	#E 0:01:43:510   draw_list_draw: No vertex array was bound, and render pipeline expects vertices.
+	#<C++ Error>   Condition "draw_list.validation.vertex_format == INVALID_ID" is true.
+	#<C++ Source>  servers/rendering/rendering_device.cpp:4755 @ draw_list_draw()
+
 	$Voxelization.StartCapture(resolution, max(bounds_size.x, max(bounds_size.y, bounds_size.z)))
 	
 	await get_tree().process_frame
@@ -1005,6 +1009,9 @@ func _on_voxelize_button_pressed() -> void:
 		var mat := StandardMaterial3D.new()
 		mat.albedo_color = Color.WHITE
 		$VoxelizedMeshWorld/Mesh.set_surface_override_material(0, mat)
+	
+	for i in 4:
+		await get_tree().process_frame
 	
 	%SubViewport.refresh()
 	%Voxelize.disabled = false

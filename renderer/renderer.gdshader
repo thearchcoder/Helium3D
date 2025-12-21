@@ -344,7 +344,10 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	vec2 sdf_data = scene_sdf(pos);
 	float distance_to_surface = sdf_data.y;
 
-	if (abs(distance_to_surface) < voxel_epsilon) {
+	float voxel_size = 2.5 / float(voxel_resolution);
+	float conservative_threshold = voxel_epsilon + voxel_size * 0.866;
+
+	if (abs(distance_to_surface) < conservative_threshold) {
 		final_color = vec3(1.0);
 	} else {
 		final_color = vec3(0.1);

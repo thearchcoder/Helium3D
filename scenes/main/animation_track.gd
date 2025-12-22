@@ -62,6 +62,13 @@ func update_animation_frames_data() -> void:
 	if len(keyframes) <= 0:
 		return
 
+	var export_keyframes_only: bool = get_tree().current_scene.fields.get('export_keyframes_only', false)
+
+	if export_keyframes_only and is_rendering:
+		for keyframe_data in (keyframes as Array[Dictionary]):
+			animation_frames_data.append(keyframe_data.duplicate(true))
+		return
+
 	var required_fields: Array[String] = ["formulas", "keyframes", "total_visible_formula_pages", "player_position", "head_rotation", "camera_rotation"]
 
 	var all_field_names: Array[String] = []
@@ -101,18 +108,18 @@ func update_animation_frames_data() -> void:
 	var threads: Array[Thread] = []
 	var thread_results: Array[Dictionary] = []
 	thread_results.resize(fields_to_interpolate.size())
-	
+
 	for i in range(fields_to_interpolate.size()):
 		var field_name: String = fields_to_interpolate[i]
 		var field_info: Dictionary = field_interpolation_data[field_name]
 		var thread: Thread = Thread.new()
-		
+
 		var thread_data: Dictionary = {
 			"field_name": field_name,
 			"values": field_info["values"],
 			"index": i
 		}
-		
+
 		thread.start(_interpolate_field_thread.bind(thread_data, interpolation, fps))
 		threads.append(thread)
 
@@ -317,7 +324,7 @@ func process_frame() -> void:
 	if image and is_rendering and currently_at_frame >= 2:
 		var format: int = get_tree().current_scene.fields.get('export_format', 0)
 		var format_name: String = ['PNG', 'JPG', 'WEBP'][format]
-		var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/frame_") + str(int(currently_at_frame - 2) + 1).trim_suffix('.0') + "." + format_name.to_lower()
+		var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/renders/frame_") + str(int(currently_at_frame - 2) + 1).trim_suffix('.0') + "." + format_name.to_lower()
 		
 		if format == 0: image.save_png(path)
 		if format == 1: image.save_jpg(path)

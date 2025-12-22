@@ -112,6 +112,7 @@ func update_fields_ui(new_fields: Dictionary) -> void:
 		
 		var search_result: Array[Control] = value_nodes.filter(func(x: Control) -> bool: return x.name.to_snake_case() == field_name.to_snake_case())
 		if len(search_result) <= 0:
+			push_warning('Failed to search for node: ', field_name.to_snake_case())
 			continue
 		
 		var target_value_nodes: Array[Control] = search_result

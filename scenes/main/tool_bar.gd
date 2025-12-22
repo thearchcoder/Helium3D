@@ -21,8 +21,6 @@ func recover() -> void:
 	%SubViewport.refresh()
 
 func _ready() -> void:
-	load_global_settings()
-
 	autosave_timer = Timer.new()
 	autosave_timer.wait_time = autosave_interval
 	autosave_timer.timeout.connect(_on_autosave_timer_timeout)
@@ -80,6 +78,9 @@ func _ready() -> void:
 			# TODO: Make a website.
 			pass
 		)
+	
+	await get_tree().process_frame
+	load_global_settings()
 
 func show_reset_default_popup() -> void:
 	%ResetDefaultWindow.visible = true

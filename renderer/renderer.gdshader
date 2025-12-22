@@ -146,7 +146,7 @@ uniform vec3 bounds_size;
 uniform float voxel_epsilon;
 uniform vec2 voxel_screen_resolution;
 uniform float sample_scale = 4.0;
-uniform bool building_mesh = false;
+uniform int building_mesh = 0;
 uniform int voxel_resolution;
 
 #include "math.gdshaderinc"
@@ -245,7 +245,7 @@ vec3 ray_marcher(vec3 ro, vec3 rd, inout vec3 palette_color_override, inout bool
 
 		float bounds_dist = 1000000.0;
 		vec3 bounds_color = vec3(0.0);
-		if (voxelization && !building_mesh) {
+		if (voxelization && building_mesh != 1) {
 			bounds_dist = bounds_sdf(current_pos, bounds_position, bounds_size, bounds_color);
 		}
 
@@ -325,36 +325,36 @@ vec4 render_single_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 proje
 	//} else {
 	//return vec4(1.0, 0.6, 0.2, 1.0); // Orangish
 	//}
-	
-	//if (building_mesh) {
-	vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));
-	vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
-	vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
 
-	vec2 centered_uv = screen_uv;
-	vec2 resolution_scale = voxel_screen_resolution / 450.0;
-	vec3 sample_offset = camera_right * centered_uv.x * sample_scale / resolution_scale.x + camera_up * centered_uv.y * sample_scale / resolution_scale.y;
-	vec3 sample_pos = ray_origin + sample_offset;
+	if (building_mesh != 0) {
+		vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));
+		vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
+		vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
 
-	vec2 uv = screen_uv;
-	uv *= max(float(voxel_resolution) / 450.0, 1.0);
-	uv -= 0.5;
+		vec2 centered_uv = screen_uv;
+		vec2 resolution_scale = voxel_screen_resolution / 450.0;
+		vec3 sample_offset = camera_right * centered_uv.x * sample_scale / resolution_scale.x + camera_up * centered_uv.y * sample_scale / resolution_scale.y;
+		vec3 sample_pos = ray_origin + sample_offset;
 
-	vec3 pos = vec3(uv * 2.5, ray_origin.z);
-	vec2 sdf_data = scene_sdf(pos);
-	float distance_to_surface = sdf_data.y;
+		vec2 uv = screen_uv;
+		uv *= max(float(voxel_resolution) / 450.0, 1.0);
+		uv -= 0.5;
 
-	float voxel_size = 2.5 / float(voxel_resolution);
-	float conservative_threshold = voxel_epsilon + voxel_size * 0.866;
+		vec3 pos = vec3(uv * 2.5, ray_origin.z);
+		vec2 sdf_data = scene_sdf(pos);
+		float distance_to_surface = sdf_data.y;
 
-	if (abs(distance_to_surface) < conservative_threshold) {
-		final_color = vec3(1.0);
-	} else {
-		final_color = vec3(0.1);
+		float voxel_size = 2.5 / float(voxel_resolution);
+		float conservative_threshold = voxel_epsilon + voxel_size * 0.866;
+
+		if (abs(distance_to_surface) < conservative_threshold) {
+			final_color = vec3(1.0);
+		} else {
+			final_color = vec3(0.1);
+		}
+
+		return vec4(final_color, 1.0);
 	}
-
-	return vec4(final_color, 1.0);
-	//}
 
 	vec3 overridden_color;
 	bool override_color = false;
@@ -482,7 +482,7 @@ vec3 render_ray(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, mat4 projection_m
 #endif
 
 	// Vignette (disabled for equirectangular)
-	if (camera_type != 1 && !building_mesh) {
+	if (camera_type != 1 && building_mesh != 1) {
 		if (is_exponential) {
 			vec2 vignette_uv = screen_uv * (1.0 - screen_uv.yx);
 			float vignette = pow(vignette_uv.x * vignette_uv.y * (vignette_radius * 17.0), vignette_strength * 0.5 * 0.75);
@@ -500,7 +500,7 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 	float time = float(TIME);
 	float baseSeed = hash(screen_uv + time * 0.01);
 
-	if (!dof_enabled || display != 0 || building_mesh) return render_ray(ray_origin, ray_dir, screen_uv, projection_matrix, view_matrix, discard_color, resolution);
+	if (!dof_enabled || display != 0 || building_mesh == 1) return render_ray(ray_origin, ray_dir, screen_uv, projection_matrix, view_matrix, discard_color, resolution);
 
 #ifdef USING_DOF
 	vec3 camera_forward = normalize(vec3(view_matrix[0][2], view_matrix[1][2], view_matrix[2][2]));

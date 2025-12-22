@@ -28,6 +28,8 @@ func _process(_delta: float) -> void:
 		@warning_ignore("integer_division")
 		$PopupMenu.position = DisplayServer.mouse_get_position() + Vector2i(0, -31 / 2)
 		$PopupMenu.visible = true
+	
+	$VBoxContainer/MarginContainer/TextureRect.texture_filter = get_tree().current_scene.get_node('%TextureRect').texture_filter
 
 func _on_popup_menu_focus_exited() -> void:
 	$PopupMenu.visible = false

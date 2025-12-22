@@ -398,6 +398,11 @@ func _ready() -> void:
 			{'name': 'voxel_resolution', 'type': 'int', 'from': 100, 'to': 1000, 'default_value': 450},
 			{'name': 'voxel_epsilon', 'type': 'float', 'from': 0.0, 'to': 0.01, 'default_value': 0.001},
 		],
+		# Animation Settings / Export
+		27: [
+			{'name': 'export_format', 'type': 'selection', 'values': ['PNG', 'JPG', 'WEBP'], 'default_value': 'PNG'},
+			{'name': 'export_keyframes_only', 'type': 'bool', 'default_value': false}
+		],
 		# Effects / Vignette
 		8: [
 			{'name': 'vignette_radius', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 0.9},
@@ -439,20 +444,26 @@ func _ready() -> void:
 			{'name': 'texture_filter', 'type': 'selection', 'values': ['Linear', 'Nearest'], 'default_value': 'Linear', 'onchange_override': func(val: String) -> void:
 				if val == 'Linear':
 					%TextureRect.texture_filter = TEXTURE_FILTER_LINEAR
+					%FrozenTextureRect.texture_filter = TEXTURE_FILTER_LINEAR
+					%FractalViewport.texture_filter = TEXTURE_FILTER_LINEAR
+					%VoxelViewport.texture_filter = TEXTURE_FILTER_LINEAR
 				elif val == 'Nearest':
 					%TextureRect.texture_filter = TEXTURE_FILTER_NEAREST
+					%FrozenTextureRect.texture_filter = TEXTURE_FILTER_NEAREST
+					%FractalViewport.texture_filter = TEXTURE_FILTER_NEAREST
+					%VoxelViewport.texture_filter = TEXTURE_FILTER_NEAREST
 				field_changed_non_shader('texture_filter', val)
 				%ToolBar.set_global_setting('texture_filter', 0 if val == 'Linear' else 1)
 				},
 			
 			# Progressive rendering strength
 			{'name': 'low_scaling', 'type': 'float', 'from': 0.25, 'to': 1.0, 'default_value': 0.4, 'onchange_override': func(val: float) -> void:
+				%ToolBar.set_global_setting('low_scaling', val)
 				var iupscaling: float = 1.0 - %SubViewport.upscaling
 				val -= iupscaling
 				val = clamp(val, 0.25, 1.0)
 				%SubViewport.low_scaling = val
 				field_changed_non_shader('low_scaling', val)
-				%ToolBar.set_global_setting('low_scaling', val)
 				},
 		],
 		# Settings / Fractal

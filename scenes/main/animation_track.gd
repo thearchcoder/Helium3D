@@ -315,8 +315,13 @@ func process_frame() -> void:
 		image = get_tree().current_scene.last_tiled_render_image
 	
 	if image and is_rendering and currently_at_frame >= 2:
-		var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/frame_") + str(int(currently_at_frame - 2) + 1).trim_suffix('.0') + ".png"
-		image.save_png(path)
+		var format: int = get_tree().current_scene.fields.get('export_format', 0)
+		var format_name: String = ['PNG', 'JPG', 'WEBP'][format]
+		var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/frame_") + str(int(currently_at_frame - 2) + 1).trim_suffix('.0') + "." + format_name.to_lower()
+		
+		if format == 0: image.save_png(path)
+		if format == 1: image.save_jpg(path)
+		if format == 2: image.save_webp(path)
 	
 	if not is_rendering:
 		currently_at_frame += (fps * get_process_delta_time()) / keyframe_length
@@ -420,3 +425,6 @@ func set_keyframe_length(new_text: String) -> void:
 		if %FPSLineEdit.text.is_valid_float() or %FPSLineEdit.text.is_valid_int():
 			update_fps(int(float(%FPSLineEdit.text)))
 		# TODO: Handle else statement, is fps text is invalid.
+
+func _on_animation_settings_button_pressed() -> void:
+	get_tree().current_scene.get_node('AnimationSettingsWindow').visible = true

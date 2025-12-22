@@ -243,6 +243,8 @@ func insert_keyframe_at_index(index: int) -> void:
 func stop() -> void:
 	if is_playing:
 		_on_playing_toggle_button_pressed()
+		if is_rendering:
+			%SubViewport.force_disable_low_scaling = false
 
 func start() -> void:
 	if not is_playing:
@@ -409,9 +411,11 @@ func _on_render_button_pressed() -> void:
 	if is_playing:
 		_on_playing_toggle_button_pressed()
 		is_rendering = true
+		%SubViewport.force_disable_low_scaling = is_rendering
 		_on_playing_toggle_button_pressed()
 	else:
 		is_rendering = true
+		%SubViewport.force_disable_low_scaling = is_rendering
 		_on_playing_toggle_button_pressed()
 
 func set_interpolation(index: int) -> void:

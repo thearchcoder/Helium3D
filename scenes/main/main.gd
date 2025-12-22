@@ -206,6 +206,7 @@ func _process(_delta: float) -> void:
 		if $AboutWindow.visible: $AboutWindow.visible = false
 		if $SettingsWindow.visible: $SettingsWindow.visible = false
 		if $CrashSaveWindow.visible: $CrashSaveWindow.visible = false
+		if $AnimationSettingsWindow.visible: $AnimationSettingsWindow.visible = false
 		if $AuthorWindow.visible: $AuthorWindow.visible = false
 		if $RandomizeWindow.visible: _on_randomize_window_close_requested()
 		if $VoxelizeWindow.visible: $VoxelizeWindow.visible = false
@@ -956,9 +957,7 @@ func _on_voxelize_button_pressed() -> void:
 	var original_viewport_size: Vector2i = %SubViewport.size
 	
 	%Fractal.material_override.set_shader_parameter('building_mesh', true)
-	%SubViewport.refresh()
 	%SubViewport.force_disable_low_scaling = true
-	
 	%SubViewport.size = Vector2i(resolution, resolution)
 	%Fractal.material_override.set_shader_parameter('sample_scale', max(bounds_size.x, bounds_size.y))
 	%Fractal.material_override.set_shader_parameter('voxel_screen_resolution', Vector2i(resolution, resolution))
@@ -977,10 +976,10 @@ func _on_voxelize_button_pressed() -> void:
 	#<C++ Source>  servers/rendering/rendering_device.cpp:4755 @ draw_list_draw()
 
 	$Voxelization.StartCapture(resolution, max(bounds_size.x, max(bounds_size.y, bounds_size.z)))
-	
+
 	await get_tree().process_frame
 	await get_tree().process_frame
-	
+
 	for i: int in resolution + 2:
 		%SubViewport.refresh()
 		await get_tree().process_frame
@@ -1115,4 +1114,6 @@ func _on_okay_button_pressed() -> void:
 func _on_forums_button_pressed() -> void:
 	$ErrorWindow.visible = false
 	pass
-	# No forums yet.
+
+func _on_animation_settings_window_close_requested() -> void:
+	$AnimationSettingsWindow.visible = false

@@ -4624,6 +4624,20 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 	vec3 camera_up = normalize(vec3(view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]));
 	vec3 camera_right = normalize(vec3(view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]));
 
+	vec3 overridden_color = vec3(0.0);
+	bool override_color = false;
+	vec3 center_ray_data = ray_marcher(ray_origin, ray_dir, overridden_color, override_color);
+	float hit_distance = center_ray_data.y;
+
+	float distance_from_focus = abs(hit_distance - dof_focal_distance);
+
+	float coc_scale = 0.0;
+	if (dof_lens_distance > 0.0001) {
+		coc_scale = smoothstep(0.0, dof_lens_distance, distance_from_focus);
+	} else {
+		coc_scale = 1.0;
+	}
+
 	vec3 colorTotal = vec3(0.0);
 
 	for (int i = 0; i < dof_samples; i++) {
@@ -4637,11 +4651,11 @@ vec3 calculate_albedo(vec3 ray_origin, vec3 ray_dir, vec2 screen_uv, vec2 fragCo
 		float ft = dof_focal_distance;
 		vec3 focusPoint = ray_origin + baseRd * ft;
 
-		vec2 lensOffset = fibonacci_circle(float(i) + sampleSeed * 7.1, float(dof_samples)) * dof_aperture;
+		vec2 lensOffset = fibonacci_circle(float(i) + sampleSeed * 7.1, float(dof_samples)) * dof_aperture * coc_scale;
 		vec3 lensPos = ray_origin + camera_right * lensOffset.x + camera_up * lensOffset.y;
 		vec3 rd = normalize(focusPoint - lensPos);
 
-		colorTotal += render_ray(lensPos, rd, jitteredUV, projection_matrix, view_matrix, discard_color);
+		colorTotal += render_ray(lensPos, rd, jitteredUV, projection_matrix, view_matrix, discard_color, resolution);
 	}
 
 	vec3 finalColor = colorTotal / float(dof_samples);

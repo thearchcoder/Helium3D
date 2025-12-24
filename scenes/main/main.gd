@@ -191,7 +191,7 @@ func initialize_history() -> void:
 	history.clear()
 	history_at = -1
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	#var loading_icon: Image = %LoadingIcon.texture.get_image()
 	#loading_icon.rotate_90(CLOCKWISE)
 	#

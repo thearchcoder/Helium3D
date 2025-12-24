@@ -570,10 +570,10 @@ func _ready() -> void:
 			{'name': 'tiles_y', 'type': 'int', 'from': 1, 'to': 32, 'default_value': 4, 'onchange_override': func(_val: int) -> void:
 			update_tile_bounds()
 			},
-			{'name': 'current_tile', 'type': 'int', 'from': 0, 'to': 40, 'default_value': 0, 'onchange_override': func(_val: int) -> void:
+			{'name': 'current_tile', 'hidden': true, 'type': 'int', 'from': 0, 'to': 40, 'default_value': 0, 'onchange_override': func(_val: int) -> void:
 			update_tile_bounds()
 			},
-			{'name': 'compute_tiled_render', 'bool_button': true, 'type': 'bool', 'default_value': false, 'onchange_override': func(_val: bool) -> void:
+			{'name': 'compute_tiled_render', 'hidden': true, 'bool_button': true, 'type': 'bool', 'default_value': false, 'onchange_override': func(_val: bool) -> void:
 				if Engine.get_frames_drawn() != 0:
 					if not %Fractal.material_override.get_shader_parameter('tiled'):
 						Global.error('Cant compute tiled render. Please check "Tiled" first.')

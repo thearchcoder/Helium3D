@@ -241,3 +241,5 @@ shader_compiler/shader_cache/strip_debug.release=false
 anti_aliasing/quality/smaa_edge_detection_threshold=0.2
 environment/defaults/default_clear_color=Color(0.113725, 0.113725, 0.113725, 1)
 anti_aliasing/quality/use_debanding=true
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true

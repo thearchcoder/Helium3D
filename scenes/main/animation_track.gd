@@ -408,6 +408,9 @@ func _on_set_time_end_button_pressed() -> void:
 		currently_at_frame = 0
 
 func _on_render_button_pressed() -> void:
+	%AnimationExportWindow.visible = true
+
+func export_animation() -> void:
 	if is_playing:
 		_on_playing_toggle_button_pressed()
 		is_rendering = true
@@ -436,6 +439,3 @@ func set_keyframe_length(new_text: String) -> void:
 		if %FPSLineEdit.text.is_valid_float() or %FPSLineEdit.text.is_valid_int():
 			update_fps(int(float(%FPSLineEdit.text)))
 		# TODO: Handle else statement, is fps text is invalid.
-
-func _on_animation_settings_button_pressed() -> void:
-	get_tree().current_scene.get_node('AnimationSettingsWindow').visible = true

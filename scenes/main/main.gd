@@ -206,7 +206,7 @@ func _process(delta: float) -> void:
 		if $AboutWindow.visible: $AboutWindow.visible = false
 		if $SettingsWindow.visible: $SettingsWindow.visible = false
 		if $CrashSaveWindow.visible: $CrashSaveWindow.visible = false
-		if $AnimationSettingsWindow.visible: $AnimationSettingsWindow.visible = false
+		if $AnimationExportWindow.visible: $AnimationExportWindow.visible = false
 		if $AuthorWindow.visible: $AuthorWindow.visible = false
 		if $RandomizeWindow.visible: _on_randomize_window_close_requested()
 		if $VoxelizeWindow.visible: $VoxelizeWindow.visible = false
@@ -1115,5 +1115,5 @@ func _on_forums_button_pressed() -> void:
 	$ErrorWindow.visible = false
 	pass
 
-func _on_animation_settings_window_close_requested() -> void:
-	$AnimationSettingsWindow.visible = false
+func _on_animation_export_window_close_requested() -> void:
+	$AnimationExportWindow.visible = false

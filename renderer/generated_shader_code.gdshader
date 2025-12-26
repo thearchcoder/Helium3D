@@ -1603,18 +1603,18 @@ uniform int voxel_resolution;
 //uniform vec3 fmandelboxdupej_julia_c; // -@275
 //uniform vec3 fmandelboxdupej_rotation1; // -@275
 //uniform vec3 fmandelboxdupej_rotation2; // -@275
-//uniform float fmandelbulb_phase; // -@276
-//uniform float fmandelbulb_power; // -@276
-//uniform float fmandelbulb_z_mul; // -@276
-//uniform bool fmandelbulb_conjugate; // -@276
-//uniform bool fmandelbulb_abs_x; // -@276
-//uniform bool fmandelbulb_abs_y; // -@276
-//uniform bool fmandelbulb_abs_z; // -@276
-//uniform bool fmandelbulb_is_julia; // -@276
-//uniform vec4 fmandelbulb_julia_c; // -@276
-//uniform float fmandelbulb_derivative_bias; // -@276
-//uniform int fmandelbulb_number_system; // -@276
-//uniform int fmandelbulb_quaternion_mode; // -@276
+uniform float fmandelbulb_phase; // -@276
+uniform float fmandelbulb_power; // -@276
+uniform float fmandelbulb_z_mul; // -@276
+uniform bool fmandelbulb_conjugate; // -@276
+uniform bool fmandelbulb_abs_x; // -@276
+uniform bool fmandelbulb_abs_y; // -@276
+uniform bool fmandelbulb_abs_z; // -@276
+uniform bool fmandelbulb_is_julia; // -@276
+uniform vec4 fmandelbulb_julia_c; // -@276
+uniform float fmandelbulb_derivative_bias; // -@276
+uniform int fmandelbulb_number_system; // -@276
+uniform int fmandelbulb_quaternion_mode; // -@276
 //uniform float fmandelbulbdupea_phase; // -@277
 //uniform float fmandelbulbdupea_power; // -@277
 //uniform float fmandelbulbdupea_z_mul; // -@277
@@ -3221,7 +3221,7 @@ uniform int voxel_resolution;
 //#include "res://formulas/mandelboxdupeh.gdshaderinc" // -@273
 //#include "res://formulas/mandelboxdupei.gdshaderinc" // -@274
 //#include "res://formulas/mandelboxdupej.gdshaderinc" // -@275
-//#include "res://formulas/mandelbulb.gdshaderinc" // -@276
+#include "res://formulas/mandelbulb.gdshaderinc" // -@276
 //#include "res://formulas/mandelbulbdupea.gdshaderinc" // -@277
 //#include "res://formulas/mandelbulbdupeb.gdshaderinc" // -@278
 //#include "res://formulas/mandelbulbdupec.gdshaderinc" // -@279
@@ -3744,7 +3744,7 @@ vec2 scene_sdf(vec3 p) {
 //if (current_formula == 273) mandelboxdupeh_iter(z, dz, original_z, orbit, i); //-@273
 //if (current_formula == 274) mandelboxdupei_iter(z, dz, original_z, orbit, i); //-@274
 //if (current_formula == 275) mandelboxdupej_iter(z, dz, original_z, orbit, i); //-@275
-//if (current_formula == 276) mandelbulb_iter(z, dz, original_z, orbit, i); //-@276
+if (current_formula == 276) mandelbulb_iter(z, dz, original_z, orbit, i); //-@276
 //if (current_formula == 277) mandelbulbdupea_iter(z, dz, original_z, orbit, i); //-@277
 //if (current_formula == 278) mandelbulbdupeb_iter(z, dz, original_z, orbit, i); //-@278
 //if (current_formula == 279) mandelbulbdupec_iter(z, dz, original_z, orbit, i); //-@279

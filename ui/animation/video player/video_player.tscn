@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://bivw7qnabao3n"]
+[gd_scene load_steps=11 format=3 uid="uid://bivw7qnabao3n"]
 
 [ext_resource type="Script" uid="uid://dsc4d7latht7u" path="res://ui/animation/video player/video_player.gd" id="1_jf7wv"]
 [ext_resource type="Texture2D" uid="uid://c6re6si5pp758" path="res://resources/icons/left.svg" id="2_v7cbb"]
 [ext_resource type="Texture2D" uid="uid://bma3750qln5sl" path="res://resources/icons/pause-solid.svg" id="3_n1lsc"]
 [ext_resource type="Texture2D" uid="uid://dwjca5bw3kjvy" path="res://resources/icons/right.svg" id="4_rfhrq"]
+[ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="5_n1lsc"]
 [ext_resource type="Texture2D" uid="uid://dk87vbdlxat6t" path="res://resources/icons/timer.svg" id="5_v7cbb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v7cbb"]
@@ -54,7 +55,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_vertical = 3
 texture = SubResource("GradientTexture2D_stcow")
-expand_mode = 2
+expand_mode = 4
 stretch_mode = 5
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
@@ -88,6 +89,7 @@ custom_minimum_size = Vector2(55, 0)
 layout_mode = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/icon_max_width = 0
+theme_override_fonts/font = ExtResource("5_n1lsc")
 theme_override_icons/icon = ExtResource("5_v7cbb")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_n1lsc")
 selected = 3

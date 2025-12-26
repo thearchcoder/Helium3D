@@ -400,8 +400,8 @@ func _ready() -> void:
 		],
 		# Animation Export
 		27: [
-			{'name': 'export_format', 'type': 'selection', 'values': ['PNG', 'JPG', 'WEBP'], 'default_value': 'PNG'},
-			{'name': 'export_keyframes_only', 'type': 'bool', 'default_value': false}
+			{'name': 'export_keyframes_only', 'type': 'bool', 'default_value': false},
+			{'name': 'export_format', 'type': 'selection', 'values': ['PNG', 'JPG', 'WEBP'], 'default_value': 'PNG'}
 		],
 		# Effects / Vignette
 		8: [

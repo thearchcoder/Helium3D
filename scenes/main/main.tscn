@@ -1,4 +1,4 @@
-[gd_scene load_steps=86 format=3 uid="uid://coqv5flg782mg"]
+[gd_scene load_steps=89 format=3 uid="uid://coqv5flg782mg"]
 
 [ext_resource type="Script" uid="uid://b08g54nf05m2s" path="res://scenes/main/main.gd" id="1_yss2u"]
 [ext_resource type="Script" uid="uid://d1kelwvmh3wr2" path="res://scenes/main/fractalviewport.gd" id="2_2kstx"]
@@ -32,6 +32,7 @@
 [ext_resource type="Script" uid="uid://b0xu3c1kn7vkv" path="res://scenes/main/current_time.gd" id="22_s3o3g"]
 [ext_resource type="Script" uid="uid://dke5j7p0y4xgi" path="res://scenes/main/library.gd" id="25_tbnf8"]
 [ext_resource type="Script" uid="uid://f0cc6w25tiy2" path="res://scenes/main/error_window.gd" id="26_ii537"]
+[ext_resource type="PackedScene" uid="uid://bivw7qnabao3n" path="res://ui/animation/video player/video_player.tscn" id="27_tbnf8"]
 [ext_resource type="Shader" uid="uid://banl61trlwkro" path="res://renderer/renderer.gdshader" id="31_7nlll"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6w6mm"]
@@ -172,6 +173,11 @@ border_color = Color(0.187, 0.187, 0.187, 0.724)
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_s17dp"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6llfj"]
+
+[sub_resource type="Gradient" id="Gradient_tbnf8"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_r1bmu"]
+gradient = SubResource("Gradient_tbnf8")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0bhws"]
 
@@ -1466,11 +1472,11 @@ metadata/_tab_index = 0
 oversampling_override = 1.0
 title = "Export Animation"
 initial_position = 1
-size = Vector2i(680, 132)
+size = Vector2i(1055, 520)
 content_scale_factor = 1.4
 theme_override_fonts/title_font = ExtResource("8_rhsly")
 
-[node name="AnimationSettings" type="MarginContainer" parent="AnimationExportWindow"]
+[node name="AnimationExport" type="MarginContainer" parent="AnimationExportWindow"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1482,10 +1488,44 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 metadata/_tab_index = 7
 
-[node name="TabContainer" type="TabContainer" parent="AnimationExportWindow/AnimationSettings"]
+[node name="VBoxContainer" type="VBoxContainer" parent="AnimationExportWindow/AnimationExport"]
 layout_mode = 2
-theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
-tabs_visible = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="AnimationExportWindow/AnimationExport/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VideoPlayer" parent="AnimationExportWindow/AnimationExport/VBoxContainer/HBoxContainer" instance=ExtResource("27_tbnf8")]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="AnimationExportWindow/AnimationExport/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Panel" type="Panel" parent="AnimationExportWindow/AnimationExport/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AnimationExportWindow/AnimationExport/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextureRect" type="TextureRect" parent="AnimationExportWindow/AnimationExport/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = SubResource("GradientTexture2D_r1bmu")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="AnimationExportWindow/AnimationExport/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/line_spacing = -9
+text = "
+Frame #0 / 18000
+ "
+horizontal_alignment = 1
 
 [node name="CrashSaveWindow" type="Window" parent="."]
 unique_name_in_owner = true

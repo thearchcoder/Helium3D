@@ -1,0 +1,110 @@
+[gd_scene load_steps=10 format=3 uid="uid://bivw7qnabao3n"]
+
+[ext_resource type="Script" uid="uid://dsc4d7latht7u" path="res://ui/animation/video player/video_player.gd" id="1_jf7wv"]
+[ext_resource type="Texture2D" uid="uid://c6re6si5pp758" path="res://resources/icons/left.svg" id="2_v7cbb"]
+[ext_resource type="Texture2D" uid="uid://bma3750qln5sl" path="res://resources/icons/pause-solid.svg" id="3_n1lsc"]
+[ext_resource type="Texture2D" uid="uid://dwjca5bw3kjvy" path="res://resources/icons/right.svg" id="4_rfhrq"]
+[ext_resource type="Texture2D" uid="uid://dk87vbdlxat6t" path="res://resources/icons/timer.svg" id="5_v7cbb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v7cbb"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 5
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="Gradient" id="Gradient_5exvv"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_stcow"]
+gradient = SubResource("Gradient_5exvv")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_n1lsc"]
+
+[node name="VideoPlayer" type="MarginContainer"]
+anchors_preset = -1
+anchor_right = 0.208
+anchor_bottom = 0.42200002
+offset_right = 0.63998413
+offset_bottom = 0.23999023
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+script = ExtResource("1_jf7wv")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_v7cbb")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Frame" type="TextureRect" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = SubResource("GradientTexture2D_stcow")
+expand_mode = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="LeftButton" type="Button" parent="VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_n1lsc")
+icon = ExtResource("2_v7cbb")
+
+[node name="PlayButton" type="Button" parent="VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_n1lsc")
+icon = ExtResource("3_n1lsc")
+
+[node name="RightButton" type="Button" parent="VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_n1lsc")
+icon = ExtResource("4_rfhrq")
+
+[node name="PlaySpeed" type="OptionButton" parent="VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(55, 0)
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/icon_max_width = 0
+theme_override_icons/icon = ExtResource("5_v7cbb")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_n1lsc")
+selected = 3
+fit_to_longest_item = false
+item_count = 8
+popup/item_0/text = "0.1x Speed"
+popup/item_0/id = 0
+popup/item_1/text = "0.2x Speed"
+popup/item_1/id = 2
+popup/item_2/text = "0.5x Speed"
+popup/item_2/id = 3
+popup/item_3/text = "1.0x Speed"
+popup/item_3/id = 4
+popup/item_4/text = "1.2x Speed"
+popup/item_4/id = 5
+popup/item_5/text = "1.5x Speed"
+popup/item_5/id = 6
+popup/item_6/text = "2.0x Speed"
+popup/item_6/id = 7
+popup/item_7/text = "3.0x Speed"
+popup/item_7/id = 8

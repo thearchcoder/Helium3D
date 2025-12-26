@@ -1462,6 +1462,31 @@ layout_mode = 2
 fields_list_id = 27
 metadata/_tab_index = 0
 
+[node name="AnimationExportWindow" type="Window" parent="."]
+oversampling_override = 1.0
+title = "Export Animation"
+initial_position = 1
+size = Vector2i(680, 132)
+content_scale_factor = 1.4
+theme_override_fonts/title_font = ExtResource("8_rhsly")
+
+[node name="AnimationSettings" type="MarginContainer" parent="AnimationExportWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 7
+
+[node name="TabContainer" type="TabContainer" parent="AnimationExportWindow/AnimationSettings"]
+layout_mode = 2
+theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
+tabs_visible = false
+
 [node name="CrashSaveWindow" type="Window" parent="."]
 unique_name_in_owner = true
 oversampling_override = 1.0
@@ -2038,6 +2063,7 @@ compositor = SubResource("Compositor_s17dp")
 [connection signal="pressed" from="AboutWindow/HBoxContainer/VBoxContainer2/HBoxContainer/MarginContainer/CloseButton" to="." method="_on_close_button_pressed"]
 [connection signal="close_requested" from="SettingsWindow" to="." method="_on_settings_window_close_requested"]
 [connection signal="close_requested" from="AnimationSettingsWindow" to="." method="_on_animation_settings_window_close_requested"]
+[connection signal="close_requested" from="AnimationExportWindow" to="." method="_on_animation_settings_window_close_requested"]
 [connection signal="close_requested" from="CrashSaveWindow" to="." method="_on_crash_save_close_requested"]
 [connection signal="pressed" from="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2/RecoverButton" to="." method="_on_recover_button_pressed"]
 [connection signal="pressed" from="CrashSaveWindow/HBoxContainer/MarginContainer/VBoxContainer2/CrashSaveCancelButton" to="." method="_on_crash_save_cancel_button_pressed"]

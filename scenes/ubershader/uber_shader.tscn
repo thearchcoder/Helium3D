@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://cgey54sjo545t"]
+
+[sub_resource type="Gradient" id="Gradient_iqyg6"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_1gou1"]
+gradient = SubResource("Gradient_iqyg6")
+
+[node name="UberShader" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 256.0
+offset_bottom = 49.0
+texture = SubResource("GradientTexture1D_1gou1")

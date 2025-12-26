@@ -398,7 +398,7 @@ func _ready() -> void:
 			{'name': 'voxel_resolution', 'type': 'int', 'from': 100, 'to': 1000, 'default_value': 450},
 			{'name': 'voxel_epsilon', 'type': 'float', 'from': 0.0, 'to': 0.01, 'default_value': 0.001},
 		],
-		# Animation Settings / Export
+		# Animation Export
 		27: [
 			{'name': 'export_format', 'type': 'selection', 'values': ['PNG', 'JPG', 'WEBP'], 'default_value': 'PNG'},
 			{'name': 'export_keyframes_only', 'type': 'bool', 'default_value': false}

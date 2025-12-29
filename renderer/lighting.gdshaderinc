@@ -1,3 +1,41 @@
+vec3 fresnel_schlick(vec3 f0, float cosTheta) {
+	return f0 + (1.0 - f0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+float ggx_distribution(float rough, float NdotH) {
+	float a = max(rough * rough, 0.0001);
+	float a2 = a * a;
+	float NdotH2 = NdotH * NdotH;
+	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+	denom = 3.14159265359 * denom * denom;
+	return a2 / max(denom, 0.0000001);
+}
+
+float ggx_anisotropic(float rough, float aniso, float NdotH, float TdotH, float BdotH) {
+	float rough_x = max(rough * (1.0 + aniso), 0.001);
+	float rough_y = max(rough * (1.0 - aniso), 0.001);
+
+	float a_x = rough_x * rough_x;
+	float a_y = rough_y * rough_y;
+
+	float denom = (TdotH * TdotH) / (a_x * a_x) +
+	              (BdotH * BdotH) / (a_y * a_y) +
+	              NdotH * NdotH;
+
+	return 1.0 / max(3.14159265359 * a_x * a_y * denom * denom, 0.0000001);
+}
+
+float geometry_schlick_ggx(float NdotV, float rough) {
+	float r = rough + 1.0;
+	float k = (r * r) / 8.0;
+	return NdotV / (NdotV * (1.0 - k) + k);
+}
+
+float smith_geometry(float rough, float NdotV, float NdotL) {
+	float ggx1 = geometry_schlick_ggx(NdotV, rough);
+	float ggx2 = geometry_schlick_ggx(NdotL, rough);
+	return ggx1 * ggx2;
+}
 
 float calcAO(vec3 pos, vec3 normal) {
 	float max_dist = ambient_occlusion_distance;
@@ -67,7 +105,7 @@ float hard_shadow(vec3 point, vec3 dir, float start, float end) {
 	return 1.0;
 }
 
-vec3 compute_direct_point_light(vec3 p, vec3 rd, vec3 ro, vec3 normal, vec3 light_pos, vec3 light_color, float light_intensity, float light_radius) {
+vec3 compute_direct_point_light(vec3 p, vec3 rd, vec3 ro, vec3 normal, vec3 light_pos, vec3 light_color, float light_intensity, float light_radius, float ao) {
 	float light_distance = length(light_pos - p);
 	vec3 to_light = normalize(light_pos - p);
 	vec3 final_normal;
@@ -76,24 +114,81 @@ vec3 compute_direct_point_light(vec3 p, vec3 rd, vec3 ro, vec3 normal, vec3 ligh
 	else if (normal_map_projection == 1) final_normal = get_normal_from_map(planar_uv(p, 0.1), p, normal);
 	else if (normal_map_projection == 2) final_normal = triplanar_normal(p, normal);
 
-	vec3 diffuse = light_color * light_intensity * clamp(dot(to_light, final_normal), 0.0, 1.0);
-	vec3 light = diffuse;
-	
-	float shadow = !hard_shadows ? 
-		soft_shadow(p, to_light, shadow_epsilon, light_distance, light_radius) : 
+	vec3 view_dir = normalize(ro - p);
+	vec3 half_vec = normalize(to_light + view_dir);
+	float NdotL = max(dot(final_normal, to_light), 0.0);
+	float NdotV = max(dot(final_normal, view_dir), 0.0);
+	float NdotH = max(dot(final_normal, half_vec), 0.0);
+	float HdotV = max(dot(half_vec, view_dir), 0.0);
+
+	vec3 tangent = normalize(cross(final_normal, vec3(0.0, 1.0, 0.0)));
+	if (abs(dot(final_normal, vec3(0.0, 1.0, 0.0))) > 0.99) {
+		tangent = normalize(cross(final_normal, vec3(1.0, 0.0, 0.0)));
+	}
+	vec3 bitangent = cross(final_normal, tangent);
+
+	if (abs(anisotropic_rotation) > 0.001) {
+		float cos_rot = cos(anisotropic_rotation);
+		float sin_rot = sin(anisotropic_rotation);
+		vec3 rotated_tangent = tangent * cos_rot + bitangent * sin_rot;
+		vec3 rotated_bitangent = -tangent * sin_rot + bitangent * cos_rot;
+		tangent = rotated_tangent;
+		bitangent = rotated_bitangent;
+	}
+
+	float TdotH = dot(tangent, half_vec);
+	float BdotH = dot(bitangent, half_vec);
+
+	vec3 f0 = mix(vec3(0.04), vec3(1.0), metallic);
+	vec3 fresnel = fresnel_schlick(f0, HdotV);
+	vec3 kD = (1.0 - fresnel) * (1.0 - metallic);
+
+	float distance_attenuation = 1.0 / max(light_distance * light_distance, 0.0001);
+
+	float ao_on_diffuse = mix(1.0, ao, ambient_occlusion_light_affect);
+	vec3 diffuse = kD * light_color * light_intensity * NdotL * ao_on_diffuse * distance_attenuation;
+
+	if (sss_strength > 0.001) {
+		vec3 distorted_light = normalize(to_light + final_normal * sss_distortion);
+		float back_scatter = max(dot(view_dir, -distorted_light), 0.0);
+		back_scatter = pow(back_scatter, 4.0);
+		vec3 sss_contrib = sss_color * back_scatter * sss_strength * light_intensity * distance_attenuation;
+		diffuse += sss_contrib * ao_on_diffuse;
+	}
+
+	float shadow = !hard_shadows ?
+		soft_shadow(p, to_light, shadow_epsilon, light_distance, light_radius) :
 		hard_shadow(p, to_light, shadow_epsilon, light_distance);
-	
-	light *= shadow;
 
-	float specular = pow(max(dot(reflect(to_light, final_normal), rd), 0.0), specular_sharpness);
-	light *= max(specular * specular_intensity, 1.0) * shadow;
+	float D = abs(anisotropy) > 0.001 ?
+		ggx_anisotropic(roughness, anisotropy, NdotH, TdotH, BdotH) :
+		ggx_distribution(roughness, NdotH);
 
-	return light;
+	float G = smith_geometry(roughness, NdotV, NdotL);
+	vec3 F = fresnel;
+	vec3 cook_torrance = (D * G * F) / max(4.0 * NdotV * NdotL, 0.001);
+	float ao_on_specular = mix(1.0, ao, ambient_occlusion_light_affect * 0.5);
+	vec3 specular_contrib = cook_torrance * specular_intensity * light_color * light_intensity * NdotL * ao_on_specular * distance_attenuation;
+
+	vec3 base_brdf = (diffuse + specular_contrib) * shadow;
+
+	if (clearcoat > 0.001) {
+		vec3 clearcoat_f0 = vec3(0.04);
+		float coat_D = ggx_distribution(clearcoat_roughness, NdotH);
+		float coat_G = smith_geometry(clearcoat_roughness, NdotV, NdotL);
+		vec3 coat_F = fresnel_schlick(clearcoat_f0, HdotV);
+		vec3 coat_specular = (coat_D * coat_G * coat_F) / max(4.0 * NdotV * NdotL, 0.001);
+		coat_specular *= light_color * light_intensity * NdotL * shadow * clearcoat * distance_attenuation;
+
+		base_brdf = base_brdf * (1.0 - clearcoat * 0.5 * coat_F) + coat_specular;
+	}
+
+	return base_brdf;
 }
 
 vec3 compute_direct_lighting(vec3 p, vec3 rd, vec3 ro, vec3 normal) {
 	float ao = calcAO(p, normal);
-	vec3 total_light;
+	vec3 total_light = vec3(0.0);
 	vec3 ambient = ambient_light * vec3(1.0);
 
 	if (ambient_light_from_background) {
@@ -102,11 +197,11 @@ vec3 compute_direct_lighting(vec3 p, vec3 rd, vec3 ro, vec3 normal) {
 	}
 	else ambient *= ambient_light_color;
 
-	if (light1_enabled && !light2_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light1_position, light1_color, light1_intensity, light1_radius);
-	if (light2_enabled && !light1_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light2_position, light2_color, light2_intensity, light2_radius);
-	if (light2_enabled && light1_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light2_position, light2_color, light2_intensity, light2_radius) + compute_direct_point_light(p, rd, ro, normal, light1_position, light1_color, light1_intensity, light2_radius);
-	total_light += mix(ambient * ao, ambient, ambient_occlusion_light_affect);
-	total_light *= mix(1.0, ao, ambient_occlusion_light_affect);
+	if (light1_enabled && !light2_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light1_position, light1_color, light1_intensity, light1_radius, ao);
+	if (light2_enabled && !light1_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light2_position, light2_color, light2_intensity, light2_radius, ao);
+	if (light2_enabled && light1_enabled) total_light = compute_direct_point_light(p, rd, ro, normal, light2_position, light2_color, light2_intensity, light2_radius, ao) + compute_direct_point_light(p, rd, ro, normal, light1_position, light1_color, light1_intensity, light1_radius, ao);
+
+	total_light += ambient * ao;
 	return total_light;
 }
 

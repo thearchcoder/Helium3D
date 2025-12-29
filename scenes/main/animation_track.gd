@@ -6,6 +6,8 @@ var is_mouse_hovering: bool = false
 var keyframes: Array = []
 var is_playing: bool = false
 var is_rendering: bool = false
+var is_exporting: bool = false
+var exported_video: Array[PackedByteArray] = []
 var animation_frames_data: Array[Dictionary] = []
 var currently_at_frame: float = 0:
 	set(value):
@@ -324,13 +326,18 @@ func process_frame() -> void:
 		image = get_tree().current_scene.last_tiled_render_image
 	
 	if image and is_rendering and currently_at_frame >= 2:
-		var format: int = get_tree().current_scene.fields.get('export_format', 0)
-		var format_name: String = ['PNG', 'JPG', 'WEBP'][format]
-		var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/renders/frame_") + str(int(currently_at_frame - 2) + 1).trim_suffix('.0') + "." + format_name.to_lower()
-		
-		if format == 0: image.save_png(path)
-		if format == 1: image.save_jpg(path)
-		if format == 2: image.save_webp(path)
+		if is_exporting:
+			var format: int = get_tree().current_scene.fields.get('export_format', 0)
+			var format_name: String = ['PNG', 'JPG', 'WEBP'][format]
+			var path: String = get_tree().current_scene.HELIUM3D_PATH + Global.path("/renders/frame_") + str(int(currently_at_frame - 2) + 1).trim_suffix('.0') + "." + format_name.to_lower()
+
+			if format == 0: image.save_png(path)
+			if format == 1: image.save_jpg(path)
+			if format == 2: image.save_webp(path)
+
+		var compressed_data: PackedByteArray = image.save_webp_to_buffer(false, 0.6)
+		exported_video.append(compressed_data)
+		%VideoPlayer.at_frame = %VideoPlayer.at_frame
 	
 	if not is_rendering:
 		currently_at_frame += (fps * get_process_delta_time()) / keyframe_length
@@ -410,7 +417,17 @@ func _on_set_time_end_button_pressed() -> void:
 func _on_render_button_pressed() -> void:
 	%AnimationExportWindow.visible = true
 
-func export_animation() -> void:
+func _on_render_animation_button_pressed() -> void:
+	render_animation(false)
+
+func _on_export_animation_button_pressed() -> void:
+	render_animation(true)
+
+func render_animation(is_exporting_animation: bool = false) -> void:
+	is_exporting = is_exporting_animation
+	exported_video = []
+	%VideoPlayer.at_frame = %VideoPlayer.at_frame
+	
 	if is_playing:
 		_on_playing_toggle_button_pressed()
 		is_rendering = true

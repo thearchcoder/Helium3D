@@ -18,6 +18,8 @@ grow_vertical = 2
 script = ExtResource("1_13oqj")
 
 [node name="PopupMenu" type="PopupMenu" parent="."]
+snap_2d_transforms_to_pixel = true
+snap_2d_vertices_to_pixel = true
 oversampling_override = 1.0
 size = Vector2i(109, 44)
 content_scale_factor = 1.4

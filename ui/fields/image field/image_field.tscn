@@ -4,11 +4,9 @@
 [ext_resource type="Script" uid="uid://bbpqoandsgx8k" path="res://ui/fields/image field/image_field.gd" id="2_0hh4d"]
 [ext_resource type="FontFile" uid="uid://ca7pc7ur0hd10" path="res://resources/font/Rubik-SemiBold.ttf" id="3_q1vc6"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fiq4o"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1l333"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pkbj8"]
 content_margin_left = 5.0
-bg_color = Color(0.144063, 0.144063, 0.144062, 1)
+bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
 corner_radius_top_left = 3
 corner_radius_bottom_left = 3
 
@@ -18,16 +16,18 @@ bg_color = Color(0.0646966, 0.0646966, 0.0646963, 1)
 corner_radius_top_left = 3
 corner_radius_bottom_left = 3
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pkbj8"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1l333"]
 content_margin_left = 5.0
-bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+bg_color = Color(0.144063, 0.144063, 0.144062, 1)
 corner_radius_top_left = 3
 corner_radius_bottom_left = 3
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6e01i"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fiq4o"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_crnpa"]
 content_margin_left = 7.0
 content_margin_right = 7.0
-bg_color = Color(0.144063, 0.144063, 0.144062, 1)
+bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 
@@ -38,10 +38,10 @@ bg_color = Color(0.0646966, 0.0646966, 0.0646963, 1)
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_crnpa"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6e01i"]
 content_margin_left = 7.0
 content_margin_right = 7.0
-bg_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+bg_color = Color(0.144063, 0.144063, 0.144062, 1)
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 
@@ -61,10 +61,10 @@ theme_override_constants/h_separation = 0
 theme_override_constants/icon_max_width = 68
 theme_override_fonts/font = ExtResource("3_q1vc6")
 theme_override_font_sizes/font_size = 18
-theme_override_styles/focus = SubResource("StyleBoxEmpty_fiq4o")
-theme_override_styles/hover = SubResource("StyleBoxFlat_1l333")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_wox1n")
 theme_override_styles/normal = SubResource("StyleBoxFlat_pkbj8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_wox1n")
+theme_override_styles/hover = SubResource("StyleBoxFlat_1l333")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_fiq4o")
 text = "Open an Image"
 expand_icon = true
 
@@ -73,16 +73,18 @@ layout_mode = 2
 theme_override_constants/icon_max_width = 2
 theme_override_fonts/font = ExtResource("3_q1vc6")
 theme_override_font_sizes/font_size = 18
-theme_override_styles/focus = SubResource("StyleBoxEmpty_fiq4o")
-theme_override_styles/hover = SubResource("StyleBoxFlat_6e01i")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_qqtfa")
 theme_override_styles/normal = SubResource("StyleBoxFlat_crnpa")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_qqtfa")
+theme_override_styles/hover = SubResource("StyleBoxFlat_6e01i")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_fiq4o")
 text = "x"
 expand_icon = true
 
 [node name="FileDialog" type="FileDialog" parent="." index="3"]
 unique_name_in_owner = true
 auto_translate_mode = 1
+snap_2d_transforms_to_pixel = true
+snap_2d_vertices_to_pixel = true
 title = "Open a File"
 initial_position = 2
 size = Vector2i(1152, 648)

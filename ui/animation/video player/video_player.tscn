@@ -24,9 +24,14 @@ expand_margin_right = 10.0
 expand_margin_bottom = 10.0
 
 [sub_resource type="Gradient" id="Gradient_5exvv"]
+offsets = PackedFloat32Array(0, 0.7)
+colors = PackedColorArray(0, 0, 0, 1, 0.05629155, 0.056291625, 0.056291543, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_stcow"]
 gradient = SubResource("Gradient_5exvv")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0, 0)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_n1lsc"]
 
@@ -52,6 +57,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_v7cbb")
 layout_mode = 2
 
 [node name="Frame" type="TextureRect" parent="VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 texture = SubResource("GradientTexture2D_stcow")
@@ -64,6 +70,7 @@ layout_mode = 2
 [node name="HSlider" type="HSlider" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+rounded = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -85,6 +92,7 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_n1lsc")
 icon = ExtResource("4_rfhrq")
 
 [node name="PlaySpeed" type="OptionButton" parent="VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(55, 0)
 layout_mode = 2
 theme_override_constants/h_separation = 8
@@ -98,16 +106,21 @@ item_count = 8
 popup/item_0/text = "0.1x Speed"
 popup/item_0/id = 0
 popup/item_1/text = "0.2x Speed"
-popup/item_1/id = 2
+popup/item_1/id = 1
 popup/item_2/text = "0.5x Speed"
-popup/item_2/id = 3
+popup/item_2/id = 2
 popup/item_3/text = "1.0x Speed"
-popup/item_3/id = 4
+popup/item_3/id = 3
 popup/item_4/text = "1.2x Speed"
-popup/item_4/id = 5
+popup/item_4/id = 4
 popup/item_5/text = "1.5x Speed"
-popup/item_5/id = 6
+popup/item_5/id = 5
 popup/item_6/text = "2.0x Speed"
-popup/item_6/id = 7
+popup/item_6/id = 6
 popup/item_7/text = "3.0x Speed"
-popup/item_7/id = 8
+popup/item_7/id = 7
+
+[connection signal="value_changed" from="VBoxContainer/HBoxContainer/HSlider" to="." method="_on_h_slider_value_changed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer2/LeftButton" to="." method="left"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer2/PlayButton" to="." method="toggle"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer2/RightButton" to="." method="right"]

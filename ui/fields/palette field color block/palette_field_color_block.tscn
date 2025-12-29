@@ -61,6 +61,8 @@ offset_bottom = 9451.0
 flat = true
 
 [node name="PopupPanel" type="PopupPanel" parent="Circle"]
+snap_2d_transforms_to_pixel = true
+snap_2d_vertices_to_pixel = true
 oversampling_override = 1.0
 size = Vector2i(316, 625)
 
@@ -70,8 +72,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 4.0
 offset_top = 4.0
-offset_right = -4.0
-offset_bottom = -4.0
+offset_right = 312.0
+offset_bottom = 621.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3

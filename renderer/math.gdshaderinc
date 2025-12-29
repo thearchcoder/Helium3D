@@ -790,18 +790,32 @@ vec3 triplanar_normal(vec3 p, vec3 normal) {
 	blend_weights = pow(blend_weights, vec3(normal_map_triplanar_sharpness));
 	blend_weights /= dot(blend_weights, vec3(1.0));
 
-	vec3 normal_x = texture(normal_map, p.yz * normal_map_scale).rgb * 2.0 - 1.0;
-	vec3 normal_y = texture(normal_map, p.xz * normal_map_scale).rgb * 2.0 - 1.0;
-	vec3 normal_z = texture(normal_map, p.xy * normal_map_scale).rgb * 2.0 - 1.0;
+	vec3 tnormal_x = texture(normal_map, p.yz * normal_map_scale).rgb * 2.0 - 1.0;
+	vec3 tnormal_y = texture(normal_map, p.xz * normal_map_scale).rgb * 2.0 - 1.0;
+	vec3 tnormal_z = texture(normal_map, p.xy * normal_map_scale).rgb * 2.0 - 1.0;
 
-	normal_x = vec3(0.0, normal_x.y, normal_x.x) * normal_map_height;
-	normal_y = vec3(normal_y.x, 0.0, normal_y.y) * normal_map_height;
-	normal_z = vec3(normal_z.x, normal_z.y, 0.0) * normal_map_height;
+	tnormal_x = normalize(vec3(tnormal_x.xy * normal_map_height, tnormal_x.z));
+	tnormal_y = normalize(vec3(tnormal_y.xy * normal_map_height, tnormal_y.z));
+	tnormal_z = normalize(vec3(tnormal_z.xy * normal_map_height, tnormal_z.z));
 
-	return normalize(normal +
-		normal_x * blend_weights.x +
-		normal_y * blend_weights.y +
-		normal_z * blend_weights.z);
+	vec3 axis_sign = sign(normal);
+	vec3 tangent_x = vec3(0.0, axis_sign.x, 0.0);
+	vec3 bitangent_x = vec3(0.0, 0.0, axis_sign.x);
+	vec3 world_normal_x = mat3(tangent_x, bitangent_x, vec3(axis_sign.x, 0.0, 0.0)) * tnormal_x;
+
+	vec3 tangent_y = vec3(axis_sign.y, 0.0, 0.0);
+	vec3 bitangent_y = vec3(0.0, 0.0, axis_sign.y);
+	vec3 world_normal_y = mat3(tangent_y, bitangent_y, vec3(0.0, axis_sign.y, 0.0)) * tnormal_y;
+
+	vec3 tangent_z = vec3(axis_sign.z, 0.0, 0.0);
+	vec3 bitangent_z = vec3(0.0, axis_sign.z, 0.0);
+	vec3 world_normal_z = mat3(tangent_z, bitangent_z, vec3(0.0, 0.0, axis_sign.z)) * tnormal_z;
+
+	return normalize(
+		world_normal_x * blend_weights.x +
+		world_normal_y * blend_weights.y +
+		world_normal_z * blend_weights.z
+	);
 }
 
 /////////

@@ -314,19 +314,28 @@ func _ready() -> void:
 			{'name': 'light'+l+'_intensity', 'type': 'float', 'from': 0, 'to': 200, 'default_value': 100},
 			{'name': 'light'+l+'_radius', 'type': 'float', 'from': 0, 'to': 2, 'default_value': 0.1},
 		],
-		# Lighting / General
-		6: [
-			# Shadow
+		# Lighting / Shadow
+		28: [
 			{'name': 'hard_shadows', 'type': 'bool', 'default_value': false},
 			{'name': 'shadow_steps', 'type': 'int', 'from': 0, 'to': 400, 'default_value': 230},
 			{'name': 'shadow_epsilon', 'advanced_only': true, 'type': 'float', 'from': 0, 'to': 0.4, 'default_value': 0.004},
 			{'name': 'shadow_raystep_multiplier', 'advanced_only': true, 'type': 'float', 'from': 0.2, 'to': 3.0, 'default_value': 1.0},
-			
-			# Specular highlights
+			{'name': 'metallic', 'type': 'float', 'from': 0, 'to': 1, 'default_value': 0},
+			{'name': 'roughness', 'type': 'float', 'from': 0, 'to': 1, 'default_value': 0.5},
+			{'name': 'clearcoat', 'type': 'float', 'from': 0, 'to': 1, 'default_value': 0.0},
+			{'name': 'clearcoat_roughness', 'advanced_only': true, 'type': 'float', 'from': 0, 'to': 1, 'default_value': 0.1},
+			{'name': 'anisotropy', 'type': 'float', 'from': -1, 'to': 1, 'default_value': 0.0},
+			{'name': 'anisotropic_rotation', 'advanced_only': true, 'type': 'float', 'from': 0, 'to': 6.28318, 'default_value': 0.0},
+			{'name': 'sss_strength', 'type': 'float', 'from': 0, 'to': 2, 'default_value': 0.0},
+			{'name': 'sss_distortion', 'advanced_only': true, 'type': 'float', 'from': 0, 'to': 1, 'default_value': 0.2},
+			{'name': 'sss_color', 'type': 'color', 'default_value': Color(1.0, 0.3, 0.3)},
+		],
+		29: [
 			{'name': 'specular_intensity', 'type': 'float', 'from': 0.0, 'to': 100.0, 'default_value': 15},
 			{'name': 'specular_sharpness', 'type': 'float', 'from': 0.0, 'to': 40.0, 'default_value': 20},
-
-			# Reflections
+		],
+		# Lighting / Reflections
+		6: [
 			{'name': 'reflection_intensity', 'type': 'float', 'from': 0.0, 'to': 1.0, 'default_value': 0.0, 'onchange_override': func(val: float) -> void:
 			%Fractal.material_override.set_shader_parameter('reflection_intensity', val)
 			get_tree().current_scene.using_reflections = val >= 0.000001

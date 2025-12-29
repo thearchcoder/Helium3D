@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://owbf3siulolw"]
+[gd_scene load_steps=3 format=3 uid="uid://owbf3siulolw"]
 
 [ext_resource type="Script" uid="uid://bdpxx7gxw0lbj" path="res://ui/field container/field_container.gd" id="1_jrlfu"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h5jqo"]
 
 [node name="FieldContainer" type="MarginContainer"]
 anchors_preset = -1
@@ -20,7 +22,11 @@ layout_mode = 2
 [node name="Names" type="VBoxContainer" parent="Fields"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 14
+
+[node name="HSeparator" type="HSeparator" parent="Fields/Names"]
+layout_mode = 2
+theme_override_constants/separation = 0
+theme_override_styles/separator = SubResource("StyleBoxEmpty_h5jqo")
 
 [node name="Values" type="VBoxContainer" parent="Fields"]
 unique_name_in_owner = true

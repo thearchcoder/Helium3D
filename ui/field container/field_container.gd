@@ -303,6 +303,10 @@ func compute_tiled_render() -> void:
 	if should_start_tiled_render:
 		compute_tiled_render()
 
+#func _physics_process(_delta: float) -> void:
+	#for label in %Names.get_children():
+		#label.global_position.y = label.get_meta('value_node').global_position.y + 4
+
 func _ready() -> void:
 	var l: String = str(light_id)
 	var ALL_FIELD_CONTAINER_FIELDS := {
@@ -696,23 +700,11 @@ func update_fields_ui() -> void:
 		text = text.trim_prefix('4d ')
 		
 		var label: Label = Label.new()
-		label.text = text
+		label.custom_minimum_size.y = value_node.size.y
+		#label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		label.text = text + ': '
 		label.name = text
 		label.add_theme_font_override('font', FONT)
-		label.text += ': '
-		
-		if %Values.get_node(variable_name.to_pascal_case()).has_method('i_am_a_vec3_field'):
-			label.text += '\n'
-			label.text += '\n'
-			label.text += '\n'
-			label.add_theme_constant_override('line_spacing', 0)
-		
-		if %Values.get_node(variable_name.to_pascal_case()).has_method('i_am_a_vec4_field'):
-			label.text += '\n'
-			label.text += '\n'
-			label.text += '\n'
-			label.text += '\n'
-			label.add_theme_constant_override('line_spacing', 0)
 		
 		$Fields/Names.add_child(label)
 		value_node.set_meta('name_node', label)

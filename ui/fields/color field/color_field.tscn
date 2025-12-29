@@ -18,6 +18,7 @@ corner_radius_bottom_left = 2
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l6l4t"]
 
 [node name="ColorField" instance=ExtResource("1_qyg35")]
+custom_minimum_size = Vector2(0, 27)
 anchor_right = 0.0333333
 anchor_bottom = 0.0296296
 offset_right = 0.0
@@ -33,7 +34,6 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_cpmcy")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_cpmcy")
 theme_override_styles/hover = SubResource("StyleBoxFlat_cpmcy")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_l6l4t")
-text = "e"
 
 [connection signal="color_changed" from="ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
 [connection signal="popup_closed" from="ColorPickerButton" to="." method="_on_color_picker_button_popup_closed"]

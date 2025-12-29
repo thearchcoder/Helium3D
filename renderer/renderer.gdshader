@@ -94,6 +94,7 @@ uniform float fresnel_intensity = 0.0045;
 // Effects / Tone mapping
 uniform int tone_mapping = 0;
 uniform float exposure = 1.0;
+uniform float white_point = 1.0;
 uniform float gamma = 2.2;
 // Effects / Outline
 uniform vec3 outline_color: source_color = vec3(1.0, 0.5, 0.2);

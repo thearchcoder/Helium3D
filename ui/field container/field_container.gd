@@ -504,6 +504,7 @@ func _ready() -> void:
 		4: [
 			{'name': 'gamma', 'type': 'float', 'from': 0.5, 'to': 4.0, 'default_value': 1.42},
 			{'name': 'exposure', 'type': 'float', 'from': 0.5, 'to': 5.0, 'default_value': 1.5},
+			{'name': 'white_point', 'type': 'float', 'from': 0.0, 'to': 5.0, 'default_value': 1.0},
 			{'name': 'tone_mapping', 'type': 'selection', 'values': ['Linear', 'Simple Reinhard', 'Luma Reinhard', 'White Luma Reinhard', 'Rom Bin Da House', 'Filmic', 'Uncharted2', 'ACES'], 'default_value': 'Simple Reinhard'},
 		],
 		# Effects / Bloom

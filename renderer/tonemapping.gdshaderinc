@@ -1,14 +1,17 @@
 vec3 linear_tone_mapping(vec3 color) {
+	color /= white_point;
 	return clamp(exposure * color, 0.0, 1.0);
 }
 
 vec3 simple_reinhard_tone_mapping(vec3 color) {
+	color /= white_point;
 	color *= (exposure + 0.5) / (1.0 + color / exposure);
 	return color;
 }
 
 vec3 luma_based_reinhard_tone_mapping(vec3 color)
 {
+	color /= white_point;
 	float luma = dot(color, vec3(0.2126, 0.7152, 0.0722));
 	float tone_mapped_luma = luma / (1. + luma);
 	color *= tone_mapped_luma / luma;
@@ -18,9 +21,8 @@ vec3 luma_based_reinhard_tone_mapping(vec3 color)
 
 vec3 white_preserving_luma_based_reinhard_tone_mapping(vec3 color)
 {
-	float white = 2.0;
 	float luma = dot(color, vec3(0.2126, 0.7152, 0.0722));
-	float tone_mapped_luma = luma * (1.0 + luma / (white * white)) / (1.0 + luma);
+	float tone_mapped_luma = luma * (1.0 + luma / (white_point * white_point)) / (1.0 + luma);
 	color *= tone_mapped_luma / luma;
 
 	return color * exposure;
@@ -44,10 +46,9 @@ vec3 uncharted2_tone_mapping(vec3 color) {
 	float d = 0.20;
 	float e = 0.02;
 	float f = 0.30;
-	float w = 11.2;
 	color *= exposure + 1.0;
 	color = ((color * (a * color + c * b) + d * e) / (color * (a * color + b) + d * f)) - e / f;
-	float white = ((w * (a * w + c * b) + d * e) / (w * (a * w + b) + d * f)) - e / f;
+	float white = ((white_point * (a * white_point + c * b) + d * e) / (white_point * (a * white_point + b) + d * f)) - e / f;
 	color /= white;
 
 	return color;
@@ -68,7 +69,7 @@ vec3 aces_tonemapping(vec3 color){
 	vec3 a = v * (v + 0.0245786) - 0.000090537;
 	vec3 b = v * (0.983729 * v + 0.4329510) + 0.238081;
 
-	color = pow(clamp(m2 * (a / b), 0.0, 1.0), vec3(1.0 / 2.2));
+	color = clamp(m2 * (a / b), 0.0, 1.0);
 
 	return color * exposure;
 }

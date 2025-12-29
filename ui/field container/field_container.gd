@@ -311,7 +311,7 @@ func _ready() -> void:
 			{'name': 'light'+l+'_position', 'type': 'vec3', 'from': Vector3(-20, -20, -20), 'to': Vector3(20, 20, 20), 'default_value': Vector3(10, 10, 10)},
 			{'name': 'light'+l+'_enabled', 'type': 'bool', 'default_value': true if light_id == 1 else false},
 			{'name': 'light'+l+'_color', 'type': 'color', 'default_value': Color('white')},
-			{'name': 'light'+l+'_intensity', 'type': 'float', 'from': 0, 'to': 2, 'default_value': 0.725},
+			{'name': 'light'+l+'_intensity', 'type': 'float', 'from': 0, 'to': 200, 'default_value': 100},
 			{'name': 'light'+l+'_radius', 'type': 'float', 'from': 0, 'to': 2, 'default_value': 0.1},
 		],
 		# Lighting / General

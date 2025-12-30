@@ -30,7 +30,6 @@ func reload_position() -> void:
 func set_block_offset(new_offset: float) -> void:
 	var length: float = $"../..".size.x - 19
 	position.x = clamp(new_offset * length, -5, length)
-	position.y = ($"../..".size.y - 12) / 2
 	$"../../..".changed_gradient()
 
 func free_object(obj: Object) -> void:

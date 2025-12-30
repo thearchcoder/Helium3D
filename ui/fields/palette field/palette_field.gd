@@ -23,7 +23,7 @@ var value: Dictionary = {'special_field': true, 'type': 'palette', 'is_blurry': 
 			block.color = color
 			%Blocks.add_child(block)
 			block.set_block_offset(block.offset)
-			block.position.y = size.y - 23
+			block.position.y = size.y - 17
 		
 		changed_gradient()
 		
@@ -38,7 +38,7 @@ var value: Dictionary = {'special_field': true, 'type': 'palette', 'is_blurry': 
 			block.color = color
 			%Blocks.add_child(block)
 			block.set_block_offset(block.offset)
-			block.position.y = size.y - 23
+			block.position.y = size.y - 17
 		
 		changed_gradient()
 		Global.action_occurred()
@@ -76,7 +76,7 @@ func _on_button_button_down() -> void:
 	var block := BLOCK_SCENE.instantiate()
 	%Blocks.add_child(block)
 	block.offset = 0.5
-	block.position = Vector2(0, size.y - 23)
+	block.position = Vector2(0, size.y - 17)
 	
 	block.is_dragging = true
 	block.focused = true

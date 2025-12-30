@@ -272,8 +272,16 @@ shader_parameter/color_exponent = 0.0
 shader_parameter/specular_intensity = 0.0
 shader_parameter/specular_sharpness = 0.0
 shader_parameter/metallic = 0.0
+shader_parameter/roughness = 0.5
 shader_parameter/reflection_intensity = 0.0
 shader_parameter/reflection_bounces = 0
+shader_parameter/clearcoat = 0.0
+shader_parameter/clearcoat_roughness = 0.1
+shader_parameter/anisotropy = 0.0
+shader_parameter/anisotropic_rotation = 0.0
+shader_parameter/sss_strength = 0.0
+shader_parameter/sss_distortion = 0.2
+shader_parameter/sss_color = Color(1, 0.3, 0.3, 1)
 shader_parameter/normal_map_enabled = false
 shader_parameter/normal_map_projection = 0
 shader_parameter/normal_map_triplanar_sharpness = 0.0
@@ -319,6 +327,7 @@ shader_parameter/fresnel_falloff = 5.0
 shader_parameter/fresnel_intensity = 0.0045
 shader_parameter/tone_mapping = 0
 shader_parameter/exposure = 1.0
+shader_parameter/white_point = 1.0
 shader_parameter/gamma = 2.2
 shader_parameter/outline_color = Color(1, 0.5, 0.2, 1)
 shader_parameter/outline_intensity = 0.0
@@ -829,6 +838,7 @@ theme_override_styles/tab_focus = SubResource("StyleBoxEmpty_2g4vb")
 current_tab = 2
 
 [node name="Light 1" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
+visible = false
 layout_mode = 2
 fields_list_id = 7
 metadata/_tab_index = 0
@@ -841,7 +851,6 @@ light_id = 2
 metadata/_tab_index = 1
 
 [node name="Background" parent="UI/HBoxContainer/TabContainer/Lighting/TabContainer" instance=ExtResource("19_l42h1")]
-visible = false
 layout_mode = 2
 fields_list_id = 19
 metadata/_tab_index = 2

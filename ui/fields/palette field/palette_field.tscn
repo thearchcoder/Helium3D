@@ -7,10 +7,12 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mnd2h"]
 bg_color = Color(0.0807833, 0.0807834, 0.0807832, 1)
-expand_margin_left = 6.0
-expand_margin_top = 6.0
-expand_margin_right = 6.0
-expand_margin_bottom = 6.0
+corner_radius_top_left = 4
+corner_radius_bottom_left = 4
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
 
 [sub_resource type="Gradient" id="Gradient_7w6g2"]
 interpolation_mode = 1
@@ -26,6 +28,8 @@ gradient = SubResource("Gradient_7w6g2")
 content_margin_left = 3.0
 content_margin_right = 3.0
 bg_color = Color(0.0807833, 0.0807834, 0.0807832, 1)
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7302w"]
 content_margin_left = 3.0
@@ -40,23 +44,23 @@ bg_color = Color(0.111197, 0.111197, 0.111197, 1)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_el3ur"]
 
 [node name="PaletteField" instance=ExtResource("1_x23c8")]
-custom_minimum_size = Vector2(1.45519e-11, 35)
+custom_minimum_size = Vector2(0, 27)
 anchor_top = -0.012
 anchor_right = 0.157
-anchor_bottom = 0.044
-offset_top = -0.04
-offset_right = 0.849976
-offset_bottom = -33.52
+anchor_bottom = 0.013
+offset_top = -0.03999996
+offset_right = 0.8499756
+offset_bottom = -0.03999996
 theme_override_constants/separation = 0
 script = ExtResource("2_560la")
 
 [node name="MarginContainer" type="MarginContainer" parent="." index="0"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/margin_left = 6
-theme_override_constants/margin_top = 6
-theme_override_constants/margin_right = 6
-theme_override_constants/margin_bottom = 6
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
 
 [node name="Panel" type="Panel" parent="MarginContainer" index="0"]
 layout_mode = 2

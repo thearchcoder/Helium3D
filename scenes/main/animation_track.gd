@@ -201,11 +201,11 @@ func insert_keyframe() -> void:
 	data.erase('anti_aliasing')
 
 	keyframes.append(data.duplicate(true))
-	
+
 	if len(keyframes) == 1:
 		currently_at_frame = 1
-	
-	reload_keyframes()
+
+	await add_keyframe_ui_at(keyframes.size() - 1)
 
 func duplicate_keyframe(keyframe_data: Dictionary) -> void:
 	stop()
@@ -214,9 +214,8 @@ func duplicate_keyframe(keyframe_data: Dictionary) -> void:
 		if keyframes[i] == keyframe_data:
 			var duplicated_data: Dictionary = keyframe_data.duplicate(true)
 			keyframes.insert(i + 1, duplicated_data)
+			await add_keyframe_ui_at(i + 1)
 			break
-
-	reload_keyframes()
 
 func insert_keyframe_at_index(index: int) -> void:
 	stop()
@@ -240,7 +239,7 @@ func insert_keyframe_at_index(index: int) -> void:
 	data.erase('anti_aliasing')
 
 	keyframes.insert(index, data.duplicate(true))
-	reload_keyframes()
+	await add_keyframe_ui_at(index)
 
 func stop() -> void:
 	if is_playing:
@@ -258,9 +257,8 @@ func remove_keyframe(target_keyframe_data: Dictionary) -> void:
 	for i in range(keyframes.size()):
 		if target_keyframe_data == keyframes[i]:
 			keyframes.remove_at(i)
+			await remove_keyframe_ui_at(i)
 			break
-
-	reload_keyframes()
 
 	if currently_at_frame >= (len(keyframes) - 1) * fps:
 		currently_at_frame = (len(keyframes) - 1) * fps
@@ -279,26 +277,51 @@ func reorder_keyframe(from_index: int, to_index: int, select_target: bool = fals
 	keyframes.remove_at(from_index)
 	keyframes.insert(to_index, keyframe_data)
 
-	reload_keyframes()
+	await move_keyframe_ui(from_index, to_index)
 
 	if select_target:
 		var target_keyframe: Node = %Keyframes.get_child(to_index)
 		if target_keyframe.has_method("select"):
 			target_keyframe.select()
 
+func create_keyframe_ui(keyframe_data: Dictionary) -> Control:
+	var keyframe: Control = ANIMATION_TRACK_KEYFRAME_SCENE.instantiate()
+	if not keyframe_data['keyframe_texture'] is EncodedObjectAsID:
+		keyframe.image = ImageTexture.create_from_image(Image.create_from_data(KEYFRAME_TEXTURE_SIZE, KEYFRAME_TEXTURE_SIZE, false, Image.FORMAT_RGB8, Marshalls.base64_to_raw(keyframe_data['keyframe_texture'])))
+	keyframe.data = keyframe_data
+	return keyframe
+
+func add_keyframe_ui_at(index: int) -> void:
+	var keyframe_data: Dictionary = keyframes[index]
+	var keyframe: Control = create_keyframe_ui(keyframe_data)
+	%Keyframes.add_child(keyframe)
+	%Keyframes.move_child(keyframe, index)
+	await get_tree().process_frame
+	update_current_time_position()
+
+func remove_keyframe_ui_at(index: int) -> void:
+	var child: Node = %Keyframes.get_child(index)
+	%Keyframes.remove_child(child)
+	child.queue_free()
+	await get_tree().process_frame
+	update_current_time_position()
+
+func move_keyframe_ui(from_index: int, to_index: int) -> void:
+	%Keyframes.move_child(%Keyframes.get_child(from_index), to_index)
+	await get_tree().process_frame
+	update_current_time_position()
+
 func reload_keyframes() -> void:
 	for child in %Keyframes.get_children():
 		child.queue_free()
 
-	for i in range(keyframes.size()):
-		var keyframe_data: Dictionary = keyframes[i]
-		var keyframe: Control = ANIMATION_TRACK_KEYFRAME_SCENE.instantiate()
-		if not keyframe_data['keyframe_texture'] is EncodedObjectAsID:
-			keyframe.image = ImageTexture.create_from_image(Image.create_from_data(KEYFRAME_TEXTURE_SIZE, KEYFRAME_TEXTURE_SIZE, false, Image.FORMAT_RGB8, Marshalls.base64_to_raw(keyframe_data['keyframe_texture'])))
+	await get_tree().process_frame
 
-		keyframe.data = keyframe_data
+	for i in range(keyframes.size()):
+		var keyframe: Control = create_keyframe_ui(keyframes[i])
 		%Keyframes.add_child(keyframe)
 
+	await get_tree().process_frame
 	update_current_time_position()
 
 func calculate_time_estimate() -> float:
